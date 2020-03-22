@@ -14,7 +14,7 @@ import java.sql.ResultSet
 data class Issue(@JsonProperty("name")  var name: Name?,
                   var allowedLabels: MutableList<Label> = mutableListOf<Label>(),
                   val id : UUID = UUID.randomUUID(),
-                  var state: IssueState = IssueState.OPEN
+                  var state: IssueState?
 ) {
 
     class IssueMapper : RowMapper<Issue>{

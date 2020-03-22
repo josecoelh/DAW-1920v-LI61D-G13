@@ -170,16 +170,16 @@ interface ProjectDao {
      * @return the updated project
      * @throws IllegalArgumentException if the [Project] doesn't exist or the [Issue] doesn't exist
      */
-    @SqlUpdate()
-    fun updateIssue(projectId: UUID, issueId: UUID, issue: Issue): Boolean
+    @SqlUpdate("update issue set _name = :name , _state = :state where proj_id = :projectId and issue_id = :issueId")
+    fun updateIssue(projectId: UUID, issueId: UUID, name : String, state: String): Boolean
 
-    @SqlUpdate
-    fun addCommentToIssue(projectId: UUID, issueId: UUID, comment: Comment): Boolean
+    @SqlUpdate("insert into _comments values(?,?,?,?")
+    fun addCommentToIssue(comment : String, date : String, commentId: UUID, issueId: UUID): Boolean
 
-    @SqlUpdate
-    fun deleteCommentInIssue(projectId: UUID, issueId: UUID, commentId: UUID): Boolean
+    @SqlUpdate("delete from _comments where issue_id = ? and comment_id = ? ")
+    fun deleteCommentInIssue( issueId: UUID, commentId: UUID): Boolean
 
-    @SqlUpdate
-    fun getIssue(projectId: UUID, issueId: UUID): Boolean
+    @SqlQuery("select issue_id, _state, _name from issues where proj_id=? and issue_id = ?")
+    fun getIssue(projectId: UUID, issueId: UUID): Issue
 
 }

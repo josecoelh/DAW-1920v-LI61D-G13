@@ -111,7 +111,7 @@ class ProjectController @Autowired constructor(val projectService: ProjectServic
      * @return [Issue] with the corresponding [issueId]
      */
     @GetMapping(path = arrayOf("{projectId}/issue/{issueId}"))
-    fun getIssue(@PathVariable("projectId") projectId: UUID, @PathVariable("issueId") issueId: UUID): ResponseEntity<Boolean> {
+    fun getIssue(@PathVariable("projectId") projectId: UUID, @PathVariable("issueId") issueId: UUID): ResponseEntity<Issue> {
         val res = projectService.getIssue(projectId,issueId)
         return ResponseEntity.ok(res)
     }
@@ -199,7 +199,7 @@ class ProjectController @Autowired constructor(val projectService: ProjectServic
     fun deleteCommentInIssue(@PathVariable("projectId") projectId: UUID,
                              @PathVariable("issueId") issueId: UUID,
                              @PathVariable("commentId") commentId: UUID) : ResponseEntity<SuccessResponse> {
-        projectService.deleteCommentInIssue(projectId, issueId, commentId)
+        projectService.deleteCommentInIssue(issueId, commentId)
         return ResponseEntity.ok(SuccessResponse( Links.issuePath(projectId,issueId),HttpMethod.DELETE))
     }
 
