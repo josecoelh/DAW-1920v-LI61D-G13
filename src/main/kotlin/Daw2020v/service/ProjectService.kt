@@ -2,10 +2,7 @@ package Daw2020v.service
 
 import Daw2020v.dao.Database
 import Daw2020v.dao.ProjectDao
-import Daw2020v.model.Comment
-import Daw2020v.model.Issue
-import Daw2020v.model.Label
-import Daw2020v.model.Project
+import Daw2020v.model.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.lang.IllegalArgumentException
@@ -18,10 +15,13 @@ class ProjectService @Autowired constructor() {
 
     fun insertProject(project: Project): Boolean {
         if (project.name == null || project.shortDesc == null) throw IllegalArgumentException("Bad project")
-        val res = Database.executeDao { projectDao.insertProject(project.id, project.name!!.value, project.shortDesc!!.text) } as Boolean
-        if (res) return true
-        //TODO se der erro?
-        return false
+        return Database.executeDao { projectDao.insertProject(project.id, project.name!!.value, project.shortDesc!!.text) } as Boolean
+
+    }
+
+    fun insertIssue(projectId: UUID, issue: Issue): Boolean {
+        if(issue.name == null) throw IllegalArgumentException("Bad issue")
+        return Database.executeDao { projectDao.putIssue(projectId,issue.id, issue.name!!.value) } as Boolean
     }
 
     fun getProject(projectId: UUID): Project {
@@ -107,4 +107,14 @@ class ProjectService @Autowired constructor() {
 
     fun addCommentToIssue(projectId: UUID, issueId: UUID, comment: Comment): Boolean =
             Database.executeDao { projectDao.addCommentToIssue(comment.value, comment.date, comment.id, issueId) } as Boolean
+
+    fun changeIssueState(projectId: UUID, issueId: UUID, state: IssueState) : Boolean{
+        return Database.executeDao { projectDao.changeIssueState(projectId, issueId, state.name) } as Boolean
+    }
+
+    fun getComment(issueId: UUID, commentId: UUID): Comment {
+        return Database.executeDao { projectDao.getComment(issueId,commentId) } as Comment
+    }
+
+
 }

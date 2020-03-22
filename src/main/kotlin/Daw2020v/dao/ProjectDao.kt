@@ -24,7 +24,8 @@ interface ProjectDao {
     @SqlUpdate("INSERT INTO project(proj_id , _name,description) VALUES (?, ?, ?)")
     fun insertProject( id:UUID,  name:String,  desc:String): Boolean
 
-
+    @SqlUpdate("INSERT INTO issues values (:name, :issueId, :projectId, OPEN")
+    fun putIssue(projectId: UUID, issueId: UUID, name: String) : Boolean
 
     @SqlQuery("select al._value from project as proj  join allowed_labels as al on(proj.proj_id = al.proj_id) where proj.proj_id = ?")
     @RegisterRowMapper(Label.LabelMapper::class)
@@ -85,7 +86,7 @@ interface ProjectDao {
      * @throws IllegalArgumentException if the [Project] doesn't exist
      */
     @SqlUpdate("insert into issues values(:name, :issueId, :projectId, :state)")
-    fun putIssue(projectId : UUID, issueId : String, name: String ,state: String) : Boolean
+    fun putIssue(projectId : UUID, issueId : String, name: String, state: String) : Boolean
 
     @SqlUpdate(" delete from _comments where issue_id = ?")
     fun deleteIssueComment(issueId: UUID) : Boolean
@@ -180,6 +181,19 @@ interface ProjectDao {
     fun deleteCommentInIssue( issueId: UUID, commentId: UUID): Boolean
 
     @SqlQuery("select issue_id, _state, _name from issues where proj_id=? and issue_id = ?")
+    @RegisterRowMapper(Issue.IssueMapper::class)
     fun getIssue(projectId: UUID, issueId: UUID): Issue
+
+    @SqlQuery("select _comment, _date, comment_id from _comments where issue_id=? and comment_id=?" )
+    @RegisterRowMapper(Comment.CommentMapper::class)
+    fun getComment(issueId: UUID, commentId: UUID) : Comment
+
+    @SqlUpdate("update issue set state = :state where proj_id = :projectId and issue_id = :issueId ")
+    fun changeIssueState(projectId: UUID, issueId: UUID, state: String) : Boolean
+
+
+
+
+
 
 }

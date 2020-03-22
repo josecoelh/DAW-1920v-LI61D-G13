@@ -3,10 +3,7 @@ package Daw2020v.api
 import Daw2020v.common.HttpMethod
 import Daw2020v.common.Links
 import Daw2020v.common.SuccessResponse
-import Daw2020v.model.Comment
-import Daw2020v.model.Issue
-import Daw2020v.model.Label
-import Daw2020v.model.Project
+import Daw2020v.model.*
 import Daw2020v.service.ProjectService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
@@ -41,6 +38,16 @@ class ProjectController @Autowired constructor(val projectService: ProjectServic
         if (res != null) return ResponseEntity.ok(res)
         return ResponseEntity.status(404).build()
     }
+
+    @GetMapping(path = arrayOf("{projectId}/issue/{issueId}/comment/{commentId}")) //TODO erros
+    fun getComment(@PathVariable("projectId") projectId: UUID,
+                   @PathVariable("issueId") issueId: UUID,
+                   @PathVariable("commentId")commentId: UUID): ResponseEntity<Comment> {
+        val res = projectService.getComment(issueId,commentId) //aqui acontece a cena do projectid nao servir para nadaaa
+        if (res != null) return ResponseEntity.ok(res)
+        return ResponseEntity.status(404).build()
+    }
+
 
     /**
      * This method updates the name and/or description of a given [Project]
@@ -114,6 +121,12 @@ class ProjectController @Autowired constructor(val projectService: ProjectServic
     fun getIssue(@PathVariable("projectId") projectId: UUID, @PathVariable("issueId") issueId: UUID): ResponseEntity<Issue> {
         val res = projectService.getIssue(projectId,issueId)
         return ResponseEntity.ok(res)
+    }
+
+    @PostMapping(path = arrayOf("{projectId}/issue"))
+    fun postIssue(@PathVariable("projectId") projectId: UUID, @PathVariable("issueId") issue: Issue): ResponseEntity<SuccessResponse> {
+        val res = projectService.insertIssue(projectId,issue)
+        return ResponseEntity.ok(SuccessResponse(Links.issuePath(projectId,issue.id), HttpMethod.POST))
     }
 
     /**
@@ -203,7 +216,12 @@ class ProjectController @Autowired constructor(val projectService: ProjectServic
         return ResponseEntity.ok(SuccessResponse( Links.issuePath(projectId,issueId),HttpMethod.DELETE))
     }
 
-
-
+   @PutMapping(path = arrayOf("{projectId}/issue/{issueId}/{state}"))
+   fun changeIssueState(@PathVariable("projectId") projectId: UUID,
+                        @PathVariable("issueId") issueId: UUID,
+                        @PathVariable("state") state: IssueState) : ResponseEntity<SuccessResponse> {
+       projectService.changeIssueState(projectId,issueId, state)
+       return ResponseEntity.ok(SuccessResponse( Links.issuePath(projectId,issueId),HttpMethod.PUT))
+   }
 
 }
