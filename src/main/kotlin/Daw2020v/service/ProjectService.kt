@@ -13,6 +13,10 @@ class ProjectService @Autowired constructor() {
     val projectDao: ProjectDao = Database.getProjectDao()
 
 
+    fun getAllProjects(): List<Project>{
+        return  projectDao.getAllProjects()
+    }
+
     fun insertProject(project: Project): Boolean {
         if (project.name == null || project.shortDesc == null) throw IllegalArgumentException("Bad project")
         return Database.executeDao { projectDao.insertProject(project.id, project.name!!.value, project.shortDesc!!.text) } as Boolean

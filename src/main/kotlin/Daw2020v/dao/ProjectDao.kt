@@ -16,6 +16,10 @@ import java.util.*
 
 interface ProjectDao {
 
+
+    @SqlQuery("SELECT * FROM project")
+    @RegisterRowMapper(Project.ProjectMapper::class)
+    fun getAllProjects():List<Project>
     /**
      * Inserts a [Project] in the DB
      * @param project the [Project] to add

@@ -24,7 +24,6 @@ class Project(
             Project(Name(rs!!.getString("_name")),
                     ShortDescription(rs.getString("description")),
                     UUID.fromString(rs.getString("proj_id")))
-
     }
 
     /**

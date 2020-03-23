@@ -21,6 +21,11 @@ class ProjectController @Autowired constructor(val projectService: ProjectServic
 
 
 
+    @GetMapping
+    fun getAllProjects():ResponseEntity<List<Project>>{
+        val res = projectService.getAllProjects()
+        return ResponseEntity.ok(res)
+    }
     /**
      * This method inserts a given [Project] into the database
      * @param project The [Project] to insert

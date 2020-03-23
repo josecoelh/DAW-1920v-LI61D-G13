@@ -11,8 +11,8 @@ class ShortDescription private constructor(@JsonProperty("value")var text: Strin
 
     companion object {
 
-        val MAX: Int = 100
-        val MIN: Int = 0
+        private const val MAX: Int = 100
+        private const val MIN: Int = 0
 
         /**
          * Factory method that returns a [ShortDescription] instance with the specified [value],
