@@ -82,6 +82,27 @@
 					"response": []
 				},
 				{
+					"name": "GET All Projects",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/githubPremium/project/All",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"githubPremium",
+								"project",
+								"All"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "GET Project",
 					"request": {
 						"method": "GET",

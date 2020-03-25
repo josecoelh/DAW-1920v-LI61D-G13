@@ -3,6 +3,7 @@ package Daw2020v.api
 import Daw2020v.common.HttpMethod
 import Daw2020v.common.Links
 import Daw2020v.common.SuccessResponse
+import Daw2020v.common.returnTypes.ProjectOutputModel
 import Daw2020v.model.*
 import Daw2020v.service.ProjectService
 import org.springframework.beans.factory.annotation.Autowired
@@ -21,10 +22,12 @@ class ProjectController @Autowired constructor(val projectService: ProjectServic
 
 
 
-    @GetMapping
-    fun getAllProjects():ResponseEntity<List<Project>>{
-        val res = projectService.getAllProjects()
-        return ResponseEntity.ok(res)
+    @GetMapping(path = arrayOf("All"))
+    fun getAllProjects():ResponseEntity<Array<ProjectOutputModel>>{
+        val projects = projectService.getAllProjects()
+        val res = mutableListOf<ProjectOutputModel>()
+        projects.forEach { res.add(ProjectOutputModel(it.id,it.name,it.shortDesc,Links.PROJECT_PATH + it.id.toString())) }
+        return ResponseEntity.ok(res.toTypedArray())
     }
     /**
      * This method inserts a given [Project] into the database
