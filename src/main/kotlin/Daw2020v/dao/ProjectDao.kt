@@ -83,14 +83,24 @@ interface ProjectDao {
 
 
     /**
+     *
      * Updates the [Issue] of a [Project]
      * @param issue List containing the [Issue] to add
      * @param projectId identifier of the [Project] to update
      * @return the updated [Project]
      * @throws IllegalArgumentException if the [Project] doesn't exist
      */
-    @SqlUpdate("insert into issues values(:name, :issueId, :projectId, :state)")
-    fun putIssue(projectId : UUID, issueId : String, name: String, state: String) : Boolean
+    @SqlUpdate("update issues set _name = :name, _state = :state where proj_id = :projectId and issue_id = issueId)")
+    fun putIssue(projectId: UUID, issueId : UUID, name: String, state: String) : Boolean
+
+    @SqlUpdate("INSERT INTO issues values (:name, :issueId, :projectId, OPEN")
+    fun createIssue(projectId: UUID, issueId: UUID, name: String) : Boolean
+
+    @SqlUpdate("update issues set _name = :name, _state = :state where proj_id = :projectId and issue_id = issueId)")
+    fun changeIssueName(projectId: UUID, issueId : UUID, name: String) : Boolean
+
+    @SqlUpdate("update issue set state = :state where proj_id = :projectId and issue_id = :issueId ")
+    fun changeIssueState(projectId: UUID, issueId: UUID, state: String) : Boolean
 
     @SqlUpdate(" delete from _comments where issue_id = ?")
     fun deleteIssueComment(issueId: UUID) : Boolean
@@ -192,8 +202,6 @@ interface ProjectDao {
     @RegisterRowMapper(Comment.CommentMapper::class)
     fun getComment(issueId: UUID, commentId: UUID) : Comment
 
-    @SqlUpdate("update issue set state = :state where proj_id = :projectId and issue_id = :issueId ")
-    fun changeIssueState(projectId: UUID, issueId: UUID, state: String) : Boolean
 
 
 

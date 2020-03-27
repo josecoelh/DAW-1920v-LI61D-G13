@@ -2,6 +2,7 @@ package Daw2020v.service
 
 import Daw2020v.dao.Database
 import Daw2020v.dao.ProjectDao
+import Daw2020v.dtos.IssueInputModel
 import Daw2020v.model.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -20,7 +21,6 @@ class ProjectService @Autowired constructor() {
     fun insertProject(project: Project): Boolean {
         if (project.name == null || project.shortDesc == null) throw IllegalArgumentException("Bad project")
         return Database.executeDao { projectDao.insertProject(project.id, project.name!!.value, project.shortDesc!!.text) } as Boolean
-
     }
 
     fun insertIssue(projectId: UUID, issue: Issue): Boolean {
@@ -53,8 +53,8 @@ class ProjectService @Autowired constructor() {
         return projectId
     }
 
-    fun putIssue(projectId: UUID, issue: Issue): UUID {
-        Database.executeDao { projectDao.putIssue(projectId, issue.id.toString(), issue.name!!.value, issue.state.toString()) }
+    fun createIssue(projectId: UUID, issue: Issue): UUID {
+        Database.executeDao { projectDao.createIssue(projectId, issue.id, issue.name!!.value) }
         return projectId
     }
 
@@ -92,13 +92,17 @@ class ProjectService @Autowired constructor() {
         return Database.executeDao { projectDao.deleteLabelInIssue(issueId, label) } as Boolean
     }
 
-    fun updateIssue(projectId: UUID, issueId: UUID, issue: Issue): Boolean {
-        if (issue.name == null || issue.state == null) {
-            val prevIssue = getIssue(projectId, issueId)
-            if (issue.state == null) issue.state = prevIssue.state
-            if (issue.name == null) issue.name = prevIssue.name
+    fun updateIssue(projectId: UUID, issueId: UUID, issue: IssueInputModel): Boolean {
+        if (issue.name == null && issue.state == null) throw IllegalArgumentException("cant update with every field null dumbass")
+        if (issue.name == null) {
+            return Database.executeDao { projectDao.changeIssueState(projectId, issueId, issue.state.toString()) } as Boolean
+        } else {
+            if (issue.state == null) {
+                return Database.executeDao { projectDao.changeIssueName(projectId, issueId, issue.name.value) } as Boolean
+            } else {
+                return Database.executeDao { projectDao.putIssue(projectId, issueId, issue.name.value, issue.state.toString()) } as Boolean
+            }
         }
-        return Database.executeDao { projectDao.updateIssue(projectId, issueId, issue.name!!.value, issue.state.toString()) } as Boolean
     }
 
     fun deleteCommentInIssue(issueId: UUID, commentId: UUID): Boolean =
@@ -106,7 +110,11 @@ class ProjectService @Autowired constructor() {
 
 
     fun getIssue(projectId: UUID, issueId: UUID): Issue {
-        return Database.executeDao { projectDao.getIssue(projectId, issueId) } as Issue
+        val issue = Database.executeDao { projectDao.getIssue(projectId, issueId) } as Issue
+            issue.allowedLabels = Database.executeDao { projectDao.getProjectLabels(projectId) } as MutableList<Label>;
+            issue.addComment(*(Database.executeDao { projectDao.getIssueComment(issue.id) } as List<Comment>).toTypedArray())
+            issue.addLabel(*(Database.executeDao { projectDao.getIssueLabel(issue.id) } as List<Label>).toTypedArray())
+        return issue
     }
 
     fun addCommentToIssue(projectId: UUID, issueId: UUID, comment: Comment): Boolean =
@@ -120,5 +128,20 @@ class ProjectService @Autowired constructor() {
         return Database.executeDao { projectDao.getComment(issueId,commentId) } as Comment
     }
 
+    fun getAllComments(projectId: UUID, issueId: UUID): MutableList<Comment> {
+        return (Database.executeDao { projectDao.getIssueComment(issueId) } as MutableList<Comment>)
+    }
+
+    fun getAllIssues(projectId: UUID): List<Issue> {
+        val issues: List<Issue> = Database.executeDao { projectDao.getProjectIssues(projectId) } as List<Issue>
+        issues.forEach {
+            it.allowedLabels =  Database.executeDao { projectDao.getProjectLabels(projectId) } as MutableList<Label>
+            it.addComment(*(Database.executeDao { projectDao.getIssueComment(it.id) } as List<Comment>).toTypedArray())
+            it.addLabel(*(Database.executeDao { projectDao.getIssueLabel(it.id) } as List<Label>).toTypedArray())
+        }
+        return issues
+    }
+
+    fun getAllLabels(projectId: UUID): MutableList<Label> = Database.executeDao { projectDao.getProjectLabels(projectId) } as MutableList<Label>
 
 }
