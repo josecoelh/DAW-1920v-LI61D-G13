@@ -3,6 +3,7 @@ package Daw2020v.service
 import Daw2020v.dao.Database
 import Daw2020v.dao.ProjectDao
 import Daw2020v.dtos.IssueInputModel
+import Daw2020v.dtos.ProjectInputModel
 import Daw2020v.model.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -36,16 +37,25 @@ class ProjectService @Autowired constructor() {
         issues.forEach {
             it.allowedLabels = projectLabels;
             it.addComment(*(Database.executeDao { projectDao.getIssueComment(it.id) } as List<Comment>).toTypedArray())
-            it.addLabel(*(Database.executeDao { projectDao.getIssueLabel(it.id) } as List<Label>).toTypedArray())
+            it.addLabel(*(Database.executeDao { projectDao.getIssueLabels(projectId,it.id) } as List<Label>).toTypedArray())
             project.addIssue(it)
         }
         return project
     }
 
 
-    fun putProject(projectId: UUID, project: Project): UUID {
-        Database.executeDao { projectDao.putProject(project.name!!.value, project.shortDesc!!.text, projectId) }
-        return projectId
+    fun putProject(projectId: UUID, project: ProjectInputModel): Boolean {
+        Database.executeDao { projectDao.putProject(project.name!!.value, project.description!!.text, projectId) }
+        if (project.name == null && project.description == null) throw IllegalArgumentException("cant update with every field null dumbass")
+        if (project.name == null) {
+            return Database.executeDao { projectDao.changeProjectDescription(project.description!!.text, projectId) } as Boolean
+        } else {
+            if (project.description == null) {
+                return Database.executeDao { projectDao.changeProjectName(project.name!!.value,projectId) } as Boolean
+            } else {
+                return Database.executeDao { projectDao.putProject(project.name.value, project.description!!.text,projectId) } as Boolean
+            }
+        }
     }
 
     fun putLabels(projectId: UUID, labels: Array<Label>): UUID {
@@ -113,7 +123,7 @@ class ProjectService @Autowired constructor() {
         val issue = Database.executeDao { projectDao.getIssue(projectId, issueId) } as Issue
             issue.allowedLabels = Database.executeDao { projectDao.getProjectLabels(projectId) } as MutableList<Label>;
             issue.addComment(*(Database.executeDao { projectDao.getIssueComment(issue.id) } as List<Comment>).toTypedArray())
-            issue.addLabel(*(Database.executeDao { projectDao.getIssueLabel(issue.id) } as List<Label>).toTypedArray())
+            issue.addLabel(*(Database.executeDao { projectDao.getIssueLabels(projectId,issue.id) } as List<Label>).toTypedArray())
         return issue
     }
 
@@ -137,11 +147,16 @@ class ProjectService @Autowired constructor() {
         issues.forEach {
             it.allowedLabels =  Database.executeDao { projectDao.getProjectLabels(projectId) } as MutableList<Label>
             it.addComment(*(Database.executeDao { projectDao.getIssueComment(it.id) } as List<Comment>).toTypedArray())
-            it.addLabel(*(Database.executeDao { projectDao.getIssueLabel(it.id) } as List<Label>).toTypedArray())
+            it.addLabel(*(Database.executeDao { projectDao.getIssueLabels(projectId,it.id) } as List<Label>).toTypedArray())
         }
         return issues
     }
 
+
     fun getAllLabels(projectId: UUID): MutableList<Label> = Database.executeDao { projectDao.getProjectLabels(projectId) } as MutableList<Label>
+
+    fun getLabelfromProject(projectId: UUID, label: String): Label = Database.executeDao { projectDao.getProjectLabel(projectId,label) } as Label
+
+    fun getLabelfromIssue(projectId: UUID,issueId: UUID,label: String): Label = Database.executeDao { projectDao.getIssueLabel(projectId,issueId,label) } as Label
 
 }

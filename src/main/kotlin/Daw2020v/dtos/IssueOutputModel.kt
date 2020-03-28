@@ -5,6 +5,7 @@ import Daw2020v.model.Issue
 import java.util.*
 
 class IssueOutputModel (projectID: UUID, issue: Issue){
+
     var properties: PairContainer = PairContainer(
             "id" to issue.id.toString(),
             "name" to issue.name!!.value,
@@ -30,4 +31,10 @@ class IssueOutputModel (projectID: UUID, issue: Issue){
                     "method" to "DELETE",
                     "href" to Links.issuePath(projectID, issue.id)
             ))
+    var links : List<PairContainer> = listOf(
+            PairContainer(
+                    "rel" to "self",
+                    "href" to Links.issuePath(projectID,issue.id)
+            )
+    )
 }

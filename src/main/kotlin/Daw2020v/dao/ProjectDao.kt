@@ -48,10 +48,13 @@ interface ProjectDao {
     @RegisterRowMapper(Comment.CommentMapper::class)
     fun getIssueComment(id:UUID) : List<Comment>
 
-    @SqlQuery("select il._value from issues as i join issue_labels as il on (i.issue_id = il.issue_id) where i.issue_id = ?")
+    @SqlQuery("select il._value from issues as i join issue_labels as il on (i.issue_id = il.issue_id) where i.proj_id = ? and i.issue_id = ?")
     @RegisterRowMapper(Label.LabelMapper::class)
-    fun getIssueLabel(id: UUID) : List<Label>
+    fun getIssueLabels(projectId: UUID, issueId: UUID) : List<Label>
 
+    @SqlQuery("select il._value from issues as i join issue_labels as il on (i.issue_id = il.issue_id) where i.proj_id = ? and i.issue_id = ? and il._value = ?")
+    @RegisterRowMapper(Label.LabelMapper::class)
+    fun getIssueLabel(projectId: UUID, issueId: UUID,label: String): Label
     /**
      * Gets a [Project] from the DB
      * @param projectId the id of the [Project] to search
@@ -69,7 +72,13 @@ interface ProjectDao {
      * @return the updated [Project]
      */
     @SqlUpdate("update project set _name = ? , description = ? where proj_id = ?")
-    fun putProject(@Bind name : String,@Bind desc: String ,@Bind projectId: UUID): Boolean
+    fun putProject( name : String, desc: String , projectId: UUID): Boolean
+
+    @SqlUpdate("update project set _name = ? where proj_id = ?")
+    fun changeProjectName(name : String, projectId: UUID): Boolean
+
+    @SqlUpdate("update project set description = ? where proj_id = ?")
+    fun changeProjectDescription(desc: String , projectId: UUID): Boolean
 
     /**
      * Updates the [Label] of a [Project]
@@ -201,9 +210,6 @@ interface ProjectDao {
     @SqlQuery("select _comment, _date, comment_id from _comments where issue_id=? and comment_id=?" )
     @RegisterRowMapper(Comment.CommentMapper::class)
     fun getComment(issueId: UUID, commentId: UUID) : Comment
-
-
-
 
 
 

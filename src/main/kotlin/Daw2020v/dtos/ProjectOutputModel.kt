@@ -28,4 +28,10 @@ class ProjectOutputModel(project:Project){
             "method" to "DELETE",
             "href" to Links.projectPath(project.id)
     ))
+    var links : List<PairContainer> = listOf(
+            PairContainer(
+                    "rel" to "self",
+                    "href" to Links.projectPath(project.id)
+            )
+    )
 }

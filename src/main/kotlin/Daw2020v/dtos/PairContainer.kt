@@ -9,13 +9,11 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer
 @JsonSerialize(using = PairContainerSerializer::class)
 class PairContainer(vararg pairs : Pair<String, String>) {
     val map:Map<String,String> = mapOf(*pairs)
-
 }
 
 class PairContainerSerializer : StdSerializer<PairContainer>(PairContainer::class.java){
     override fun serialize(value: PairContainer?, gen: JsonGenerator?, provider: SerializerProvider?) {
         gen!!.writeObject(value!!.map)
     }
-
 }
 

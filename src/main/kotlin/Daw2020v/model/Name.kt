@@ -1,6 +1,19 @@
 package Daw2020v.model
 
+import Daw2020v.dtos.PairContainer
+import Daw2020v.dtos.PairContainerSerializer
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.core.JsonParser
+import com.fasterxml.jackson.core.TreeNode
+import com.fasterxml.jackson.databind.DeserializationContext
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.SerializerProvider
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer
+import com.fasterxml.jackson.databind.node.ObjectNode
+import com.fasterxml.jackson.databind.ser.std.StdSerializer
 import org.springframework.stereotype.Component
 import java.lang.IllegalArgumentException
 
@@ -9,7 +22,7 @@ import java.lang.IllegalArgumentException
 /**
  * Data type for representing Names in the context of this app.
  */
-
+@JsonDeserialize(using = NameDeSerializer::class)
 class Name private constructor(@JsonProperty("value")val value: String) {
 
     companion object {
@@ -34,4 +47,11 @@ class Name private constructor(@JsonProperty("value")val value: String) {
         operator fun invoke(value: String): Name = of(value)
     }
 }
+class NameDeSerializer: StdDeserializer<Name>(Name::class.java) {
+    override fun deserialize(jp: JsonParser?, ctxt: DeserializationContext?): Name {
+        val node = jp!!.codec.readTree<TreeNode>(jp)
+        val value : String = node.toString().replace("\"","")
+        return Name(value)
+    }
 
+}
