@@ -10,15 +10,24 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
 import java.util.*
 
-//@JsonSerialize(using = IssueOutputSerializer::class)
-class IssueOutputModel (projectID: UUID, issue: Issue){
+class IssueOutputModel(projectID: UUID, issue: Issue) {
 
     var properties: PairContainer = PairContainer(
             "id" to issue.id.toString(),
             "name" to issue.name!!.value,
-            "state" to issue.state.toString())
-    var entities : MutableList<PairContainer> = mutableListOf<PairContainer>()
-    var actions : List<PairContainer> = listOf<PairContainer>(
+            "state" to issue.state.toString(),
+            "allowed labels" to issue.allowedLabels.joinToString { it.identifier })
+    var entities = listOf<PairContainer>(
+            PairContainer(
+                    "class" to "Comments",
+                    "rel" to "Comments on this issue",
+                    "href" to Links.allCommentsFromIssue(projectID, issue.id)),
+            PairContainer(
+                    "class" to "Labels",
+                    "rel" to "This issues's labels",
+                    "href" to Links.allLabelsFromIssues(projectID, issue.id))
+    )
+    var actions: List<PairContainer> = listOf<PairContainer>(
             PairContainer(
                     "name" to "edit-issue",
                     "method" to "PUT",
@@ -29,33 +38,14 @@ class IssueOutputModel (projectID: UUID, issue: Issue){
                     "method" to "DELETE",
                     "href" to Links.issuePath(projectID, issue.id)
             ))
-    var links : List<PairContainer> = listOf(
+    var links: List<PairContainer> = listOf(
             PairContainer(
                     "rel" to "self",
                     "href" to Links.issuePath(projectID, issue.id)
             )
-    )/*
-    init {
-        if(!issue.allowedLabels.isEmpty()) {
-            properties.map.put("allowed labels",issue.allowedLabels.joinToString { it.identifier })
-        }
-        if (!issue.comments.isEmpty() || !issue.labels.isEmpty()) {
-            if(!issue.comments.isEmpty()){
-                entities.add( PairContainer(
-                        "class" to "Comments",
-                        "rel" to "Comments on this issue",
-                        "href" to Links.allCommentsFromIssue(projectID, issue.id)))
-            }
-            if(!issue.labels.isEmpty()){
-                entities.add(
-                        PairContainer(
-                                "class" to "Labels",
-                                "rel" to "This issues's labels",
-                                "href" to Links.allLabelsFromIssues(projectID, issue.id)))
-            }
-        }
-    }*/
-    class IssueDeletedOutputModel(projectId : UUID, issueId:UUID) {
+    )
+
+    class IssueDeletedOutputModel(projectId: UUID, issueId: UUID) {
         val details = PairContainer(
                 "class" to "[issue]",
                 "description" to "Issue $issueId from project $projectId successfully deleted"

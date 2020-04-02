@@ -2,9 +2,10 @@ package Daw2020v.common
 
 import java.util.*
 
-const val WIKI_PATH = "https://github.com/josecoelh/daw/wiki/API-Endpoints"
-const val PROJECT_ENDPOINT = "/githubPremium/projects"
-const val ISSUE_ENDPOINT = "/githubPremium/issues"
+const val WIKI_PATH = "https://github.com/josecoelh/DAW-1920v-LI61D-G13/wiki"
+const val PROJECT_ENDPOINT = "/githubPremium/projects/"
+const val ISSUE_ENDPOINT = "$PROJECT_ENDPOINT{projectId}/issues/"
+const val COMMENT_ENDPOINT ="$ISSUE_ENDPOINT{issueId}/comments/"
 
 
 /*data */class Links/* private constructor(val instance: String)*/{

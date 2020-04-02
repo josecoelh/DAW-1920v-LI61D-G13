@@ -9,13 +9,24 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
 import java.util.*
 
-//@JsonSerialize(using = ProjectOutputSerializer::class)
+/**
+ * This class is to be returned wrapped on a [ResponseEntity], it is supposed to be conversed to a JSON object and it follows Siren style
+ */
 class ProjectOutputModel(project: Project) {
     var properties: PairContainer = PairContainer(
             "id" to project.id.toString(),
             "name" to project.name!!.value,
             "description" to project.shortDesc!!.text)
-    val entities: MutableList<PairContainer> = mutableListOf()
+    val entities: MutableList<PairContainer> = mutableListOf(
+            PairContainer(
+                    "class" to "Issues",
+                    "rel" to "This project's issues",
+                    "href" to Links.allIssues(project.id)),
+            PairContainer(
+                    "class" to "Labels",
+                    "rel" to "This project's labels",
+                    "href" to Links.allLabels(project.id))
+            )
     var actions: List<PairContainer> = listOf(
             PairContainer(
                     "name" to "edit-project",
@@ -35,6 +46,9 @@ class ProjectOutputModel(project: Project) {
     )
 
 
+    /**
+     * Specific Class for HTTP DELETE methods
+     */
     class ProjectDeletedOutputModel(projectId: UUID) {
         val details = PairContainer(
                 "class" to "[project]",
@@ -45,48 +59,31 @@ class ProjectOutputModel(project: Project) {
                 "href" to Links.ALL_PROJECTS
         ))
     }
-
-    /*
-    init {
-        if (!project.issues.isEmpty() || !project.allowedLabels.isEmpty()) {
-            if(!project.issues.isEmpty()){
-                entities.add( PairContainer(
-                        "class" to "Issues",
-                        "rel" to "This project's issues",
-                        "href" to Links.allIssues(project.id)))
-            }
-            if(!project.allowedLabels.isEmpty()){
-                entities.add(
-                        PairContainer(
-                        "class" to "Labels",
-                        "rel" to "This project's labels",
-                        "href" to Links.allLabels(project.id)))
-            }
-        }
-    }*/
 }
 
-/*
-class ProjectOutputSerializer : StdSerializer<ProjectOutputModel>(ProjectOutputModel::class.java){
-    override fun serialize(value: ProjectOutputModel?, gen: JsonGenerator?, provider: SerializerProvider?) {
-        gen!!.writeStartObject()
-        gen.writeObjectField("properties",value!!.properties)
-        if(!value.entities.isEmpty()) {
-            gen.writeArrayFieldStart("entities")
-            value.entities.forEach{ gen.writeObject(it) }
-            gen.writeEndArray()
-        }
-        if(!value.actions.isEmpty()) {
-            gen.writeArrayFieldStart("actions")
-            value.actions.forEach{ gen.writeObject(it) }
-            gen.writeEndArray()
-        }
-        if(!value.links.isEmpty()) {
-            gen.writeArrayFieldStart("links")
-            value.links.forEach{ gen.writeObject(it) }
-            gen.writeEndArray()
-        }
-        gen.writeEndObject()
-    }
 
-}*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

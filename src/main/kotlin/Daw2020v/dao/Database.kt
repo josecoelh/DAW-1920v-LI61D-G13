@@ -22,9 +22,11 @@ class Database {
             jdbi.installPlugin(SqlObjectPlugin())
         }
 
-        fun getProjectDao() : ProjectDao {
-            return jdbi.onDemand(ProjectDao::class.java)
+        fun getProjectDao() : Dao {
+            return jdbi.onDemand(Dao::class.java)
         }
+
+
 
         fun executeDao(daoFunc : ()->Any):Any{
             handle.begin()
