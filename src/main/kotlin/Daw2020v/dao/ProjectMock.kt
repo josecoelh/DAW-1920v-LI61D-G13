@@ -1,12 +1,6 @@
 package Daw2020v.dao
 
-import Daw2020v.model.Comment
-import Daw2020v.model.Issue
-import Daw2020v.model.Label
-import Daw2020v.model.Project
 import org.springframework.stereotype.Repository
-import java.util.*
-import kotlin.IllegalArgumentException
 
 
 @Repository("mockProject")

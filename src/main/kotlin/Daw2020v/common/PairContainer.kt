@@ -1,4 +1,4 @@
-package Daw2020v.dtos
+package Daw2020v.common
 
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.SerializerProvider

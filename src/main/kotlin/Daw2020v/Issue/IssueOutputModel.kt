@@ -1,7 +1,8 @@
-package Daw2020v.dtos
+package Daw2020v.Issue
 
 import Daw2020v.common.Links
-import Daw2020v.model.Issue
+import Daw2020v.common.model.Issue
+import Daw2020v.common.PairContainer
 import java.util.*
 
 class IssueOutputModel (projectID: UUID, issue: Issue){
@@ -34,7 +35,7 @@ class IssueOutputModel (projectID: UUID, issue: Issue){
     var links : List<PairContainer> = listOf(
             PairContainer(
                     "rel" to "self",
-                    "href" to Links.issuePath(projectID,issue.id)
+                    "href" to Links.issuePath(projectID, issue.id)
             )
     )
 }

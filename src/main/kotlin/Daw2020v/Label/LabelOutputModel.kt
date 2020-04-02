@@ -1,8 +1,8 @@
-package Daw2020v.dtos
+package Daw2020v.Label
 
 import Daw2020v.common.Links
-import Daw2020v.model.Label
-import Daw2020v.model.Project
+import Daw2020v.common.model.Label
+import Daw2020v.common.PairContainer
 import java.util.*
 
 class LabelOutputModel(label : Label, projectId : UUID, issueId : UUID? = null) {
@@ -17,8 +17,8 @@ class LabelOutputModel(label : Label, projectId : UUID, issueId : UUID? = null) 
                     "method" to "DELETE",
                     "href" to Links.labelFromIssue(projectId, issueId, label.identifier)))
             links.add(PairContainer(
-                            "rel" to "self",
-                            "href" to Links.labelFromIssue(projectId,issueId,label.identifier)))
+                    "rel" to "self",
+                    "href" to Links.labelFromIssue(projectId, issueId, label.identifier)))
         }
         else {
             actions.add(PairContainer(

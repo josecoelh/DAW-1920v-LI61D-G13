@@ -1,10 +1,9 @@
-package Daw2020v.service
+package Daw2020v.Project
 
 import Daw2020v.dao.Database
 import Daw2020v.dao.ProjectDao
-import Daw2020v.dtos.IssueInputModel
-import Daw2020v.dtos.ProjectInputModel
-import Daw2020v.model.*
+import Daw2020v.Issue.IssueInputModel
+import Daw2020v.common.model.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.lang.IllegalArgumentException
@@ -19,9 +18,9 @@ class ProjectService @Autowired constructor() {
         return  projectDao.getAllProjects()
     }
 
-    fun insertProject(project: Project): Boolean {
+    fun insertProject(project: Project): Project {
         if (project.name == null || project.shortDesc == null) throw IllegalArgumentException("Bad project")
-        return Database.executeDao { projectDao.insertProject(project.id, project.name!!.value, project.shortDesc!!.text) } as Boolean
+        return Database.executeDao { projectDao.insertProject(project.id, project.name!!.value, project.shortDesc!!.text) } as Project
     }
 
     fun insertIssue(projectId: UUID, issue: Issue): Boolean {

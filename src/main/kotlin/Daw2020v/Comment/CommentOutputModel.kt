@@ -1,7 +1,8 @@
-package Daw2020v.dtos
+package Daw2020v.Comment
 
 import Daw2020v.common.Links
-import Daw2020v.model.Comment
+import Daw2020v.common.model.Comment
+import Daw2020v.common.PairContainer
 import java.util.*
 
 class CommentOutputModel(comment : Comment, projectId :UUID, issueId : UUID) {
@@ -16,7 +17,7 @@ class CommentOutputModel(comment : Comment, projectId :UUID, issueId : UUID) {
                     "href" to Links.commentFromIssue(projectId, issueId, comment.id)))
     var links : List<PairContainer> = listOf(
             PairContainer(
-            "rel" to "self",
-            "href" to Links.commentFromIssue(projectId, issueId, comment.id)))
+                    "rel" to "self",
+                    "href" to Links.commentFromIssue(projectId, issueId, comment.id)))
 
 }

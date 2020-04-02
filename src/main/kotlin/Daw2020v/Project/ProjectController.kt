@@ -1,11 +1,14 @@
-package Daw2020v.api
+package Daw2020v.Project
 
+import Daw2020v.Comment.CommentInputModel
+import Daw2020v.Comment.CommentOutputModel
+import Daw2020v.Issue.IssueInputModel
+import Daw2020v.Issue.IssueOutputModel
+import Daw2020v.Label.LabelOutputModel
 import Daw2020v.common.HttpMethod
 import Daw2020v.common.Links
-import Daw2020v.common.SuccessResponse
-import Daw2020v.dtos.*
-import Daw2020v.model.*
-import Daw2020v.service.ProjectService
+import Daw2020v.common.PROJECT_ENDPOINT
+import Daw2020v.common.model.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -15,7 +18,7 @@ import java.util.*
 /**
 * This class is responsible for the routing and response handling, the routes on this class all start with "githubPremium/project"
  */
-@RequestMapping("githubPremium/projects")
+@RequestMapping(PROJECT_ENDPOINT)
 @RestController
 class ProjectController @Autowired constructor(val projectService: ProjectService) {
 
@@ -42,14 +45,14 @@ class ProjectController @Autowired constructor(val projectService: ProjectServic
                           @PathVariable("issueId") issueId: UUID,
                           @PathVariable("label") label: String) : ResponseEntity<LabelOutputModel>{
         val res = projectService.getLabelfromIssue(projectId,issueId,label)
-        return ResponseEntity.ok(LabelOutputModel(res, projectId,issueId))
+        return ResponseEntity.ok(LabelOutputModel(res, projectId, issueId))
     }
 
     @GetMapping(path = arrayOf("{projectId}/labels"))
     fun getAllLabelsFromProject(@PathVariable("projectId") projectId: UUID):ResponseEntity<MutableList<LabelOutputModel>>{
         val labels = projectService.getAllLabels(projectId)
         val outputList = mutableListOf<LabelOutputModel>()
-        labels.forEach { outputList.add(LabelOutputModel(it,projectId)) }
+        labels.forEach { outputList.add(LabelOutputModel(it, projectId)) }
         return ResponseEntity.ok(outputList)
     }
 
@@ -57,7 +60,7 @@ class ProjectController @Autowired constructor(val projectService: ProjectServic
     fun getAllLabelsFromIssues(@PathVariable("projectId") projectId: UUID,@PathVariable("issueId")  issueId:UUID):ResponseEntity<MutableList<LabelOutputModel>>{
         val labels = projectService.getIssue(projectId, issueId).labels
         val outputList = mutableListOf<LabelOutputModel>()
-        labels.forEach { outputList.add(LabelOutputModel(it,projectId,issueId)) }
+        labels.forEach { outputList.add(LabelOutputModel(it, projectId, issueId)) }
         return ResponseEntity.ok(outputList)
     }
 
@@ -68,16 +71,6 @@ class ProjectController @Autowired constructor(val projectService: ProjectServic
         projects.forEach { res.add(ProjectOutputModel(it))}
         return ResponseEntity.ok(res.toTypedArray())
     }
-    /**
-     * This method inserts a given [Project] into the database
-     * @param project The [Project] to insert
-     * @return the return is a SuccessResponse object with the details of what was done
-     */
-    @PostMapping //TODO ERROS
-    fun insertProject(@RequestBody project: Project): ResponseEntity<SuccessResponse> {
-        projectService.insertProject(project)
-        return ResponseEntity.ok(SuccessResponse(Links.projectPath(project.id), HttpMethod.POST))
-    }
 
     @GetMapping(path = arrayOf("{projectId}")) //TODO erros
     fun getProject(@PathVariable("projectId") projectId: UUID): ResponseEntity<ProjectOutputModel> {
@@ -85,12 +78,25 @@ class ProjectController @Autowired constructor(val projectService: ProjectServic
         return ResponseEntity.ok(ProjectOutputModel(res))
     }
 
+
+    *
+     * This method inserts a given [Project] into the database
+     * @param project The [Project] to insert
+     * @return the return is a SuccessResponse object with the details of what was done
+     *//*
+    @PostMapping //TODO ERROS
+    fun insertProject(@RequestBody project: Project): ResponseEntity<SuccessResponse> {
+        projectService.insertProject(project)
+        return ResponseEntity.ok(SuccessResponse(Links.projectPath(project.id), HttpMethod.POST))
+    }
+
+
     @GetMapping(path = arrayOf("{projectId}/issues/{issueId}/comments/{commentId}")) //TODO erros
     fun getComment(@PathVariable("projectId") projectId: UUID,
                    @PathVariable("issueId") issueId: UUID,
                    @PathVariable("commentId")commentId: UUID): ResponseEntity<CommentOutputModel> {
         val res = projectService.getComment(issueId,commentId)
-        return ResponseEntity.ok(CommentOutputModel(res,projectId, issueId))
+        return ResponseEntity.ok(CommentOutputModel(res, projectId, issueId))
     }
 
 
@@ -268,7 +274,7 @@ class ProjectController @Autowired constructor(val projectService: ProjectServic
                              @PathVariable("issueId") issueId: UUID) : ResponseEntity<MutableList<CommentOutputModel>> {
         val comments = projectService.getAllComments(projectId, issueId)
         val outputList = mutableListOf<CommentOutputModel>()
-        comments.forEach { outputList.add(CommentOutputModel(it,projectId,issueId)) }
+        comments.forEach { outputList.add(CommentOutputModel(it, projectId, issueId)) }
         return ResponseEntity.ok(outputList)
     }
 

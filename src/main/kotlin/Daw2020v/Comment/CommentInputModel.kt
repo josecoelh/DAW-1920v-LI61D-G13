@@ -1,4 +1,4 @@
-package Daw2020v.dtos
+package Daw2020v.Comment
 
 import com.fasterxml.jackson.annotation.JsonProperty
 

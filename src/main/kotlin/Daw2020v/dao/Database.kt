@@ -1,19 +1,9 @@
 package Daw2020v.dao
 
-import Daw2020v.dao.ProjectDao
-import Daw2020v.model.Comment
-import Daw2020v.model.Issue
-import Daw2020v.model.Label
-import Daw2020v.model.Project
-import ch.qos.logback.core.db.DataSourceConnectionSource
 import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.Jdbi
 import org.postgresql.ds.PGSimpleDataSource
-import org.springframework.stereotype.Repository
-import java.util.*
 import org.jdbi.v3.sqlobject.SqlObjectPlugin
-import org.springframework.stereotype.Component
-import java.sql.Connection
 
 class Database {
     companion object {

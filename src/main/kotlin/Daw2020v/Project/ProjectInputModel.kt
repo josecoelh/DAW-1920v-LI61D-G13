@@ -1,7 +1,7 @@
-package Daw2020v.dtos
+package Daw2020v.Project
 
-import Daw2020v.model.Name
-import Daw2020v.model.ShortDescription
+import Daw2020v.common.model.Name
+import Daw2020v.common.model.ShortDescription
 import com.fasterxml.jackson.annotation.JsonProperty
 
 class ProjectInputModel(@JsonProperty("name") val name : Name?,

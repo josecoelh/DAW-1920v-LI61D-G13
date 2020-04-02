@@ -1,10 +1,7 @@
 package Daw2020v.dao
 
-import Daw2020v.model.*
-import org.jdbi.v3.sqlobject.config.RegisterBeanMapper
+import Daw2020v.common.model.*
 import org.jdbi.v3.sqlobject.config.RegisterRowMapper
-import org.jdbi.v3.sqlobject.customizer.Bind
-import org.jdbi.v3.sqlobject.customizer.BindBean
 import org.jdbi.v3.sqlobject.statement.SqlQuery
 import org.jdbi.v3.sqlobject.statement.SqlUpdate
 import java.util.*

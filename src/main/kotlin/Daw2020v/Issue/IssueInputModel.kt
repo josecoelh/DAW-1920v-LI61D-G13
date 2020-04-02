@@ -1,9 +1,8 @@
-package Daw2020v.dtos
+package Daw2020v.Issue
 
-import Daw2020v.model.IssueState
-import Daw2020v.model.Name
+import Daw2020v.common.model.IssueState
+import Daw2020v.common.model.Name
 import com.fasterxml.jackson.annotation.JsonProperty
-import java.util.*
 
 class IssueInputModel (@JsonProperty("name") val name: Name?,
                        @JsonProperty("state") val state : IssueState?)

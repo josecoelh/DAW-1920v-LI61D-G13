@@ -1,13 +1,11 @@
-package Daw2020v.model
+package Daw2020v.common.model
 
-import Daw2020v.model.ShortDescription.Companion.of
-import com.fasterxml.jackson.annotation.JsonProperty
+import Daw2020v.common.model.ShortDescription.Companion.of
 import org.jdbi.v3.core.mapper.RowMapper
 import org.jdbi.v3.core.statement.StatementContext
 import java.sql.ResultSet
 import java.text.SimpleDateFormat
 import java.time.Instant
-import java.time.LocalDateTime
 import java.util.*
 
 /**
