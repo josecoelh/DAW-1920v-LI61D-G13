@@ -31,4 +31,15 @@ class LabelOutputModel(label : Label, projectId : UUID, issueId : UUID? = null) 
         }
     }
 
+
+    class LabelDeletedOutputModel(label: String,projectId : UUID, issueId:UUID? = null) {
+        val details = PairContainer(
+                "class" to "[label]",
+                "description" to "Label $label from ${if(issueId!=null) "the issue$issueId" else "from project $projectId"} successfully deleted"
+        )
+        val links: List<PairContainer> = listOf(PairContainer(
+                "rel" to if(issueId != null)"issue" else "project",
+                "href" to if(issueId != null)Links.issuePath(projectId, issueId) else Links.projectPath(projectId)
+        ))
+    }
 }

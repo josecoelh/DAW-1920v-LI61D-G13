@@ -7,14 +7,15 @@ import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
+import java.util.*
 
-@JsonSerialize(using = ProjectOutputSerializer::class)
+//@JsonSerialize(using = ProjectOutputSerializer::class)
 class ProjectOutputModel(project: Project) {
     var properties: PairContainer = PairContainer(
             "id" to project.id.toString(),
             "name" to project.name!!.value,
             "description" to project.shortDesc!!.text)
-    val entities : MutableList<PairContainer> = mutableListOf()
+    val entities: MutableList<PairContainer> = mutableListOf()
     var actions: List<PairContainer> = listOf(
             PairContainer(
                     "name" to "edit-project",
@@ -32,6 +33,20 @@ class ProjectOutputModel(project: Project) {
                     "href" to Links.projectPath(project.id)
             )
     )
+
+
+    class ProjectDeletedOutputModel(projectId: UUID) {
+        val details = PairContainer(
+                "class" to "[project]",
+                "description" to "Project $projectId successfully deleted"
+        )
+        val links: List<PairContainer> = listOf(PairContainer(
+                "rel" to "all-projects",
+                "href" to Links.ALL_PROJECTS
+        ))
+    }
+
+    /*
     init {
         if (!project.issues.isEmpty() || !project.allowedLabels.isEmpty()) {
             if(!project.issues.isEmpty()){
@@ -48,10 +63,10 @@ class ProjectOutputModel(project: Project) {
                         "href" to Links.allLabels(project.id)))
             }
         }
-    }
+    }*/
 }
 
-
+/*
 class ProjectOutputSerializer : StdSerializer<ProjectOutputModel>(ProjectOutputModel::class.java){
     override fun serialize(value: ProjectOutputModel?, gen: JsonGenerator?, provider: SerializerProvider?) {
         gen!!.writeStartObject()
@@ -74,4 +89,4 @@ class ProjectOutputSerializer : StdSerializer<ProjectOutputModel>(ProjectOutputM
         gen.writeEndObject()
     }
 
-}
+}*/

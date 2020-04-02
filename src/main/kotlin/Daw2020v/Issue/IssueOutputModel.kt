@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
 import java.util.*
 
-@JsonSerialize(using = IssueOutputSerializer::class)
+//@JsonSerialize(using = IssueOutputSerializer::class)
 class IssueOutputModel (projectID: UUID, issue: Issue){
 
     var properties: PairContainer = PairContainer(
@@ -34,7 +34,7 @@ class IssueOutputModel (projectID: UUID, issue: Issue){
                     "rel" to "self",
                     "href" to Links.issuePath(projectID, issue.id)
             )
-    )
+    )/*
     init {
         if(!issue.allowedLabels.isEmpty()) {
             properties.map.put("allowed labels",issue.allowedLabels.joinToString { it.identifier })
@@ -54,28 +54,15 @@ class IssueOutputModel (projectID: UUID, issue: Issue){
                                 "href" to Links.allLabelsFromIssues(projectID, issue.id)))
             }
         }
-    }
-}
-
-class IssueOutputSerializer : StdSerializer<IssueOutputModel>(IssueOutputModel::class.java) {
-    override fun serialize(value: IssueOutputModel?, gen: JsonGenerator?, provider: SerializerProvider?) {
-        gen!!.writeStartObject()
-        gen.writeObjectField("properties",value!!.properties)
-        if(!value.entities.isEmpty()) {
-            gen.writeArrayFieldStart("entities")
-            value.entities.forEach{ gen.writeObject(it) }
-            gen.writeEndArray()
-        }
-        if(!value.actions.isEmpty()) {
-            gen.writeArrayFieldStart("actions")
-            value.actions.forEach{ gen.writeObject(it) }
-            gen.writeEndArray()
-        }
-        if(!value.links.isEmpty()) {
-            gen.writeArrayFieldStart("links")
-            value.links.forEach{ gen.writeObject(it) }
-            gen.writeEndArray()
-        }
-        gen.writeEndObject()
+    }*/
+    class IssueDeletedOutputModel(projectId : UUID, issueId:UUID) {
+        val details = PairContainer(
+                "class" to "[issue]",
+                "description" to "Issue $issueId from project $projectId successfully deleted"
+        )
+        val links: List<PairContainer> = listOf(PairContainer(
+                "rel" to "project",
+                "href" to Links.projectPath(projectId)
+        ))
     }
 }

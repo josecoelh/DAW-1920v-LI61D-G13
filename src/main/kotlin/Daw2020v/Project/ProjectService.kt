@@ -20,13 +20,11 @@ class ProjectService @Autowired constructor() {
 
     fun insertProject(project: Project): Project {
         if (project.name == null || project.shortDesc == null) throw IllegalArgumentException("Bad project")
-        return Database.executeDao { projectDao.insertProject(project.id, project.name!!.value, project.shortDesc!!.text) } as Project
+        Database.executeDao { projectDao.createProject(project.id, project.name!!.value, project.shortDesc!!.text) }
+        return getProject(projectId = project.id)
     }
 
-    fun insertIssue(projectId: UUID, issue: Issue): Boolean {
-        if(issue.name == null) throw IllegalArgumentException("Bad issue")
-        return Database.executeDao { projectDao.putIssue(projectId,issue.id, issue.name!!.value) } as Boolean
-    }
+
 
     fun getProject(projectId: UUID): Project {
         val project: Project = Database.executeDao { projectDao.getProject(projectId) } as Project
@@ -43,28 +41,29 @@ class ProjectService @Autowired constructor() {
     }
 
 
-    fun putProject(projectId: UUID, project: ProjectInputModel): Boolean {
-        Database.executeDao { projectDao.putProject(project.name!!.value, project.description!!.text, projectId) }
+    fun updateProject(projectId: UUID, project: ProjectInputModel): Project {
+        Database.executeDao { projectDao.updateProject(project.name!!.value, project.description!!.text, projectId) }
         if (project.name == null && project.description == null) throw IllegalArgumentException("cant update with every field null dumbass")
         if (project.name == null) {
-            return Database.executeDao { projectDao.changeProjectDescription(project.description!!.text, projectId) } as Boolean
+             Database.executeDao { projectDao.changeProjectDescription(project.description!!.text, projectId) }
         } else {
             if (project.description == null) {
-                return Database.executeDao { projectDao.changeProjectName(project.name!!.value,projectId) } as Boolean
+                Database.executeDao { projectDao.changeProjectName(project.name!!.value,projectId) }
             } else {
-                return Database.executeDao { projectDao.putProject(project.name.value, project.description!!.text,projectId) } as Boolean
+                Database.executeDao { projectDao.updateProject(project.name.value, project.description!!.text,projectId) }
             }
         }
+            return getProject(projectId)
     }
 
-    fun putLabels(projectId: UUID, labels: Array<Label>): UUID {
-        labels.forEach { Database.executeDao { projectDao.putLabel(projectId, it.identifier) } }
-        return projectId
+    fun addAllowedLabelInProject(projectId: UUID, labels: Array<Label>) {
+        labels.forEach { Database.executeDao { projectDao.addAllowedLabelInProject(projectId, it.identifier) } }
     }
 
-    fun createIssue(projectId: UUID, issue: Issue): UUID {
-        Database.executeDao { projectDao.createIssue(projectId, issue.id, issue.name!!.value) }
-        return projectId
+    fun createIssue(projectId: UUID, issue: Issue): Issue {
+        if(issue.name == null) throw IllegalArgumentException("Bad issue")
+        Database.executeDao { projectDao.createIssue(projectId,issue.id, issue.name!!.value) }
+        return getIssue(projectId, issue.id)
     }
 
     fun deleteIssue(issueId: UUID): Boolean {
@@ -73,10 +72,9 @@ class ProjectService @Autowired constructor() {
         return Database.executeDao { projectDao.deleteIssue(issueId) } as Boolean
     }
 
-    fun deleteAllowedLabel(projectId: UUID, label: String): Boolean {
+    fun deleteAllowedLabel(projectId: UUID, label: String) {
         Database.executeDao { projectDao.deleteLabel(label, projectId) }
         Database.executeDao { projectDao.deleteAllowedLabel(projectId, label) }
-        return true
     }
 
     fun deleteProject(projectId: UUID): Boolean {
@@ -89,29 +87,30 @@ class ProjectService @Autowired constructor() {
     }
 
 
-    fun putLabelinIssue(projectId: UUID, issueId: UUID, label: String): Boolean {
-        val ProjectLabel: Label? = Database.executeDao { projectDao.getProjectLabel(projectId, label) } as Label?
-        if (ProjectLabel != null) {
-            return Database.executeDao { projectDao.putLabelInIssue(issueId, label) } as Boolean
-        }
-        return false
+    fun putLabelinIssue(projectId: UUID, issueId: UUID, label: String): Label {
+        val projectLabel: Label? = Database.executeDao { projectDao.getProjectLabel(projectId, label) } as Label?
+        if (projectLabel != null) {
+            Database.executeDao { projectDao.putLabelInIssue(issueId, label) } as Boolean
+            return getLabelfromIssue(projectId, issueId, label)
+        } else throw IllegalArgumentException("label not allowed")
     }
 
     fun deleteLabelInIssue(issueId: UUID, label: String): Boolean {
         return Database.executeDao { projectDao.deleteLabelInIssue(issueId, label) } as Boolean
     }
 
-    fun updateIssue(projectId: UUID, issueId: UUID, issue: IssueInputModel): Boolean {
+    fun updateIssue(projectId: UUID, issueId: UUID, issue: IssueInputModel): Issue {
         if (issue.name == null && issue.state == null) throw IllegalArgumentException("cant update with every field null dumbass")
         if (issue.name == null) {
-            return Database.executeDao { projectDao.changeIssueState(projectId, issueId, issue.state.toString()) } as Boolean
+             Database.executeDao { projectDao.changeIssueState(projectId, issueId, issue.state.toString()) }
         } else {
             if (issue.state == null) {
-                return Database.executeDao { projectDao.changeIssueName(projectId, issueId, issue.name.value) } as Boolean
+                Database.executeDao { projectDao.changeIssueName(projectId, issueId, issue.name.value) }
             } else {
-                return Database.executeDao { projectDao.putIssue(projectId, issueId, issue.name.value, issue.state.toString()) } as Boolean
+                Database.executeDao { projectDao.updateIssue(projectId, issueId, issue.name.value, issue.state.toString()) }
             }
         }
+        return getIssue(projectId, issueId)
     }
 
     fun deleteCommentInIssue(issueId: UUID, commentId: UUID): Boolean =
@@ -126,11 +125,8 @@ class ProjectService @Autowired constructor() {
         return issue
     }
 
-    fun addCommentToIssue(projectId: UUID, issueId: UUID, comment: Comment): Boolean =
-            Database.executeDao { projectDao.addCommentToIssue(comment.value, comment.date, comment.id, issueId) } as Boolean
-
-    fun changeIssueState(projectId: UUID, issueId: UUID, state: IssueState) : Boolean{
-        return Database.executeDao { projectDao.changeIssueState(projectId, issueId, state.name) } as Boolean
+    fun addCommentToIssue(projectId: UUID, issueId: UUID, comment: Comment) {
+        Database.executeDao { projectDao.addCommentToIssue(comment.value, comment.date, comment.id, issueId) }
     }
 
     fun getComment(issueId: UUID, commentId: UUID): Comment {

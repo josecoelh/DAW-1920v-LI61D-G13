@@ -20,4 +20,15 @@ class CommentOutputModel(comment : Comment, projectId :UUID, issueId : UUID) {
                     "rel" to "self",
                     "href" to Links.commentFromIssue(projectId, issueId, comment.id)))
 
+    class CommentDeletedOutputModel(projectId : UUID, issueId:UUID, commentId: UUID) {
+        val details = PairContainer(
+                "class" to "[comment]",
+                "description" to "Comment $commentId from issue $issueId successfully deleted"
+        )
+        val links: List<PairContainer> = listOf(PairContainer(
+                "rel" to "issue",
+                "href" to Links.issuePath(projectId, issueId)
+        ))
+    }
+
 }

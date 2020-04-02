@@ -13,6 +13,7 @@ const val ISSUE_ENDPOINT = "/githubPremium/issues"
      * guarantees good behavior and achieves uniformity
      */
     companion object{
+        public const val ALL_PROJECTS = "/githubPremium/projects"
         private const val PROJECT_PATH = "/githubPremium/projects/%s"
         private const val ISSUE_PATH = "$PROJECT_PATH/issues/%s"
         private const val ALL_ISSUES = "$PROJECT_PATH/issues"

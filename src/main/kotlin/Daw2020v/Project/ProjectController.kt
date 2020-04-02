@@ -79,15 +79,15 @@ class ProjectController @Autowired constructor(val projectService: ProjectServic
     }
 
 
-    *
+    /**
      * This method inserts a given [Project] into the database
      * @param project The [Project] to insert
      * @return the return is a SuccessResponse object with the details of what was done
-     *//*
+     */
     @PostMapping //TODO ERROS
-    fun insertProject(@RequestBody project: Project): ResponseEntity<SuccessResponse> {
-        projectService.insertProject(project)
-        return ResponseEntity.ok(SuccessResponse(Links.projectPath(project.id), HttpMethod.POST))
+    fun createProject(@RequestBody project: Project): ResponseEntity<ProjectOutputModel> {
+        val res = projectService.insertProject(project)
+        return ResponseEntity.ok(ProjectOutputModel(res))
     }
 
 
@@ -99,9 +99,6 @@ class ProjectController @Autowired constructor(val projectService: ProjectServic
         return ResponseEntity.ok(CommentOutputModel(res, projectId, issueId))
     }
 
-
-
-
     /**
      * This method updates the name and/or description of a given [Project]
      * @param project A container with the name/description to update
@@ -109,9 +106,9 @@ class ProjectController @Autowired constructor(val projectService: ProjectServic
      * @return the return is a SuccessResponse object with the details of what was done
      */
     @PutMapping(path = arrayOf("{projectId}"))
-    fun putProject(@PathVariable("projectId") projectId: UUID, @RequestBody project: ProjectInputModel): ResponseEntity<SuccessResponse> {
-        projectService.putProject(projectId, project)
-        return ResponseEntity.ok(SuccessResponse( Links.projectPath(projectId), HttpMethod.PUT))
+    fun updateProject(@PathVariable("projectId") projectId: UUID, @RequestBody project: ProjectInputModel): ResponseEntity<ProjectOutputModel> {
+        val res = projectService.updateProject(projectId, project)
+        return ResponseEntity.ok(ProjectOutputModel(res))
     }
 
     /**
@@ -120,12 +117,9 @@ class ProjectController @Autowired constructor(val projectService: ProjectServic
      * @return the return is a SuccessResponse object with the details of what was done or a badRequest in case something fails
      */
     @DeleteMapping(path = arrayOf("{projectId}"))
-    fun deleteProject(@PathVariable("projectId") projectId: UUID): ResponseEntity<SuccessResponse> {
-        val res = projectService.deleteProject(projectId)
-        if (res != null) {
-            return ResponseEntity.ok(SuccessResponse( Links.projectPath(projectId), HttpMethod.DELETE))
-        }
-        return ResponseEntity.badRequest().build()
+    fun deleteProject(@PathVariable("projectId") projectId: UUID): ResponseEntity<ProjectOutputModel.ProjectDeletedOutputModel> {
+        projectService.deleteProject(projectId)
+        return ResponseEntity.ok(ProjectOutputModel.ProjectDeletedOutputModel(projectId))
     }
 
     /**
@@ -135,9 +129,10 @@ class ProjectController @Autowired constructor(val projectService: ProjectServic
      * @return the return is a SuccessResponse object with the details of what was done
      */
     @PutMapping(path = arrayOf("{projectId}/labels"))
-    fun putAllowedLabels(@PathVariable("projectId") id: UUID, @RequestBody labels: Array<Label>): ResponseEntity<SuccessResponse> {
-        val res = projectService.putLabels(id, labels)
-        return ResponseEntity.ok(SuccessResponse( Links.projectPath(id), HttpMethod.PUT))
+    fun putAllowedLabels(@PathVariable("projectId") id: UUID, @RequestBody labels: Array<Label>): ResponseEntity<List<LabelOutputModel>> {
+        projectService.addAllowedLabelInProject(id, labels)
+        val res : List<LabelOutputModel> = labels.map { LabelOutputModel(it, id) }
+        return ResponseEntity.ok(res)
     }
 
     /**
@@ -147,9 +142,9 @@ class ProjectController @Autowired constructor(val projectService: ProjectServic
      * @return the return is a SuccessResponse object with the details of what was done or a badRequest in case something fails
      */
     @DeleteMapping(path = arrayOf("{projectId}/labels/{labelId}"))
-    fun deleteAllowedLabel(@PathVariable("projectId") projectId: UUID, @PathVariable("labelId") labelId: String): ResponseEntity<SuccessResponse> {
-        val res = projectService.deleteAllowedLabel(projectId, labelId)
-        return ResponseEntity.ok(SuccessResponse( Links.projectPath(projectId), HttpMethod.DELETE))
+    fun deleteAllowedLabel(@PathVariable("projectId") projectId: UUID, @PathVariable("labelId") labelId: String): ResponseEntity<LabelOutputModel.LabelDeletedOutputModel> {
+        projectService.deleteAllowedLabel(projectId, labelId)
+        return ResponseEntity.ok(LabelOutputModel.LabelDeletedOutputModel(labelId,projectId))
     }
 
     /**
@@ -158,10 +153,10 @@ class ProjectController @Autowired constructor(val projectService: ProjectServic
      * @param projectId The id of the [Project] to update
      * @return the return is a SuccessResponse object with the details of what was done
      */
-    @PutMapping(path = arrayOf("{projectId}/issues"))
-    fun createIssue(@PathVariable("projectId") projectId: UUID, @RequestBody issue: Issue): ResponseEntity<SuccessResponse> {
+    @PostMapping(path = arrayOf("{projectId}/issues"))
+    fun createIssue(@PathVariable("projectId") projectId: UUID, @RequestBody issue: Issue): ResponseEntity<IssueOutputModel> {
         val res = projectService.createIssue(projectId, issue)
-        return ResponseEntity.ok(SuccessResponse( Links.issuePath(projectId, issue.id), HttpMethod.PUT))
+        return ResponseEntity.ok(IssueOutputModel(projectId, res))
     }
 
     /**
@@ -176,10 +171,10 @@ class ProjectController @Autowired constructor(val projectService: ProjectServic
         return ResponseEntity.ok(res)
     }
 
-    @PostMapping(path = arrayOf("{projectId}/issues"))
-    fun postIssue(@PathVariable("projectId") projectId: UUID, @PathVariable("issueId") issue: Issue): ResponseEntity<SuccessResponse> {
-        val res = projectService.insertIssue(projectId,issue)
-        return ResponseEntity.ok(SuccessResponse(Links.issuePath(projectId,issue.id), HttpMethod.POST))
+    @PutMapping(path = arrayOf("{projectId}/issues"))
+    fun updateIssue(@PathVariable("projectId") projectId: UUID, @PathVariable("issueId") issue: Issue): ResponseEntity<IssueOutputModel> {
+        val res = projectService.createIssue(projectId,issue)
+        return ResponseEntity.ok(IssueOutputModel(projectId, res))
     }
 
     /**
@@ -189,9 +184,9 @@ class ProjectController @Autowired constructor(val projectService: ProjectServic
      * @return the return is a SuccessResponse object with the details of what was done
      */
     @DeleteMapping(path = arrayOf("{projectId}/issues/{issueId}"))
-    fun deleteIssue(@PathVariable("projectId") projectId: UUID, @PathVariable("issueId") issueId: UUID):ResponseEntity<SuccessResponse> {
-        val res = projectService.deleteIssue(issueId)
-        return ResponseEntity.ok(SuccessResponse( Links.projectPath(projectId), HttpMethod.DELETE))
+    fun deleteIssue(@PathVariable("projectId") projectId: UUID, @PathVariable("issueId") issueId: UUID):ResponseEntity<IssueOutputModel.IssueDeletedOutputModel> {
+        projectService.deleteIssue(issueId)
+        return ResponseEntity.ok(IssueOutputModel.IssueDeletedOutputModel(projectId, issueId))
     }
 
     /**
@@ -204,9 +199,9 @@ class ProjectController @Autowired constructor(val projectService: ProjectServic
     @PutMapping(path = arrayOf("{projectId}/issues/{issueId}/labels/{labelId}"))
     fun putLabelinIssue(@PathVariable("projectId") projectId: UUID,
                         @PathVariable("issueId") issueId: UUID,
-                        @PathVariable("labelId") labelId: String): ResponseEntity<SuccessResponse> {
-        projectService.putLabelinIssue(projectId, issueId, labelId)
-        return ResponseEntity.ok(SuccessResponse( Links.issuePath(projectId,issueId), HttpMethod.PUT))
+                        @PathVariable("labelId") labelId: String): ResponseEntity<LabelOutputModel> {
+        val res = projectService.putLabelinIssue(projectId, issueId, labelId)
+        return ResponseEntity.ok(LabelOutputModel(res, projectId, issueId))
     }
 
     /**
@@ -219,9 +214,9 @@ class ProjectController @Autowired constructor(val projectService: ProjectServic
     @DeleteMapping(path = arrayOf("{projectId}/issues/{issueId}/labels/{labelId}"))
     fun deleteLabelinIssue(@PathVariable("projectId") projectId: UUID,
                            @PathVariable("issueId") issueId: UUID,
-                           @PathVariable("labelId") labelId: String): ResponseEntity<SuccessResponse> {
+                           @PathVariable("labelId") labelId: String): ResponseEntity<LabelOutputModel.LabelDeletedOutputModel> {
         projectService.deleteLabelInIssue( issueId, labelId)
-        return ResponseEntity.ok(SuccessResponse( Links.issuePath(projectId,issueId), HttpMethod.DELETE))
+        return ResponseEntity.ok(LabelOutputModel.LabelDeletedOutputModel(labelId, projectId, issueId))
     }
 
     /**
@@ -234,9 +229,9 @@ class ProjectController @Autowired constructor(val projectService: ProjectServic
     @PutMapping(path = arrayOf("{projectId}/issues/{issueId}"))
     fun updateIssue(@PathVariable("projectId") projectId: UUID,
                     @PathVariable("issueId") issueId: UUID,
-                    @RequestBody issue: IssueInputModel): ResponseEntity<SuccessResponse> {
-        projectService.updateIssue(projectId, issueId, issue)
-        return ResponseEntity.ok(SuccessResponse( Links.issuePath(projectId,issueId), HttpMethod.PUT))
+                    @RequestBody issue: IssueInputModel): ResponseEntity<IssueOutputModel> {
+        val res = projectService.updateIssue(projectId, issueId, issue)
+        return ResponseEntity.ok(IssueOutputModel(projectId,res))
     }
 
     /**
@@ -249,9 +244,10 @@ class ProjectController @Autowired constructor(val projectService: ProjectServic
     @PutMapping(path = arrayOf("{projectId}/issues/{issueId}/comments"))
     fun addCommentToIssue(@PathVariable("projectId") projectId: UUID,
                           @PathVariable("issueId") issueId: UUID,
-                          @RequestBody comment: CommentInputModel) : ResponseEntity<SuccessResponse>{
-        projectService.addCommentToIssue(projectId, issueId, Comment(comment.value)!!)
-        return ResponseEntity.ok(SuccessResponse( Links.issuePath(projectId,issueId), HttpMethod.PUT))
+                          @RequestBody comment: CommentInputModel) : ResponseEntity<CommentOutputModel>{
+        val newComment = Comment(comment.value)!!
+        projectService.addCommentToIssue(projectId, issueId,newComment)
+        return ResponseEntity.ok(CommentOutputModel(newComment, projectId, issueId))
     }
 
     /**
@@ -264,9 +260,9 @@ class ProjectController @Autowired constructor(val projectService: ProjectServic
     @DeleteMapping(path = arrayOf("{projectId}/issues/{issueId}/comments/{commentId}"))
     fun deleteCommentInIssue(@PathVariable("projectId") projectId: UUID,
                              @PathVariable("issueId") issueId: UUID,
-                             @PathVariable("commentId") commentId: UUID) : ResponseEntity<SuccessResponse> {
+                             @PathVariable("commentId") commentId: UUID) : ResponseEntity<CommentOutputModel.CommentDeletedOutputModel> {
         projectService.deleteCommentInIssue(issueId, commentId)
-        return ResponseEntity.ok(SuccessResponse( Links.issuePath(projectId,issueId),HttpMethod.DELETE))
+        return ResponseEntity.ok(CommentOutputModel.CommentDeletedOutputModel(projectId,issueId, commentId ))
     }
 
     @GetMapping(path = arrayOf("{projectId}/issues/{issueId}/comments"))

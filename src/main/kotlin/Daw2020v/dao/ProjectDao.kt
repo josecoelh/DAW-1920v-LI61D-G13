@@ -23,10 +23,10 @@ interface ProjectDao {
      * @return the project
      */
     @SqlUpdate("INSERT INTO project(proj_id , _name,description) VALUES (?, ?, ?)")
-    fun insertProject( id:UUID,  name:String,  desc:String): Boolean
+    fun createProject(id:UUID, name:String, desc:String): Boolean
 
     @SqlUpdate("INSERT INTO issues values (:name, :issueId, :projectId, OPEN")
-    fun putIssue(projectId: UUID, issueId: UUID, name: String) : Boolean
+    fun createIssue(projectId: UUID, issueId: UUID, name: String) : Boolean
 
     @SqlQuery("select al._value from project as proj  join allowed_labels as al on(proj.proj_id = al.proj_id) where proj.proj_id = ?")
     @RegisterRowMapper(Label.LabelMapper::class)
@@ -69,7 +69,7 @@ interface ProjectDao {
      * @return the updated [Project]
      */
     @SqlUpdate("update project set _name = ? , description = ? where proj_id = ?")
-    fun putProject( name : String, desc: String , projectId: UUID): Boolean
+    fun updateProject(name : String, desc: String, projectId: UUID): Boolean
 
     @SqlUpdate("update project set _name = ? where proj_id = ?")
     fun changeProjectName(name : String, projectId: UUID): Boolean
@@ -85,7 +85,7 @@ interface ProjectDao {
      * @throws IllegalArgumentException if the [Project] doesn't exist
      */
     @SqlUpdate("insert into allowed_labels values(:label, :projectId)")
-    fun putLabel(projectId: UUID, label : String) : Boolean
+    fun addAllowedLabelInProject(projectId: UUID, label : String) : Boolean
 
 
     /**
@@ -96,11 +96,9 @@ interface ProjectDao {
      * @return the updated [Project]
      * @throws IllegalArgumentException if the [Project] doesn't exist
      */
-    @SqlUpdate("update issues set _name = :name, _state = :state where proj_id = :projectId and issue_id = issueId)")
-    fun putIssue(projectId: UUID, issueId : UUID, name: String, state: String) : Boolean
 
-    @SqlUpdate("INSERT INTO issues values (:name, :issueId, :projectId, OPEN")
-    fun createIssue(projectId: UUID, issueId: UUID, name: String) : Boolean
+
+
 
     @SqlUpdate("update issues set _name = :name, _state = :state where proj_id = :projectId and issue_id = issueId)")
     fun changeIssueName(projectId: UUID, issueId : UUID, name: String) : Boolean
@@ -191,8 +189,8 @@ interface ProjectDao {
      * @return the updated project
      * @throws IllegalArgumentException if the [Project] doesn't exist or the [Issue] doesn't exist
      */
-    @SqlUpdate("update issue set _name = :name , _state = :state where proj_id = :projectId and issue_id = :issueId")
-    fun updateIssue(projectId: UUID, issueId: UUID, name : String, state: String): Boolean
+    @SqlUpdate("update issues set _name = :name, _state = :state where proj_id = :projectId and issue_id = issueId)")
+    fun updateIssue(projectId: UUID, issueId : UUID, name: String, state: String) : Boolean
 
     @SqlUpdate("insert into _comments values(?,?,?,?")
     fun addCommentToIssue(comment : String, date : String, commentId: UUID, issueId: UUID): Boolean
