@@ -5,8 +5,10 @@ import Daw2020v.common.model.Project
 import Daw2020v.common.PairContainer
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.SerializerProvider
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
 
+@JsonSerialize(using = ProjectOutputSerializer::class)
 class ProjectOutputModel(project: Project) {
     var properties: PairContainer = PairContainer(
             "id" to project.id.toString(),

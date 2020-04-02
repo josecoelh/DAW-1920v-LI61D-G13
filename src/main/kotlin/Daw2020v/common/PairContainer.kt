@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer
 
 @JsonSerialize(using = PairContainerSerializer::class)
 class PairContainer(vararg pairs : Pair<String, String>) {
-    val map:Map<String,String> = mapOf(*pairs)
+    val map:MutableMap<String,String> = mutableMapOf(*pairs)
 }
 
 class PairContainerSerializer : StdSerializer<PairContainer>(PairContainer::class.java){
