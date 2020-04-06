@@ -13,7 +13,7 @@ import java.util.*
  */
 @Service
 class ProjectService @Autowired constructor() {
-    val dao: Dao = Database.getProjectDao()
+    val dao: Dao = Database.getDao()
 
 
     fun getAllProjects(): List<Project> {
@@ -29,13 +29,13 @@ class ProjectService @Autowired constructor() {
 
     fun getProject(projectId: UUID): Project {
         val project: Project = Database.executeDao { dao.getProject(projectId) } as Project
-        val projectLabels: MutableList<Label> = Database.executeDao { dao.getProjectLabels(projectId) } as MutableList<Label>
+        val projectLabels: MutableList<String> = Database.executeDao { dao.getProjectLabels(projectId) } as MutableList<String>
         val issues: List<Issue> = Database.executeDao { dao.getProjectIssues(projectId) } as List<Issue>
         project.allowedLabels = projectLabels
         issues.forEach {
             it.allowedLabels = projectLabels;
             it.addComment(*(Database.executeDao { dao.getIssueComment(it.id) } as List<Comment>).toTypedArray())
-            it.addLabel(*(Database.executeDao { dao.getIssueLabels(projectId, it.id) } as List<Label>).toTypedArray())
+            it.addLabel(*(Database.executeDao { dao.getIssueLabels(projectId, it.id) } as List<String>).toTypedArray())
             project?.addIssue(it)
 
         }
@@ -58,8 +58,8 @@ class ProjectService @Autowired constructor() {
         return getProject(projectId)
     }
 
-    fun addAllowedLabelInProject(projectId: UUID, labels: Array<Label>) {
-        labels.forEach { Database.executeDao { dao.addAllowedLabelInProject(projectId, it.identifier) } }
+    fun addAllowedLabelInProject(projectId: UUID, labels: Array<String>) {
+        labels.forEach { Database.executeDao { dao.addAllowedLabelInProject(projectId, it) } }
     }
 
 
@@ -77,8 +77,6 @@ class ProjectService @Autowired constructor() {
         return true
     }
 
-    fun getAllLabels(projectId: UUID): MutableList<Label> = Database.executeDao { dao.getProjectLabels(projectId) } as MutableList<Label>
-
-    fun getLabelfromProject(projectId: UUID, label: String): Label = Database.executeDao { dao.getProjectLabel(projectId, label) } as Label
+    fun getAllLabels(projectId: UUID): MutableList<String> = Database.executeDao { dao.getProjectLabels(projectId) } as MutableList<String>
 
 }

@@ -1,5 +1,6 @@
 package Daw2020v.common.model
 
+import Daw2020v.Project.ProjectOutputModel
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.jdbi.v3.core.mapper.RowMapper
 import org.jdbi.v3.core.statement.StatementContext
@@ -11,20 +12,16 @@ import java.util.*
  */
 
 class Project(
-              @JsonProperty("name") var name: Name?,
-              @JsonProperty("description")var shortDesc: ShortDescription?,
-              var id :UUID = UUID.randomUUID())
-{
+        @JsonProperty("name") var name: Name?,
+        @JsonProperty("description") var shortDesc: ShortDescription?,
+        var id: UUID = UUID.randomUUID()) {
 
-    @JsonProperty("labels")var allowedLabels: MutableList<Label> = mutableListOf<Label>()
-    @JsonProperty("issues")val issues: MutableList<Issue> = mutableListOf<Issue>()
+    @JsonProperty("labels")
+    var allowedLabels: MutableList<String> = mutableListOf<String>()
+    @JsonProperty("issues")
+    val issues: MutableList<Issue> = mutableListOf<Issue>()
 
-    class ProjectMapper : RowMapper<Project> {
-        override fun map(rs: ResultSet?, ctx: StatementContext?): Project =
-            Project(Name(rs!!.getString("_name")),
-                    ShortDescription(rs.getString("description")),
-                    UUID.fromString(rs.getString("proj_id")))
-    }
+    fun toDto() : ProjectOutputModel = ProjectOutputModel(this)
 
     /**
      * Update the project's name
@@ -56,14 +53,14 @@ class Project(
      * Removes an issue from the project
      * @param issueId The id of the issue that's going to be removed
      */
-    fun removeIssue(issueId : UUID) = issues.remove(getIssue(issueId))
+    fun removeIssue(issueId: UUID) = issues.remove(getIssue(issueId))
 
     /**
      * Gets the issue with the given issueId
      * @param issueId the id of the issue to be returned
      * @return [Issue] with the corresponding [issueId]
      */
-    fun getIssue(issueId : UUID) = issues.find { it.id == issueId }
+    fun getIssue(issueId: UUID) = issues.find { it.id == issueId }
 
     /**
      * Remove label from the project and update all the issues from this project
@@ -76,18 +73,19 @@ class Project(
 
     /**
      * Gets the label with the given labelId
-     * @param labelId the id of the label to be returned
-     * @return [Label] with the corresponding [labelId]
+     * @param label the id of the label to be returned
+     * @return [Label] with the corresponding [label]
      */
-    fun getAllowedLabel(labelId: String) = allowedLabels.find { it.identifier == labelId }
+    fun getAllowedLabel(label: String) = allowedLabels.find { it == label }
 
     /**
      * Add labels to the project and update all the issues from this project
      * @param labels Single or multiple labels to add/remove
      */
-    fun addAllowedLabels(vararg labels: Label) {
-        labels.iterator().forEach {labelToAdd->
-           if(allowedLabels.find { label-> label.identifier == labelToAdd.identifier } == null) allowedLabels.add(labelToAdd)
+
+    fun addAllowedLabels(vararg labels: String) {
+        labels.iterator().forEach { labelToAdd ->
+            if (allowedLabels.find { label -> label == labelToAdd } == null) allowedLabels.add(labelToAdd)
         }
         issues.forEach { it.updateLabels(allowedLabels) }
     }
@@ -99,5 +97,12 @@ class Project(
      *
      */
     fun changeState(state: IssueState, issue: Issue) = issue.changeState(state)
+
+    class ProjectMapper : RowMapper<Project> {
+        override fun map(rs: ResultSet?, ctx: StatementContext?): Project =
+                Project(Name(rs!!.getString("_name")),
+                        ShortDescription(rs.getString("description")),
+                        UUID.fromString(rs.getString("proj_id")))
+    }
 }
 

@@ -1,6 +1,7 @@
 package Daw2020v.common.model
 
 
+import Daw2020v.Issue.IssueOutputModel
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.util.*
 import org.jdbi.v3.core.mapper.RowMapper
@@ -12,7 +13,7 @@ import java.sql.ResultSet
 *  Data type for representing Issues in the context of this app.
  */
 data class Issue(@JsonProperty("name")  var name: Name?,
-                  var allowedLabels: MutableList<Label> = mutableListOf<Label>(),
+                  var allowedLabels: MutableList<String> = mutableListOf<String>(),
                   val id : UUID = UUID.randomUUID(),
                   var state: IssueState?
 ) {
@@ -26,7 +27,9 @@ data class Issue(@JsonProperty("name")  var name: Name?,
         }
     }
 
-    var labels: MutableList<Label> = mutableListOf<Label>()
+    fun toDto(projectId : UUID) : IssueOutputModel = IssueOutputModel(projectId, this)
+
+    var labels: MutableList<String> = mutableListOf<String>()
 
     @JsonProperty("comments") val comments = mutableListOf<Comment>()
 
@@ -56,7 +59,7 @@ data class Issue(@JsonProperty("name")  var name: Name?,
      * @param value the label to add
      * @return [true] if is added with success otherwise returns [false]
      */
-    fun addLabel(vararg value: Label) {
+    fun addLabel(vararg value: String) {
         value.forEach { if (allowedLabels.contains(it)) labels.add(it) }
     }
 
@@ -67,13 +70,13 @@ data class Issue(@JsonProperty("name")  var name: Name?,
      * @param value the label to add
      * @return [true] if is removed with success otherwise returns [false]
      */
-    fun removeLabel(value: Label): Boolean = labels.remove(value)
+    fun removeLabel(value: String): Boolean = labels.remove(value)
 
     /**
      * Updates the issue labels when the allowed labels are changed
      * @param newAllowed The new list of allowed labels
      */
-    fun updateLabels(newAllowed: MutableList<Label>) {
+    fun updateLabels(newAllowed: MutableList<String>) {
         allowedLabels = newAllowed
         labels = labels.filter { allowedLabels.contains(it) }.toMutableList()
     }

@@ -16,7 +16,7 @@ class IssueOutputModel(projectID: UUID, issue: Issue) {
             "id" to issue.id.toString(),
             "name" to issue.name!!.value,
             "state" to issue.state.toString(),
-            "allowed labels" to issue.allowedLabels.joinToString { it.identifier })
+            "allowed labels" to issue.allowedLabels.joinToString { it })
     var entities = listOf<PairContainer>(
             PairContainer(
                     "class" to "Comments",
@@ -36,6 +36,11 @@ class IssueOutputModel(projectID: UUID, issue: Issue) {
             PairContainer(
                     "name" to "delete-issue",
                     "method" to "DELETE",
+                    "href" to Links.issuePath(projectID, issue.id)
+            ),
+            PairContainer(
+                    "name" to "get-issue",
+                    "method" to "GET",
                     "href" to Links.issuePath(projectID, issue.id)
             ))
     var links: List<PairContainer> = listOf(

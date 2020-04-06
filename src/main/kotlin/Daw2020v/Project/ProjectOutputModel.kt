@@ -37,6 +37,11 @@ class ProjectOutputModel(project: Project) {
                     "name" to "delete-project",
                     "method" to "DELETE",
                     "href" to Links.projectPath(project.id)
+            ),
+            PairContainer(
+                    "name" to "get-project",
+                    "method" to "GET",
+                    "href" to Links.projectPath(project.id)
             ))
     var links: List<PairContainer> = listOf(
             PairContainer(

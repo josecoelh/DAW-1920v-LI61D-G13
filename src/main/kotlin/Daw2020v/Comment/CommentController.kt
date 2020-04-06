@@ -26,7 +26,7 @@ class CommentController @Autowired constructor(val commentService: CommentServic
                    @PathVariable("issueId") issueId: UUID,
                    @PathVariable("commentId") commentId: UUID): ResponseEntity<CommentOutputModel> {
         val res = commentService.getComment(issueId, commentId)
-        return ResponseEntity.ok(CommentOutputModel(res, projectId, issueId))
+        return ResponseEntity.ok(res.toDto(projectId, issueId))
     }
 
     /**
@@ -42,7 +42,7 @@ class CommentController @Autowired constructor(val commentService: CommentServic
                           @RequestBody comment: CommentInputModel): ResponseEntity<CommentOutputModel> {
         val newComment = Comment(comment.value)!!
         commentService.addCommentToIssue(projectId, issueId, newComment)
-        return ResponseEntity.ok(CommentOutputModel(newComment, projectId, issueId))
+        return ResponseEntity.ok(newComment.toDto(projectId, issueId))
     }
 
     /**
@@ -71,7 +71,7 @@ class CommentController @Autowired constructor(val commentService: CommentServic
                                 @PathVariable("issueId") issueId: UUID): ResponseEntity<MutableList<CommentOutputModel>> {
         val comments = commentService.getAllComments(projectId, issueId)
         val outputList = mutableListOf<CommentOutputModel>()
-        comments.forEach { outputList.add(CommentOutputModel(it, projectId, issueId)) }
+        comments.forEach { outputList.add(it.toDto(projectId, issueId)) }
         return ResponseEntity.ok(outputList)
     }
 }

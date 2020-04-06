@@ -14,6 +14,10 @@ class CommentOutputModel(comment : Comment, projectId :UUID, issueId : UUID) {
             PairContainer(
                     "name" to "delete-comment-label",
                     "method" to "DELETE",
+                    "href" to Links.commentFromIssue(projectId, issueId, comment.id)),
+            PairContainer(
+                    "name" to "get-comment-label",
+                    "method" to "GET",
                     "href" to Links.commentFromIssue(projectId, issueId, comment.id)))
     var links : List<PairContainer> = listOf(
             PairContainer(

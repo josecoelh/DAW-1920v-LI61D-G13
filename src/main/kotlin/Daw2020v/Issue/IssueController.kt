@@ -4,7 +4,6 @@ import Daw2020v.ExceptionHandlerClass
 import Daw2020v.Label.LabelOutputModel
 import Daw2020v.common.ISSUE_ENDPOINT
 import Daw2020v.common.model.Issue
-import Daw2020v.common.model.Label
 import Daw2020v.common.model.Project
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
@@ -26,24 +25,12 @@ class IssueController @Autowired constructor(val issueService: IssueService) : E
         val issues = issueService.getAllIssues(projectId)
         val outputList: MutableList<IssueOutputModel> = mutableListOf()
         issues.forEach {
-            outputList.add(IssueOutputModel(projectId, it))
+            outputList.add(it.toDto(projectId))
         }
         return ResponseEntity.ok(outputList)
     }
 
-    /**
-     * Gets the [Label] within a given [Issue]
-     * @param projectId the id of specified [Project]
-     * @param issueId the
-     * @return [IssueOutputModel] wrapped in a [ResponseEntity]
-     */
-    @GetMapping(path = arrayOf("{issueId}/labels/{label}"))
-    fun getLabelFromIssue(@PathVariable("projectId") projectId: UUID,
-                          @PathVariable("issueId") issueId: UUID,
-                          @PathVariable("label") label: String): ResponseEntity<LabelOutputModel> {
-        val res = issueService.getLabelfromIssue(projectId, issueId, label)
-        return ResponseEntity.ok(LabelOutputModel(res, projectId, issueId))
-    }
+
 
     /**
      * Retrieves all the [Label] from a given [Issue]
@@ -68,7 +55,7 @@ class IssueController @Autowired constructor(val issueService: IssueService) : E
     @PostMapping()
     fun createIssue(@PathVariable("projectId") projectId: UUID, @RequestBody issue: Issue): ResponseEntity<IssueOutputModel> {
         val res = issueService.createIssue(projectId, issue)
-        return ResponseEntity.ok(IssueOutputModel(projectId, res))
+        return ResponseEntity.ok(res.toDto(projectId))
     }
 
     /**
@@ -78,15 +65,15 @@ class IssueController @Autowired constructor(val issueService: IssueService) : E
      * @return [Issue] with the corresponding [issueId]
      */
     @GetMapping(path = arrayOf("{issueId}"))
-    fun getIssue(@PathVariable("projectId") projectId: UUID, @PathVariable("issueId") issueId: UUID): ResponseEntity<Issue> {
+    fun getIssue(@PathVariable("projectId") projectId: UUID, @PathVariable("issueId") issueId: UUID): ResponseEntity<IssueOutputModel> {
         val res = issueService.getIssue(projectId, issueId)
-        return ResponseEntity.ok(res)
+        return ResponseEntity.ok(res.toDto(projectId))
     }
 
     @PutMapping()
     fun updateIssue(@PathVariable("projectId") projectId: UUID, @PathVariable("issueId") issue: Issue): ResponseEntity<IssueOutputModel> {
         val res = issueService.createIssue(projectId, issue)
-        return ResponseEntity.ok(IssueOutputModel(projectId, res))
+        return ResponseEntity.ok(res.toDto(projectId))
     }
 
     /**
@@ -143,7 +130,7 @@ class IssueController @Autowired constructor(val issueService: IssueService) : E
                     @PathVariable("issueId") issueId: UUID,
                     @RequestBody issue: IssueInputModel): ResponseEntity<IssueOutputModel> {
         val res = issueService.updateIssue(projectId, issueId, issue)
-        return ResponseEntity.ok(IssueOutputModel(projectId, res))
+        return ResponseEntity.ok(res.toDto(projectId))
     }
 
 }

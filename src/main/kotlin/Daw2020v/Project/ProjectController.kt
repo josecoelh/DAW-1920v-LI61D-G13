@@ -19,20 +19,6 @@ import java.util.*
 class ProjectController @Autowired constructor(val projectService: ProjectService) : ExceptionHandlerClass() {
 
 
-
-    /** Retrieves the desired [Label] from a [Project]
-     * @param projectId the id of the [Project] that contains the [Label]
-     * @param label the [Label]
-     * @return [LabelOutputModel] wrapped in a [ResponseEntity]
-    */
-    @GetMapping(path = arrayOf("{projectId}/labels/{label}"))
-    fun getLabelfromProject(@PathVariable("projectId") projectId: UUID,
-                            @PathVariable("label") label: String): ResponseEntity<LabelOutputModel> {
-        val res = projectService.getLabelfromProject(projectId, label)
-        return ResponseEntity.ok(LabelOutputModel(res, projectId))
-    }
-
-
     /** Retrieves all the [Label]'s from a [Project]
      * @param projectId the id of the [Project] that contains the [Label]
      * @return [LabelOutputModel] wrapped in a [ResponseEntity]
@@ -52,7 +38,7 @@ class ProjectController @Autowired constructor(val projectService: ProjectServic
     fun getAllProjects(): ResponseEntity<Array<ProjectOutputModel>> {
         val projects = projectService.getAllProjects()
         val res = mutableListOf<ProjectOutputModel>()
-        projects.forEach { res.add(ProjectOutputModel(it)) }
+        projects.forEach { res.add(it.toDto()) }
         return ResponseEntity.ok(res.toTypedArray())
     }
 
@@ -62,8 +48,8 @@ class ProjectController @Autowired constructor(val projectService: ProjectServic
      */
     @GetMapping(path = arrayOf("{projectId}")) //TODO erros
     fun getProject(@PathVariable("projectId") projectId: UUID): ResponseEntity<ProjectOutputModel> {
-        val res = projectService.getProject(projectId)
-        return ResponseEntity.ok(ProjectOutputModel(res))
+        val project : Project = projectService.getProject(projectId)
+        return ResponseEntity.ok(project.toDto())
     }
 
 
@@ -74,8 +60,8 @@ class ProjectController @Autowired constructor(val projectService: ProjectServic
      */
     @PostMapping //TODO ERROS
     fun createProject(@RequestBody project: Project): ResponseEntity<ProjectOutputModel> {
-        val res = projectService.insertProject(project)
-        return ResponseEntity.ok(ProjectOutputModel(res))
+        val res : Project = projectService.insertProject(project)
+        return ResponseEntity.ok(res.toDto())
     }
 
 
@@ -88,7 +74,7 @@ class ProjectController @Autowired constructor(val projectService: ProjectServic
     @PutMapping(path = arrayOf("{projectId}"))
     fun updateProject(@PathVariable("projectId") projectId: UUID, @RequestBody project: ProjectInputModel): ResponseEntity<ProjectOutputModel> {
         val res = projectService.updateProject(projectId, project)
-        return ResponseEntity.ok(ProjectOutputModel(res))
+        return ResponseEntity.ok(res.toDto())
     }
 
     /**
@@ -109,7 +95,7 @@ class ProjectController @Autowired constructor(val projectService: ProjectServic
      * @return the return is a SuccessResponse object with the details of what was done
      */
     @PutMapping(path = arrayOf("{projectId}/labels"))
-    fun putAllowedLabels(@PathVariable("projectId") id: UUID, @RequestBody labels: Array<Label>): ResponseEntity<List<LabelOutputModel>> {
+    fun putAllowedLabels(@PathVariable("projectId") id: UUID, @RequestBody labels: Array<String>): ResponseEntity<List<LabelOutputModel>> {
         projectService.addAllowedLabelInProject(id, labels)
         val res: List<LabelOutputModel> = labels.map { LabelOutputModel(it, id) }
         return ResponseEntity.ok(res)

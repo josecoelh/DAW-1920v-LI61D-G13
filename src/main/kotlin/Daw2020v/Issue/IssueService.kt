@@ -5,7 +5,6 @@ import Daw2020v.common.LabelNotAllowedException
 import Daw2020v.common.LabelRepeatedException
 import Daw2020v.common.model.Comment
 import Daw2020v.common.model.Issue
-import Daw2020v.common.model.Label
 import Daw2020v.dao.Database
 import Daw2020v.dao.Dao
 import org.springframework.beans.factory.annotation.Autowired
@@ -17,7 +16,7 @@ import java.util.*
  */
 @Service
 class IssueService @Autowired constructor() {
-    val dao: Dao = Database.getProjectDao()
+    val dao: Dao = Database.getDao()
 
     fun getIssue(projectId: UUID, issueId: UUID): Issue {
         val issue = Database.executeDao { dao.getIssue(projectId, issueId) } as Issue
@@ -33,13 +32,12 @@ class IssueService @Autowired constructor() {
         return issues
     }
 
-    fun getLabelfromIssue(projectId: UUID, issueId: UUID, label: String): Label = Database.executeDao { dao.getIssueLabel(projectId, issueId, label) } as Label
 
 
     fun issueFinalizer(projectId: UUID, issue: Issue){
-        issue.allowedLabels = Database.executeDao { dao.getProjectLabels(projectId) } as MutableList<Label>;
+        issue.allowedLabels = Database.executeDao { dao.getProjectLabels(projectId) } as MutableList<String>;
         issue.addComment(*(Database.executeDao { dao.getIssueComment(issue.id) } as List<Comment>).toTypedArray())
-        issue.addLabel(*(Database.executeDao { dao.getIssueLabels(projectId, issue.id) } as List<Label>).toTypedArray())
+        issue.addLabel(*(Database.executeDao { dao.getIssueLabels(projectId, issue.id) } as List<String>).toTypedArray())
     }
 
     fun createIssue(projectId: UUID, issue: Issue): Issue {
@@ -54,13 +52,12 @@ class IssueService @Autowired constructor() {
         return Database.executeDao { dao.deleteIssue(issueId) } as Boolean
     }
 
-    fun putLabelInIssue(projectId: UUID, issueId: UUID, label: String): Label {
-        val toAdd = Label(label)
+    fun putLabelInIssue(projectId: UUID, issueId: UUID, label: String): String {
         val issue = Database.executeDao { dao.getIssue(projectId, issueId) } as Issue
-        if (!issue.allowedLabels.contains(toAdd)) throw LabelNotAllowedException()
-        if (issue.labels.contains(toAdd)) throw LabelRepeatedException()
+        if (!issue.allowedLabels.contains(label)) throw LabelNotAllowedException()
+        if (issue.labels.contains(label)) throw LabelRepeatedException()
         Database.executeDao { dao.putLabelInIssue(issueId, label) }
-        return getLabelfromIssue(projectId, issueId, label)
+        return label
     }
 
     fun deleteLabelInIssue(projectId: UUID, issueId: UUID, label: String) {

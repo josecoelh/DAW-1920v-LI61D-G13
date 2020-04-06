@@ -9,7 +9,7 @@ import java.util.*
 
 @Service
 class CommentService @Autowired constructor() {
-    val dao: Dao = Database.getProjectDao()
+    val dao: Dao = Database.getDao()
 
     fun getComment(issueId: UUID, commentId: UUID): Comment {
         return Database.executeDao { dao.getComment(issueId, commentId) } as Comment

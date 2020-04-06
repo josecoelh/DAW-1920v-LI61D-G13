@@ -29,12 +29,7 @@ interface Dao {
     fun createIssue(projectId: UUID, issueId: UUID, name: String) : Boolean
 
     @SqlQuery("select al._value from project as proj  join allowed_labels as al on(proj.proj_id = al.proj_id) where proj.proj_id = ?")
-    @RegisterRowMapper(Label.LabelMapper::class)
-    fun getProjectLabels(id: UUID) : List<Label>
-
-    @SqlQuery("select _value from allowed_labels where proj_id = ? and _value= ?")
-    @RegisterRowMapper(Label.LabelMapper::class)
-    fun getProjectLabel(projectId: UUID, label:String ) : Label
+    fun getProjectLabels(id: UUID) : List<String>
 
     @SqlQuery("select iss.issue_id, iss._name , iss._state from project as proj join issues as iss on(proj.proj_id = iss.proj_id) where proj.proj_id = ?")
     @RegisterRowMapper(Issue.IssueMapper::class)
@@ -46,12 +41,9 @@ interface Dao {
     fun getIssueComment(id:UUID) : List<Comment>
 
     @SqlQuery("select il._value from issues as i join issue_labels as il on (i.issue_id = il.issue_id) where i.proj_id = ? and i.issue_id = ?")
-    @RegisterRowMapper(Label.LabelMapper::class)
-    fun getIssueLabels(projectId: UUID, issueId: UUID) : List<Label>
+    fun getIssueLabels(projectId: UUID, issueId: UUID) : List<String>
 
-    @SqlQuery("select il._value from issues as i join issue_labels as il on (i.issue_id = il.issue_id) where i.proj_id = ? and i.issue_id = ? and il._value = ?")
-    @RegisterRowMapper(Label.LabelMapper::class)
-    fun getIssueLabel(projectId: UUID, issueId: UUID,label: String): Label
+
     /**
      * Gets a [Project] from the DB
      * @param projectId the id of the [Project] to search

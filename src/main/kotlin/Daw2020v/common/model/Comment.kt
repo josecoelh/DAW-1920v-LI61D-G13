@@ -1,5 +1,6 @@
 package Daw2020v.common.model
 
+import Daw2020v.Comment.CommentOutputModel
 import Daw2020v.common.model.ShortDescription.Companion.of
 import org.jdbi.v3.core.mapper.RowMapper
 import org.jdbi.v3.core.statement.StatementContext
@@ -14,14 +15,6 @@ import java.util.*
 class Comment private constructor(val value: String,
                                   val id: UUID = UUID.randomUUID(),
                                   val date: String = SimpleDateFormat("dd/MM/yyy HH mm").format(Date(Instant.now().toEpochMilli()))) {
-
-
-    class CommentMapper : RowMapper<Comment> {
-        override fun map(rs: ResultSet?, ctx: StatementContext?): Comment =
-                Comment(rs!!.getString("_comment"),
-                        UUID.fromString(rs.getString("comment_id")),
-                        rs.getString("_date"))
-    }
 
     companion object {
         val MAX: Int = 300
@@ -50,4 +43,14 @@ class Comment private constructor(val value: String,
 
         operator fun invoke(value: String, id: UUID, date: String): Comment? = of(value, id, date)
     }
+
+    class CommentMapper : RowMapper<Comment> {
+        override fun map(rs: ResultSet?, ctx: StatementContext?): Comment =
+                Comment(rs!!.getString("_comment"),
+                        UUID.fromString(rs.getString("comment_id")),
+                        rs.getString("_date"))
+    }
+
+
+    fun toDto(projectId: UUID, issueId: UUID) : CommentOutputModel = CommentOutputModel(this,projectId,issueId)
 }

@@ -1,13 +1,12 @@
 package Daw2020v.Label
 
 import Daw2020v.common.Links
-import Daw2020v.common.model.Label
 import Daw2020v.common.PairContainer
 import java.util.*
 
-class LabelOutputModel(label : Label, projectId : UUID, issueId : UUID? = null) {
+class LabelOutputModel(label : String, projectId : UUID, issueId : UUID? = null) {
     var properties: PairContainer = PairContainer(
-            "identifier" to label.identifier)
+            "identifier" to label)
     var actions: MutableList<PairContainer> = mutableListOf<PairContainer>()
     var links : MutableList<PairContainer> = mutableListOf()
     init{
@@ -15,19 +14,19 @@ class LabelOutputModel(label : Label, projectId : UUID, issueId : UUID? = null) 
             actions.add(PairContainer(
                     "name" to "delete-issue-label",
                     "method" to "DELETE",
-                    "href" to Links.labelFromIssue(projectId, issueId, label.identifier)))
+                    "href" to Links.labelFromIssue(projectId, issueId, label)))
             links.add(PairContainer(
                     "rel" to "self",
-                    "href" to Links.labelFromIssue(projectId, issueId, label.identifier)))
+                    "href" to Links.labelFromIssue(projectId, issueId, label)))
         }
         else {
             actions.add(PairContainer(
                     "name" to "delete-project-allowedlabel",
                     "method" to "DELETE",
-                    "href" to Links.labelFromProject(projectId, label.identifier)))
+                    "href" to Links.labelFromProject(projectId, label)))
             links.add(PairContainer(
                     "rel" to "self",
-                    "href" to Links.labelFromProject(projectId, label.identifier)))
+                    "href" to Links.labelFromProject(projectId, label)))
         }
     }
 
