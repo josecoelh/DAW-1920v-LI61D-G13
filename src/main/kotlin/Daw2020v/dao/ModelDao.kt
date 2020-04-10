@@ -11,7 +11,7 @@ import java.util.*
 * */
 
 
-interface Dao {
+interface ModelDao {
 
 
     @SqlQuery("SELECT * FROM project")

@@ -1,6 +1,6 @@
 package Daw2020v.Comment
 
-import Daw2020v.ExceptionHandlerClass
+import Daw2020v.BaseConstrollerClass
 import Daw2020v.common.COMMENT_ENDPOINT
 import Daw2020v.common.model.Comment
 import Daw2020v.common.model.Issue
@@ -12,7 +12,7 @@ import java.util.*
 
 @RequestMapping(COMMENT_ENDPOINT)
 @RestController
-class CommentController @Autowired constructor(val commentService: CommentService) : ExceptionHandlerClass() {
+class CommentController @Autowired constructor(val commentService: CommentService) : BaseConstrollerClass() {
 
 
     /**

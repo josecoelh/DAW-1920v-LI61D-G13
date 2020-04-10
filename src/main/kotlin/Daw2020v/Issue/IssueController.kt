@@ -1,6 +1,6 @@
 package Daw2020v.Issue
 
-import Daw2020v.ExceptionHandlerClass
+import Daw2020v.BaseConstrollerClass
 import Daw2020v.Label.LabelOutputModel
 import Daw2020v.common.ISSUE_ENDPOINT
 import Daw2020v.common.model.Issue
@@ -12,7 +12,7 @@ import java.util.*
 
 @RequestMapping(ISSUE_ENDPOINT)
 @RestController
-class IssueController @Autowired constructor(val issueService: IssueService) : ExceptionHandlerClass() {
+class IssueController @Autowired constructor(val issueService: IssueService) : BaseConstrollerClass() {
 
 
     /**
@@ -38,7 +38,7 @@ class IssueController @Autowired constructor(val issueService: IssueService) : E
      * @param issueId the id of the specified [Issue]
      * @return List of [LabelOutputModel] wrapped into a [ResponseEntity]
      */
-    @GetMapping(path = arrayOf("{issueId}/labels"))
+    @GetMapping(path = arrayOf("/{issueId}/labels"))
     fun getAllLabelsFromIssues(@PathVariable("projectId") projectId: UUID, @PathVariable("issueId") issueId: UUID): ResponseEntity<MutableList<LabelOutputModel>> {
         val labels = issueService.getIssue(projectId, issueId).labels
         val outputList = mutableListOf<LabelOutputModel>()
@@ -64,7 +64,7 @@ class IssueController @Autowired constructor(val issueService: IssueService) : E
      * @param projectId The id of the [Project] where the [Issue] is
      * @return [Issue] with the corresponding [issueId]
      */
-    @GetMapping(path = arrayOf("{issueId}"))
+    @GetMapping(path = arrayOf("/{issueId}"))
     fun getIssue(@PathVariable("projectId") projectId: UUID, @PathVariable("issueId") issueId: UUID): ResponseEntity<IssueOutputModel> {
         val res = issueService.getIssue(projectId, issueId)
         return ResponseEntity.ok(res.toDto(projectId))
@@ -82,7 +82,7 @@ class IssueController @Autowired constructor(val issueService: IssueService) : E
      * @param projectId The id of the [Project] to update
      * @return the return is a SuccessResponse object with the details of what was done
      */
-    @DeleteMapping(path = arrayOf("{issueId}"))
+    @DeleteMapping(path = arrayOf("/{issueId}"))
     fun deleteIssue(@PathVariable("projectId") projectId: UUID, @PathVariable("issueId") issueId: UUID): ResponseEntity<IssueOutputModel.IssueDeletedOutputModel> {
         issueService.deleteIssue(projectId, issueId)
         return ResponseEntity.ok(IssueOutputModel.IssueDeletedOutputModel(projectId, issueId))
@@ -95,7 +95,7 @@ class IssueController @Autowired constructor(val issueService: IssueService) : E
      * @param projectId The id of the [Project] to that contains the issue
      * @return the return is a SuccessResponse object with the details of what was done
      */
-    @PutMapping(path = arrayOf("{issueId}/labels/{labelId}"))
+    @PutMapping(path = arrayOf("/{issueId}/labels/{labelId}"))
     fun putLabelinIssue(@PathVariable("projectId") projectId: UUID,
                         @PathVariable("issueId") issueId: UUID,
                         @PathVariable("labelId") labelId: String): ResponseEntity<LabelOutputModel> {
@@ -110,7 +110,7 @@ class IssueController @Autowired constructor(val issueService: IssueService) : E
      * @param projectId The id of the project to that contains the [Issue]
      * @return the return is a SuccessResponse object with the details of what was done
      */
-    @DeleteMapping(path = arrayOf("{issueId}/labels/{labelId}"))
+    @DeleteMapping(path = arrayOf("/{issueId}/labels/{labelId}"))
     fun deleteLabelinIssue(@PathVariable("projectId") projectId: UUID,
                            @PathVariable("issueId") issueId: UUID,
                            @PathVariable("labelId") labelId: String): ResponseEntity<LabelOutputModel.LabelDeletedOutputModel> {
@@ -125,7 +125,7 @@ class IssueController @Autowired constructor(val issueService: IssueService) : E
      * @param projectId The id of the [Project] that contains the [Issue]
      * @return the return is a SuccessResponse object with the details of what was done
      */
-    @PutMapping(path = arrayOf("{issueId}"))
+    @PutMapping(path = arrayOf("/{issueId}"))
     fun updateIssue(@PathVariable("projectId") projectId: UUID,
                     @PathVariable("issueId") issueId: UUID,
                     @RequestBody issue: IssueInputModel): ResponseEntity<IssueOutputModel> {

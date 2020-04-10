@@ -22,8 +22,8 @@ class Database {
             jdbi.installPlugin(SqlObjectPlugin())
         }
 
-        fun getDao() : Dao {
-            return jdbi.onDemand(Dao::class.java)
+        fun <T>getDao(daoKlass: Class<out T>) : T {
+            return jdbi.onDemand(daoKlass)
         }
 
 
