@@ -29,8 +29,8 @@ class ProjectController @Autowired constructor(val projectService: ProjectServic
      */
     @GetMapping(path = arrayOf("/{projectId}/labels"))
     @RequireSession
-    fun getAllLabelsFromProject(@PathVariable("projectId") projectId: UUID): ResponseEntity<MutableList<LabelOutputModel>> {
-        val labels = projectService.getAllLabels(projectId)
+    fun getAllLabelsFromProject(@PathVariable("projectId") projectId: UUID, session: HttpSession): ResponseEntity<MutableList<LabelOutputModel>> {
+        val labels = projectService.getAllLabels(projectId,session.getAttribute(USER_SESSION) as String)
         val outputList = mutableListOf<LabelOutputModel>()
         labels.forEach { outputList.add(LabelOutputModel(it, projectId)) }
         return ResponseEntity.ok(outputList)
@@ -81,8 +81,8 @@ class ProjectController @Autowired constructor(val projectService: ProjectServic
      */
     @PutMapping(path = arrayOf("/{projectId}"))
     @RequireSession
-    fun updateProject(@PathVariable("projectId") projectId: UUID, @RequestBody project: ProjectInputModel): ResponseEntity<ProjectOutputModel> {
-        val res = projectService.updateProject(projectId, project)
+    fun updateProject(@PathVariable("projectId") projectId: UUID, @RequestBody project: ProjectInputModel,session: HttpSession): ResponseEntity<ProjectOutputModel> {
+        val res = projectService.updateProject(projectId, session.getAttribute(USER_SESSION) as String,project)
         return ResponseEntity.ok(res.toDto())
     }
 
@@ -93,8 +93,8 @@ class ProjectController @Autowired constructor(val projectService: ProjectServic
      */
     @DeleteMapping(path = arrayOf("/{projectId}"))
     @RequireSession
-    fun deleteProject(@PathVariable("projectId") projectId: UUID): ResponseEntity<ProjectOutputModel.ProjectDeletedOutputModel> {
-        projectService.deleteProject(projectId)
+    fun deleteProject(@PathVariable("projectId") projectId: UUID, session: HttpSession): ResponseEntity<ProjectOutputModel.ProjectDeletedOutputModel> {
+        projectService.deleteProject(projectId,session.getAttribute(USER_SESSION) as String)
         return ResponseEntity.ok(ProjectOutputModel.ProjectDeletedOutputModel(projectId))
     }
 
@@ -106,8 +106,8 @@ class ProjectController @Autowired constructor(val projectService: ProjectServic
      */
     @PutMapping(path = arrayOf("/{projectId}/labels"))
     @RequireSession
-    fun putAllowedLabels(@PathVariable("projectId") id: UUID, @RequestBody labels: Array<String>): ResponseEntity<List<LabelOutputModel>> {
-        projectService.addAllowedLabelInProject(id, labels)
+    fun putAllowedLabels(@PathVariable("projectId") id: UUID, @RequestBody labels: Array<String>,session: HttpSession): ResponseEntity<List<LabelOutputModel>> {
+        projectService.addAllowedLabelInProject(id,session.getAttribute(USER_SESSION) as String, labels)
         val res: List<LabelOutputModel> = labels.map { LabelOutputModel(it, id) }
         return ResponseEntity.ok(res)
     }
@@ -120,8 +120,8 @@ class ProjectController @Autowired constructor(val projectService: ProjectServic
      */
     @DeleteMapping(path = arrayOf("/{projectId}/labels/{labelId}"))
     @RequireSession
-    fun deleteAllowedLabel(@PathVariable("projectId") projectId: UUID, @PathVariable("labelId") labelId: String): ResponseEntity<LabelOutputModel.LabelDeletedOutputModel> {
-        projectService.deleteAllowedLabel(projectId, labelId)
+    fun deleteAllowedLabel(@PathVariable("projectId") projectId: UUID, @PathVariable("labelId") labelId: String, session: HttpSession): ResponseEntity<LabelOutputModel.LabelDeletedOutputModel> {
+        projectService.deleteAllowedLabel(projectId, session.getAttribute(USER_SESSION) as String,labelId)
         return ResponseEntity.ok(LabelOutputModel.LabelDeletedOutputModel(labelId, projectId))
     }
 }

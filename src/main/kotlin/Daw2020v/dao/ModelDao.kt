@@ -14,7 +14,7 @@ import java.util.*
 interface ModelDao {
 
 
-    @SqlQuery("SELECT * FROM project WHERE proj_id  in (SELECT project_id from PROJECT_USERS where user_name = ?")
+    @SqlQuery("SELECT * FROM project WHERE proj_id  in (SELECT project_id from PROJECT_USERS where user_name = ?)")
     @RegisterRowMapper(Project.ProjectMapper::class)
     fun getAllProjects(username:String):List<Project>
     /**
@@ -25,15 +25,17 @@ interface ModelDao {
     @SqlUpdate("INSERT INTO project(proj_id , _name,description) VALUES (?, ?, ?)")
     fun createProject(id:UUID, name:String, desc:String): Boolean
 
+    @SqlUpdate("INSERT INTO PROJECT_USERS(project_id,user_name) VALUES(?,?)")
+    fun createProjectUser(id:UUID, username: String) : Boolean
+
+    @SqlQuery("Select user_name from PROJECT_USERS where project_id = ? and user_name =?")
+    fun getProjectUser(id:UUID, username: String) : String?
+
     @SqlUpdate("INSERT INTO issues values (:name, :issueId, :projectId, OPEN")
     fun createIssue(projectId: UUID, issueId: UUID, name: String) : Boolean
 
-    @SqlQuery("select al._value from project as proj  join allowed_labels as al on(proj.proj_id = al.proj_id) where proj.proj_id = ?")
-    fun getProjectLabels(id: UUID) : List<String>
-
-    @SqlQuery("select username from project where proj_id = ?")
-    fun getProjectOwner(id: UUID) : String
-
+    @SqlQuery("select al._value from project as proj  join allowed_labels as al on(proj.proj_id = al.proj_id) where proj.proj_id in (SELECT project_id from PROJECT_USERS where project_id = ? and user_name = ?)")
+    fun getProjectLabels(id: UUID,username: String) : List<String>
 
     @SqlQuery("select iss.issue_id, iss._name , iss._state from project as proj join issues as iss on(proj.proj_id = iss.proj_id) where proj.proj_id = ?")
     @RegisterRowMapper(Issue.IssueMapper::class)
@@ -53,9 +55,9 @@ interface ModelDao {
      * @param projectId the id of the [Project] to search
      * @return the [Project]
      */
-    @SqlQuery("select * from project where proj_id = ?")
+    @SqlQuery("select * from project where proj_id in (SELECT project_id from PROJECT_USERS where user_name = ? and project_id = ?)")
     @RegisterRowMapper(Project.ProjectMapper::class)
-    fun getProject(id: UUID): Project
+    fun getProject(id: UUID,username: String): Project
 
     /**
      * Updates the name/description of a [Project] if such project doesn't already exists, it is inserted into the DB
@@ -108,8 +110,8 @@ interface ModelDao {
     @SqlUpdate(" delete from issue_labels where issue_id = ?")
     fun deleteIssueLabels(issueId: UUID) : Boolean
 
-    @SqlUpdate("delete from issue_labels as al where _value=? and al.issue_id in (select iss.issue_id from issues as iss where iss.proj_id = ?)")
-    fun deleteLabel(label: String, projectId: UUID)
+    @SqlUpdate("delete from issue_labels as al where _value=? and al.issue_id in (select iss.issue_id from issues as iss where iss.proj_id in (SELECT project_id from PROJECT_USERS where project_id = ? and user_name = ? ) )")
+    fun deleteLabel(label: String, projectId: UUID, username: String)
 
     @SqlUpdate("delete from issue_labels as al where al.issue_id in (select iss.issue_id from issues as iss where iss.proj_id = ?)")
     fun deleteAllProjectIssueLabels(projectId: UUID)
@@ -134,8 +136,8 @@ interface ModelDao {
      * @return the updated [Project]
      * @throws IllegalArgumentException if the [Project] doesn't exist
      */
-    @SqlUpdate("delete from allowed_labels where proj_id = ? and _value = ?")
-    fun deleteAllowedLabel(projectId: UUID, label: String): Boolean
+    @SqlUpdate("delete from allowed_labels where proj_id = in (SELECT project_id from PROJECT_USERS where project_id = ? and user_name = ?) and _value = ?")
+    fun deleteAllowedLabel(projectId: UUID, username: String,label: String): Boolean
 
 
     @SqlUpdate("delete from allowed_labels where proj_id = ?")
@@ -202,7 +204,7 @@ interface ModelDao {
     @RegisterRowMapper(Comment.CommentMapper::class)
     fun getComment(issueId: UUID, commentId: UUID) : Comment
 
-
-
+    @SqlUpdate("delete from project_users where project_id = ? user_name = ?")
+    fun deleteProjectUser(projectId: UUID, username: String): Boolean
 
 }

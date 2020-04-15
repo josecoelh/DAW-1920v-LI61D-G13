@@ -108,12 +108,5 @@ class Project(
                         rs.getString("username"),
                         UUID.fromString(rs.getString("proj_id")))
     }
-
-    /**
-     * Checks if a given username is the same as this project's owner username
-     *  @throws ForbiddenResourceException if it's not the same
-     * */
-    fun verifyProjectOwnership(username: String) { if(this.owner != username) throw ForbiddenResourceException() }
-
 }
 

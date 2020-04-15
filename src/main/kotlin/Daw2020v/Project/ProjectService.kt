@@ -25,14 +25,14 @@ class ProjectService @Autowired constructor() {
     fun insertProject(project: ProjectInputModel, username: String): Project {
         if (project.name == null || project.description == null) throw BadProjectException()
         Database.executeDao { modelDao.createProject(project.id, project.name!!.value, project.description!!.text) }
+        Database.executeDao { modelDao.createProjectUser(project.id,username) }
         return getProject(projectId = project.id, username = username)
     }
 
 
     fun getProject(projectId: UUID, username: String): Project {
-        val project: Project = Database.executeDao { modelDao.getProject(projectId) } as Project
-        project.verifyProjectOwnership(username)
-        val projectLabels: MutableList<String> = Database.executeDao { modelDao.getProjectLabels(projectId) } as MutableList<String>
+        val project: Project = Database.executeDao { modelDao.getProject(projectId,username) } as Project
+        val projectLabels: MutableList<String> = Database.executeDao { modelDao.getProjectLabels(projectId,username) } as MutableList<String>
         val issues: List<Issue> = Database.executeDao { modelDao.getProjectIssues(projectId) } as List<Issue>
         project.allowedLabels = projectLabels
         issues.forEach {
@@ -46,7 +46,8 @@ class ProjectService @Autowired constructor() {
     }
 
 
-    fun updateProject(projectId: UUID, project: ProjectInputModel): Project {
+    fun updateProject(projectId: UUID, username: String,project: ProjectInputModel): Project {
+        verifyProjectOwnership(projectId,username)
         Database.executeDao { modelDao.updateProject(project.name!!.value, project.description!!.text, projectId) }
         if (project.name == null && project.description == null) throw BadProjectException()
         if (project.name == null) {
@@ -58,28 +59,40 @@ class ProjectService @Autowired constructor() {
                 Database.executeDao { modelDao.updateProject(project.name.value, project.description!!.text, projectId) }
             }
         }
-        return getProject(projectId, "TODOOOOOO")
+        return getProject(projectId, username)
     }
 
-    fun addAllowedLabelInProject(projectId: UUID, labels: Array<String>) {
+    fun addAllowedLabelInProject(projectId: UUID,username: String, labels: Array<String>) {
+        verifyProjectOwnership(projectId,username)
         labels.forEach { Database.executeDao { modelDao.addAllowedLabelInProject(projectId, it) } }
     }
 
 
-    fun deleteAllowedLabel(projectId: UUID, label: String) {
-        Database.executeDao { modelDao.deleteLabel(label, projectId) }
-        Database.executeDao { modelDao.deleteAllowedLabel(projectId, label) }
+    fun deleteAllowedLabel(projectId: UUID, username: String,label: String) {
+        verifyProjectOwnership(projectId,username)
+        Database.executeDao { modelDao.deleteLabel(label, projectId,username) }
+        Database.executeDao { modelDao.deleteAllowedLabel(projectId,username, label) }
     }
 
-    fun deleteProject(projectId: UUID): Boolean {
+    fun deleteProject(projectId: UUID,username: String): Boolean {
+        verifyProjectOwnership(projectId,username)
         Database.executeDao { modelDao.deleteAllProjectIssueLabels(projectId) }
         Database.executeDao { modelDao.deleteAllowedLabels(projectId) }
         Database.executeDao { modelDao.deleteIssueCommentsFromProject(projectId) }
         Database.executeDao { modelDao.deleteProjectIssues(projectId) }
+        Database.executeDao { modelDao.deleteProjectUser(projectId,username) }
         Database.executeDao { modelDao.deleteProject(projectId) }
         return true
     }
 
-    fun getAllLabels(projectId: UUID): MutableList<String> = Database.executeDao { modelDao.getProjectLabels(projectId) } as MutableList<String>
+    fun verifyProjectOwnership(projectId: UUID,username: String) {
+        if((Database.executeDao { modelDao.getProjectUser(projectId,username) } as String?) == null) {
+            throw ForbiddenResourceException()
+        }
+    }
+
+    fun getAllLabels(projectId: UUID,username: String): MutableList<String> {
+        return Database.executeDao { modelDao.getProjectLabels(projectId,username) } as MutableList<String>
+    }
 
 }
