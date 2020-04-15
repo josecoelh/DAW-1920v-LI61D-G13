@@ -1,5 +1,6 @@
 package Daw2020v.Comment
 
+import Daw2020v.Authentication.USER_SESSION
 import Daw2020v.BaseConstrollerClass
 import Daw2020v.RequireSession
 import Daw2020v.common.COMMENT_ENDPOINT
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.util.*
+import javax.servlet.http.HttpSession
 
 @RequestMapping(COMMENT_ENDPOINT)
 @RestController
@@ -26,8 +28,8 @@ class CommentController @Autowired constructor(val commentService: CommentServic
     @RequireSession
     fun getComment(@PathVariable("projectId") projectId: UUID,
                    @PathVariable("issueId") issueId: UUID,
-                   @PathVariable("commentId") commentId: UUID): ResponseEntity<CommentOutputModel> {
-        val res = commentService.getComment(issueId, commentId)
+                   @PathVariable("commentId") commentId: UUID, session: HttpSession): ResponseEntity<CommentOutputModel> {
+        val res = commentService.getComment(issueId, commentId,session.getAttribute(USER_SESSION) as String)
         return ResponseEntity.ok(res.toDto(projectId, issueId))
     }
 
@@ -42,9 +44,9 @@ class CommentController @Autowired constructor(val commentService: CommentServic
     @RequireSession
     fun addCommentToIssue(@PathVariable("projectId") projectId: UUID,
                           @PathVariable("issueId") issueId: UUID,
-                          @RequestBody comment: CommentInputModel): ResponseEntity<CommentOutputModel> {
+                          @RequestBody comment: CommentInputModel, session: HttpSession): ResponseEntity<CommentOutputModel> {
         val newComment = Comment(comment.value)!!
-        commentService.addCommentToIssue(projectId, issueId, newComment)
+        commentService.addCommentToIssue(projectId, issueId, newComment,session.getAttribute(USER_SESSION) as String)
         return ResponseEntity.ok(newComment.toDto(projectId, issueId))
     }
 
@@ -59,8 +61,8 @@ class CommentController @Autowired constructor(val commentService: CommentServic
     @RequireSession
     fun deleteCommentInIssue(@PathVariable("projectId") projectId: UUID,
                              @PathVariable("issueId") issueId: UUID,
-                             @PathVariable("commentId") commentId: UUID): ResponseEntity<CommentOutputModel.CommentDeletedOutputModel> {
-        commentService.deleteCommentInIssue(issueId, commentId)
+                             @PathVariable("commentId") commentId: UUID,session: HttpSession): ResponseEntity<CommentOutputModel.CommentDeletedOutputModel> {
+        commentService.deleteCommentInIssue(issueId, commentId,session.getAttribute(USER_SESSION) as String)
         return ResponseEntity.ok(CommentOutputModel.CommentDeletedOutputModel(projectId, issueId, commentId))
     }
 
@@ -73,8 +75,8 @@ class CommentController @Autowired constructor(val commentService: CommentServic
     @GetMapping()
     @RequireSession
     fun getAllCommentsFromIssue(@PathVariable("projectId") projectId: UUID,
-                                @PathVariable("issueId") issueId: UUID): ResponseEntity<MutableList<CommentOutputModel>> {
-        val comments = commentService.getAllComments(projectId, issueId)
+                                @PathVariable("issueId") issueId: UUID, session: HttpSession): ResponseEntity<MutableList<CommentOutputModel>> {
+        val comments = commentService.getAllComments(projectId, issueId, session.getAttribute(USER_SESSION) as String)
         val outputList = mutableListOf<CommentOutputModel>()
         comments.forEach { outputList.add(it.toDto(projectId, issueId)) }
         return ResponseEntity.ok(outputList)

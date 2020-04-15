@@ -37,9 +37,9 @@ interface ModelDao {
     @SqlQuery("select al._value from project as proj  join allowed_labels as al on(proj.proj_id = al.proj_id) where proj.proj_id in (SELECT project_id from PROJECT_USERS where project_id = ? and user_name = ?)")
     fun getProjectLabels(id: UUID,username: String) : List<String>
 
-    @SqlQuery("select iss.issue_id, iss._name , iss._state from project as proj join issues as iss on(proj.proj_id = iss.proj_id) where proj.proj_id = ?")
+    @SqlQuery("select iss.issue_id, iss._name , iss._state from project as proj join issues as iss on(proj.proj_id = iss.proj_id) where proj.proj_id = in (SELECT project_id from PROJECT_USERS where project_id = ? and user_name = ?)")
     @RegisterRowMapper(Issue.IssueMapper::class)
-    fun getProjectIssues(id: UUID) : List<Issue>
+    fun getProjectIssues(id: UUID, username: String) : List<Issue>
 
 
     @SqlQuery("select com._comment, com._date, com.comment_id from issues as i join _comments as com on (i.issue_id = com.issue_id) where com.issue_id = ?")
@@ -98,11 +98,11 @@ interface ModelDao {
 
 
 
-    @SqlUpdate("update issues set _name = :name, _state = :state where proj_id = :projectId and issue_id = issueId)")
-    fun changeIssueName(projectId: UUID, issueId : UUID, name: String) : Boolean
+    @SqlUpdate("update issues set _name = :name where proj_id in (SELECT project_id from PROJECT_USERS where project_id = :projectId and user_name = :username ) and issue_id = issueId)")
+    fun changeIssueName(projectId: UUID, username: String,issueId : UUID, name: String) : Boolean
 
-    @SqlUpdate("update issue set state = :state where proj_id = :projectId and issue_id = :issueId ")
-    fun changeIssueState(projectId: UUID, issueId: UUID, state: String) : Boolean
+    @SqlUpdate("update issue set state = :state where proj_id in (SELECT project_id from PROJECT_USERS where project_id = :projectId and user_name = :username ) and issue_id = :issueId ")
+    fun changeIssueState(projectId: UUID,username: String, issueId: UUID, state: String) : Boolean
 
     @SqlUpdate(" delete from _comments where issue_id = ?")
     fun deleteIssueComment(issueId: UUID) : Boolean
@@ -187,22 +187,22 @@ interface ModelDao {
      * @return the updated project
      * @throws IllegalArgumentException if the [Project] doesn't exist or the [Issue] doesn't exist
      */
-    @SqlUpdate("update issues set _name = :name, _state = :state where proj_id = :projectId and issue_id = issueId)")
+    @SqlUpdate("update issues set _name = :name, _state = :state where proj_id in (SELECT project_id from PROJECT_USERS where project_id = :projectId and user_name = username ) and issue_id = issueId)")
     fun updateIssue(projectId: UUID, issueId : UUID, name: String, state: String) : Boolean
 
-    @SqlUpdate("insert into _comments values(?,?,?,?")
-    fun addCommentToIssue(comment : String, date : String, commentId: UUID, issueId: UUID): Boolean
+    @SqlUpdate("insert into _comments values(?,?,?,?,?)")
+    fun addCommentToIssue(comment : String, date : String, commentId: UUID, issueId: UUID, username: String): Boolean
 
-    @SqlUpdate("delete from _comments where issue_id = ? and comment_id = ? ")
-    fun deleteCommentInIssue( issueId: UUID, commentId: UUID): Boolean
+    @SqlUpdate("delete from _comments where issue_id = ? and comment_id = ? and username = ?")
+    fun deleteCommentInIssue( issueId: UUID, commentId: UUID,username: String): Boolean
 
-    @SqlQuery("select issue_id, _state, _name from issues where proj_id=? and issue_id = ?")
+    @SqlQuery("select issue_id, _state, _name from issues where proj_id in (SELECT project_id from PROJECT_USERS where project_id = ? and user_name = ?) and issue_id = ?")
     @RegisterRowMapper(Issue.IssueMapper::class)
-    fun getIssue(projectId: UUID, issueId: UUID): Issue
+    fun getIssue(projectId: UUID, username: String,issueId: UUID): Issue
 
-    @SqlQuery("select _comment, _date, comment_id from _comments where issue_id=? and comment_id=?" )
+    @SqlQuery("select _comment, _date, comment_id from _comments where issue_id=? and comment_id=? and username = ?" )
     @RegisterRowMapper(Comment.CommentMapper::class)
-    fun getComment(issueId: UUID, commentId: UUID) : Comment
+    fun getComment(issueId: UUID, commentId: UUID, username: String) : Comment
 
     @SqlUpdate("delete from project_users where project_id = ? user_name = ?")
     fun deleteProjectUser(projectId: UUID, username: String): Boolean

@@ -33,7 +33,7 @@ class ProjectService @Autowired constructor() {
     fun getProject(projectId: UUID, username: String): Project {
         val project: Project = Database.executeDao { modelDao.getProject(projectId,username) } as Project
         val projectLabels: MutableList<String> = Database.executeDao { modelDao.getProjectLabels(projectId,username) } as MutableList<String>
-        val issues: List<Issue> = Database.executeDao { modelDao.getProjectIssues(projectId) } as List<Issue>
+        val issues: List<Issue> = Database.executeDao { modelDao.getProjectIssues(projectId,username) } as List<Issue>
         project.allowedLabels = projectLabels
         issues.forEach {
             it.allowedLabels = projectLabels;
