@@ -2,6 +2,7 @@ DROP TABLE IF EXISTS _COMMENTS;
 DROP TABLE IF EXISTS ISSUE_LABELS;
 DROP TABLE IF EXISTS ISSUES;
 DROP TABLE IF EXISTS ALLOWED_LABELS;
+DROP TABLE IF EXISTS PROJECT_USERS;
 DROP TABLE IF EXISTS PROJECT;
 DROP TABLE IF EXISTS USERS;
 
@@ -17,8 +18,7 @@ CREATE TABLE PROJECT(
 	proj_id UUID,
 	_NAME VARCHAR(30),
 	DESCRIPTION VARCHAR(100),
-	PRIMARY KEY(proj_id),
-	FOREIGN KEY(username) REFERENCES USERS(username)
+	PRIMARY KEY(proj_id)
 );
 
 CREATE TABLE PROJECT_USERS(
@@ -55,17 +55,24 @@ CREATE TABLE _COMMENTS(
 	_DATE VARCHAR(16),
 	comment_id UUID,
 	issue_id UUID,
+	username VARCHAR(50) REFERENCES USERS(username),
 	FOREIGN KEY (issue_id) REFERENCES ISSUES(issue_id),
 	PRIMARY KEY(comment_id)
 );
 
 /* INSERT TEST VALUES*/
 insert  into  USERS values ('dXNlcm5hbWU6cGFzc3dvcmQ=','username');
-insert  into  project values ('3779a41b-7920-4f9c-b3aa-75d9302a1abe','username','cena do ','teste fudido');
+insert  into  project values ('3779a41b-7920-4f9c-b3aa-75d9302a1abe','cena do ','teste fudido');
+INSERT INTO PROJECT_USERS VALUES('3779a41b-7920-4f9c-b3aa-75d9302a1abe','username');
 insert into allowed_labels values ('v','3779a41b-7920-4f9c-b3aa-75d9302a1abe');
 insert into allowed_labels values ('vv','3779a41b-7920-4f9c-b3aa-75d9302a1abe');
 insert into issues values ('issueTest', '3779a41b-7920-4f9c-b3aa-75d9302a2abe','3779a41b-7920-4f9c-b3aa-75d9302a1abe','CLOSED');
 insert into _comments values ('teste','04/02/2020 04 03','3779a41b-7920-4f9c-b3aa-75d9302a2abe','3779a41b-7920-4f9c-b3aa-75d9302a2abe');
+insert into _comments values ('teste','04/02/2020 04 03','9611db05-b2eb-449d-87dc-427bf8f3944f','3779a41b-7920-4f9c-b3aa-75d9302a2abe');
+insert into _comments values ('teste','04/02/2020 04 03','9611db05-b2eb-449d-87dc-427bf8f3944a','3779a41b-7920-4f9c-b3aa-75d9302a2abe');
+insert into issue_labels values ('v','3779a41b-7920-4f9c-b3aa-75d9302a2abe');
+insert into issue_labels values ('vv','3779a41b-7920-4f9c-b3aa-75d9302a2abe');
+abe');
 insert into _comments values ('teste','04/02/2020 04 03','9611db05-b2eb-449d-87dc-427bf8f3944f','3779a41b-7920-4f9c-b3aa-75d9302a2abe');
 insert into _comments values ('teste','04/02/2020 04 03','9611db05-b2eb-449d-87dc-427bf8f3944a','3779a41b-7920-4f9c-b3aa-75d9302a2abe');
 insert into issue_labels values ('v','3779a41b-7920-4f9c-b3aa-75d9302a2abe');
