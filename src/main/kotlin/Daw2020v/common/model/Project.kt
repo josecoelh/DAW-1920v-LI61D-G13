@@ -2,6 +2,7 @@ package Daw2020v.common.model
 
 import Daw2020v.Authentication.User
 import Daw2020v.Project.ProjectOutputModel
+import Daw2020v.common.ForbiddenResourceException
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.jdbi.v3.core.mapper.RowMapper
 import org.jdbi.v3.core.statement.StatementContext
@@ -107,5 +108,12 @@ class Project(
                         rs.getString("username"),
                         UUID.fromString(rs.getString("proj_id")))
     }
+
+    /**
+     * Checks if a given username is the same as this project's owner username
+     *  @throws ForbiddenResourceException if it's not the same
+     * */
+    fun verifyProjectOwnership(username: String) { if(this.owner != username) throw ForbiddenResourceException() }
+
 }
 

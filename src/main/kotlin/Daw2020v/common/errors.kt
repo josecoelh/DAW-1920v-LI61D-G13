@@ -24,6 +24,9 @@ class BadIssueException : Exception()
 @ResponseStatus(code = HttpStatus.UNAUTHORIZED, reason = "wrong credentials")
 class WrongCredentialsException : Exception()
 
+@ResponseStatus(code = HttpStatus.FORBIDDEN, reason = "You're not authorized to access this resource.")
+class ForbiddenResourceException : Exception()
+
 @ResponseStatus(code = HttpStatus.BAD_REQUEST, reason = "This label is not on  allowed on the project where this issue is found")
 class LabelNotAllowedException : Exception()
 

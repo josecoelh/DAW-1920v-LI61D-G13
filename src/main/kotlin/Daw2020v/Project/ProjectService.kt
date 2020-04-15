@@ -1,9 +1,11 @@
 package Daw2020v.Project
 
 import Daw2020v.common.BadProjectException
+import Daw2020v.common.ForbiddenResourceException
 import Daw2020v.dao.Database
 import Daw2020v.dao.ModelDao
 import Daw2020v.common.model.*
+import netscape.security.ForbiddenTargetException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.util.*
@@ -28,7 +30,8 @@ class ProjectService @Autowired constructor() {
 
 
     fun getProject(projectId: UUID, username: String): Project {
-        val project: Project = Database.executeDao { modelDao.getProject(projectId, username) } as Project
+        val project: Project = Database.executeDao { modelDao.getProject(projectId) } as Project
+        project.verifyProjectOwnership(username)
         val projectLabels: MutableList<String> = Database.executeDao { modelDao.getProjectLabels(projectId) } as MutableList<String>
         val issues: List<Issue> = Database.executeDao { modelDao.getProjectIssues(projectId) } as List<Issue>
         project.allowedLabels = projectLabels

@@ -14,7 +14,7 @@ import java.util.*
 interface ModelDao {
 
 
-    @SqlQuery("SELECT * FROM project WHERE username = ?")
+    @SqlQuery("SELECT * FROM project WHERE proj_id  in (SELECT project_id from PROJECT_USERS where user_name = ?")
     @RegisterRowMapper(Project.ProjectMapper::class)
     fun getAllProjects(username:String):List<Project>
     /**
@@ -30,6 +30,10 @@ interface ModelDao {
 
     @SqlQuery("select al._value from project as proj  join allowed_labels as al on(proj.proj_id = al.proj_id) where proj.proj_id = ?")
     fun getProjectLabels(id: UUID) : List<String>
+
+    @SqlQuery("select username from project where proj_id = ?")
+    fun getProjectOwner(id: UUID) : String
+
 
     @SqlQuery("select iss.issue_id, iss._name , iss._state from project as proj join issues as iss on(proj.proj_id = iss.proj_id) where proj.proj_id = ?")
     @RegisterRowMapper(Issue.IssueMapper::class)
@@ -49,9 +53,9 @@ interface ModelDao {
      * @param projectId the id of the [Project] to search
      * @return the [Project]
      */
-    @SqlQuery("select * from project where proj_id = ? AND username = ?")
+    @SqlQuery("select * from project where proj_id = ?")
     @RegisterRowMapper(Project.ProjectMapper::class)
-    fun getProject(id: UUID, username: String): Project
+    fun getProject(id: UUID): Project
 
     /**
      * Updates the name/description of a [Project] if such project doesn't already exists, it is inserted into the DB
