@@ -26,9 +26,7 @@ class Database {
             return jdbi.onDemand(daoKlass)
         }
 
-
-
-        fun executeDao(daoFunc : ()->Any):Any{
+        fun executeDao(daoFunc : ()->Any?):Any?{
             handle.begin()
             val ret = daoFunc()
             handle.commit()

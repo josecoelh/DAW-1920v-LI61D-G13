@@ -16,19 +16,19 @@ class ProjectService @Autowired constructor() {
     val modelDao: ModelDao = Database.getDao(ModelDao::class.java)
 
 
-    fun getAllProjects(): List<Project> {
-        return modelDao.getAllProjects()
+    fun getAllProjects(username:String): List<Project> {
+        return modelDao.getAllProjects(username)
     }
 
-    fun insertProject(project: Project): Project {
-        if (project.name == null || project.shortDesc == null) throw BadProjectException()
-        Database.executeDao { modelDao.createProject(project.id, project.name!!.value, project.shortDesc!!.text) }
-        return getProject(projectId = project.id)
+    fun insertProject(project: ProjectInputModel, username: String): Project {
+        if (project.name == null || project.description == null) throw BadProjectException()
+        Database.executeDao { modelDao.createProject(project.id, project.name!!.value, project.description!!.text) }
+        return getProject(projectId = project.id, username = username)
     }
 
 
-    fun getProject(projectId: UUID): Project {
-        val project: Project = Database.executeDao { modelDao.getProject(projectId) } as Project
+    fun getProject(projectId: UUID, username: String): Project {
+        val project: Project = Database.executeDao { modelDao.getProject(projectId, username) } as Project
         val projectLabels: MutableList<String> = Database.executeDao { modelDao.getProjectLabels(projectId) } as MutableList<String>
         val issues: List<Issue> = Database.executeDao { modelDao.getProjectIssues(projectId) } as List<Issue>
         project.allowedLabels = projectLabels
@@ -55,7 +55,7 @@ class ProjectService @Autowired constructor() {
                 Database.executeDao { modelDao.updateProject(project.name.value, project.description!!.text, projectId) }
             }
         }
-        return getProject(projectId)
+        return getProject(projectId, "TODOOOOOO")
     }
 
     fun addAllowedLabelInProject(projectId: UUID, labels: Array<String>) {

@@ -11,9 +11,9 @@ interface UserDao {
 
     @SqlQuery("SELECT * FROM USERS WHERE username = ?")
     @RegisterRowMapper(User.UserMapper::class)
-    fun getUser(username : String): User
+    fun getCodedUser(username : String): User?
 
 
-    @SqlUpdate("INSERT INTO USERS(username , _password) VALUES (?, ?)")
-    fun createUser(username:String, password:String): Boolean
+    @SqlUpdate("INSERT INTO USERS(username, hashed_user) VALUES (?, ?)")
+    fun createUser(username:String, hashedUser:String) : Boolean
 }

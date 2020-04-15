@@ -7,6 +7,9 @@ const val PROJECT_ENDPOINT = "/githubPremium/projects"
 const val ISSUE_ENDPOINT = "$PROJECT_ENDPOINT{projectId}/issues"
 const val COMMENT_ENDPOINT ="$ISSUE_ENDPOINT{issueId}/comments"
 const val HOME = "/githubPremium"
+const val LOGIN = "$HOME/login"
+const val ALL_PROJECTS = "/githubPremium/projects"
+
 
 
 /*data */class Links/* private constructor(val instance: String)*/{
@@ -15,7 +18,6 @@ const val HOME = "/githubPremium"
      * guarantees good behavior and achieves uniformity
      */
     companion object{
-        public const val ALL_PROJECTS = "/githubPremium/projects"
         private const val PROJECT_PATH = "/githubPremium/projects/%s"
         private const val ISSUE_PATH = "$PROJECT_PATH/issues/%s"
         private const val ALL_ISSUES = "$PROJECT_PATH/issues"

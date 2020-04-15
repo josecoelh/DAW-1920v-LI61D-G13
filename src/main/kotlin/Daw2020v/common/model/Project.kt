@@ -1,5 +1,6 @@
 package Daw2020v.common.model
 
+import Daw2020v.Authentication.User
 import Daw2020v.Project.ProjectOutputModel
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.jdbi.v3.core.mapper.RowMapper
@@ -14,6 +15,7 @@ import java.util.*
 class Project(
         @JsonProperty("name") var name: Name?,
         @JsonProperty("description") var shortDesc: ShortDescription?,
+        val owner : String,
         var id: UUID = UUID.randomUUID()) {
 
     @JsonProperty("labels")
@@ -102,6 +104,7 @@ class Project(
         override fun map(rs: ResultSet?, ctx: StatementContext?): Project =
                 Project(Name(rs!!.getString("_name")),
                         ShortDescription(rs.getString("description")),
+                        rs.getString("username"),
                         UUID.fromString(rs.getString("proj_id")))
     }
 }

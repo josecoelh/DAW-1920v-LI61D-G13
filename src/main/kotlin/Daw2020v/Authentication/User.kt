@@ -7,9 +7,9 @@ import org.jdbi.v3.core.statement.StatementContext
 import java.sql.ResultSet
 import java.util.*
 
-data class User(val username : String, val password: String){
+data class User(val username : String, val codedUser: String){
     class UserMapper : RowMapper<User> {
         override fun map(rs: ResultSet?, ctx: StatementContext?): User =
-                User(rs!!.getString("username"), rs.getString("_password"))
+                User(rs!!.getString("username"), rs.getString("hashed_user"))
     }
 }

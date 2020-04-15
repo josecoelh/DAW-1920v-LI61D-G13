@@ -12,13 +12,17 @@ data class ProblemJson(
         val type: String,
         val title: String,
         val detail: String,
-        val status: Int
+        val status: Int,
+        val location : String
 )
 @ResponseStatus(code = HttpStatus.BAD_REQUEST, reason = "Bad arguments for project")
 class BadProjectException : Exception()
 
 @ResponseStatus(code = HttpStatus.BAD_REQUEST, reason = "Bad arguments for issue")
 class BadIssueException : Exception()
+
+@ResponseStatus(code = HttpStatus.UNAUTHORIZED, reason = "wrong credentials")
+class WrongCredentialsException : Exception()
 
 @ResponseStatus(code = HttpStatus.BAD_REQUEST, reason = "This label is not on  allowed on the project where this issue is found")
 class LabelNotAllowedException : Exception()

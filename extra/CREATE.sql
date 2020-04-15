@@ -3,12 +3,22 @@ DROP TABLE IF EXISTS ISSUE_LABELS;
 DROP TABLE IF EXISTS ISSUES;
 DROP TABLE IF EXISTS ALLOWED_LABELS;
 DROP TABLE IF EXISTS PROJECT;
+DROP TABLE IF EXISTS USERS;
+
+
+CREATE TABLE USERS(
+	hashed_user VARCHAR(100),
+	username VARCHAR(50),
+	PRIMARY KEY(username)	
+);
 
 CREATE TABLE PROJECT(
 	proj_id UUID,
+	username VARCHAR(100),
 	_NAME VARCHAR(30),
 	DESCRIPTION VARCHAR(100),
-	PRIMARY KEY(proj_id)
+	PRIMARY KEY(proj_id),
+	FOREIGN KEY(username) REFERENCES USERS(username)
 );
 
 CREATE TABLE ALLOWED_LABELS(
@@ -44,7 +54,8 @@ CREATE TABLE _COMMENTS(
 );
 
 /* INSERT TEST VALUES*/
-insert  into  project values ('3779a41b-7920-4f9c-b3aa-75d9302a1abe','cena do ','teste fudido');
+insert  into  USERS values ('dXNlcm5hbWU6cGFzc3dvcmQ=','username');
+insert  into  project values ('3779a41b-7920-4f9c-b3aa-75d9302a1abe','username','cena do ','teste fudido');
 insert into allowed_labels values ('v','3779a41b-7920-4f9c-b3aa-75d9302a1abe');
 insert into allowed_labels values ('vv','3779a41b-7920-4f9c-b3aa-75d9302a1abe');
 insert into issues values ('issueTest', '3779a41b-7920-4f9c-b3aa-75d9302a2abe','3779a41b-7920-4f9c-b3aa-75d9302a1abe','CLOSED');
@@ -53,3 +64,5 @@ insert into _comments values ('teste','04/02/2020 04 03','9611db05-b2eb-449d-87d
 insert into _comments values ('teste','04/02/2020 04 03','9611db05-b2eb-449d-87dc-427bf8f3944a','3779a41b-7920-4f9c-b3aa-75d9302a2abe');
 insert into issue_labels values ('v','3779a41b-7920-4f9c-b3aa-75d9302a2abe');
 insert into issue_labels values ('vv','3779a41b-7920-4f9c-b3aa-75d9302a2abe');
+
+

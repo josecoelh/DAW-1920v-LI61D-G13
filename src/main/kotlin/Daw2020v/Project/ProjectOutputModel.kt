@@ -1,5 +1,6 @@
 package Daw2020v.Project
 
+import Daw2020v.common.ALL_PROJECTS
 import Daw2020v.common.Links
 import Daw2020v.common.model.Project
 import Daw2020v.common.PairContainer
@@ -61,7 +62,7 @@ class ProjectOutputModel(project: Project) {
         )
         val links: List<PairContainer> = listOf(PairContainer(
                 "rel" to "all-projects",
-                "href" to Links.ALL_PROJECTS
+                "href" to ALL_PROJECTS
         ))
     }
 }

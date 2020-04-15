@@ -1,6 +1,7 @@
 package Daw2020v.Comment
 
 import Daw2020v.BaseConstrollerClass
+import Daw2020v.RequireSession
 import Daw2020v.common.COMMENT_ENDPOINT
 import Daw2020v.common.model.Comment
 import Daw2020v.common.model.Issue
@@ -22,6 +23,7 @@ class CommentController @Autowired constructor(val commentService: CommentServic
      * @param commentId the id of the [Comment] to retrieve
      */
     @GetMapping(path = arrayOf("{commentId}")) //TODO erros
+    @RequireSession
     fun getComment(@PathVariable("projectId") projectId: UUID,
                    @PathVariable("issueId") issueId: UUID,
                    @PathVariable("commentId") commentId: UUID): ResponseEntity<CommentOutputModel> {
@@ -37,6 +39,7 @@ class CommentController @Autowired constructor(val commentService: CommentServic
      * @return the return is a SuccessResponse object with the details of what was done
      */
     @PutMapping()
+    @RequireSession
     fun addCommentToIssue(@PathVariable("projectId") projectId: UUID,
                           @PathVariable("issueId") issueId: UUID,
                           @RequestBody comment: CommentInputModel): ResponseEntity<CommentOutputModel> {
@@ -53,6 +56,7 @@ class CommentController @Autowired constructor(val commentService: CommentServic
      * @return the return is a SuccessResponse object with the details of what was done
      */
     @DeleteMapping(path = arrayOf("{commentId}"))
+    @RequireSession
     fun deleteCommentInIssue(@PathVariable("projectId") projectId: UUID,
                              @PathVariable("issueId") issueId: UUID,
                              @PathVariable("commentId") commentId: UUID): ResponseEntity<CommentOutputModel.CommentDeletedOutputModel> {
@@ -67,6 +71,7 @@ class CommentController @Autowired constructor(val commentService: CommentServic
      * @return a list of [CommentOutputModel] wrapped in a [ResponseEntity]
      */
     @GetMapping()
+    @RequireSession
     fun getAllCommentsFromIssue(@PathVariable("projectId") projectId: UUID,
                                 @PathVariable("issueId") issueId: UUID): ResponseEntity<MutableList<CommentOutputModel>> {
         val comments = commentService.getAllComments(projectId, issueId)

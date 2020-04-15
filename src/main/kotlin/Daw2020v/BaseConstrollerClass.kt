@@ -18,13 +18,14 @@ class BaseConstrollerClass(){
 
 
     @ExceptionHandler(IllegalArgumentException::class, TypeCastException::class)
-    fun notFound() = ResponseEntity
+    fun notFound(request: HttpServletRequest) = ResponseEntity
             .badRequest()
             .contentType(MediaType.APPLICATION_PROBLEM_JSON)
             .body(ProblemJson(
                     type = WIKI_PATH,
                     title = "Not Found",
                     detail = "Resource not found",
-                    status = 404
+                    status = 404,
+                    location = request.requestURI
             ))
 }
