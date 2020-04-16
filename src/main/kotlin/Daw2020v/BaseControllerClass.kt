@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 @RestController
-class BaseConstrollerClass(){
+class BaseControllerClass{
 
 
 

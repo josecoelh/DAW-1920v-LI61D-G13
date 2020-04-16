@@ -16,7 +16,6 @@ import java.util.*
 class Project(
         @JsonProperty("name") var name: Name?,
         @JsonProperty("description") var shortDesc: ShortDescription?,
-        val owner : String,
         var id: UUID = UUID.randomUUID()) {
 
     @JsonProperty("labels")
@@ -105,7 +104,6 @@ class Project(
         override fun map(rs: ResultSet?, ctx: StatementContext?): Project =
                 Project(Name(rs!!.getString("_name")),
                         ShortDescription(rs.getString("description")),
-                        rs.getString("username"),
                         UUID.fromString(rs.getString("proj_id")))
     }
 }

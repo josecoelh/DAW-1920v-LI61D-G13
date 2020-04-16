@@ -31,13 +31,13 @@ interface ModelDao {
     @SqlQuery("Select user_name from PROJECT_USERS where project_id = ? and user_name =?")
     fun getProjectUser(id:UUID, username: String) : String?
 
-    @SqlUpdate("INSERT INTO issues values (:name, :issueId, :projectId, OPEN")
+    @SqlUpdate("INSERT INTO issues values (:name, :issueId, :projectId, 'OPEN')")
     fun createIssue(projectId: UUID, issueId: UUID, name: String) : Boolean
 
     @SqlQuery("select al._value from project as proj  join allowed_labels as al on(proj.proj_id = al.proj_id) where proj.proj_id in (SELECT project_id from PROJECT_USERS where project_id = ? and user_name = ?)")
     fun getProjectLabels(id: UUID,username: String) : List<String>
 
-    @SqlQuery("select iss.issue_id, iss._name , iss._state from project as proj join issues as iss on(proj.proj_id = iss.proj_id) where proj.proj_id = in (SELECT project_id from PROJECT_USERS where project_id = ? and user_name = ?)")
+    @SqlQuery("select iss.issue_id, iss._name , iss._state from project as proj join issues as iss on(proj.proj_id = iss.proj_id) where proj.proj_id in (SELECT project_id from PROJECT_USERS where project_id = ? and user_name = ?)")
     @RegisterRowMapper(Issue.IssueMapper::class)
     fun getProjectIssues(id: UUID, username: String) : List<Issue>
 
@@ -55,7 +55,7 @@ interface ModelDao {
      * @param projectId the id of the [Project] to search
      * @return the [Project]
      */
-    @SqlQuery("select * from project where proj_id in (SELECT project_id from PROJECT_USERS where user_name = ? and project_id = ?)")
+    @SqlQuery("select * from project where proj_id in (SELECT project_id from PROJECT_USERS where user_name = :username and project_id = :id)")
     @RegisterRowMapper(Project.ProjectMapper::class)
     fun getProject(id: UUID,username: String): Project
 
@@ -136,7 +136,7 @@ interface ModelDao {
      * @return the updated [Project]
      * @throws IllegalArgumentException if the [Project] doesn't exist
      */
-    @SqlUpdate("delete from allowed_labels where proj_id = in (SELECT project_id from PROJECT_USERS where project_id = ? and user_name = ?) and _value = ?")
+    @SqlUpdate("delete from allowed_labels where proj_id in (SELECT project_id from PROJECT_USERS where project_id = ? and user_name = ?) and _value = ?")
     fun deleteAllowedLabel(projectId: UUID, username: String,label: String): Boolean
 
 
@@ -165,7 +165,7 @@ interface ModelDao {
 
 
 
-    @SqlUpdate("insert into issue_labels values(?,?)")
+    @SqlUpdate("insert into issue_labels values(:labelId,:issueId)")
     fun putLabelInIssue(issueId: UUID, labelId: String): Boolean
 
     /**
@@ -187,8 +187,8 @@ interface ModelDao {
      * @return the updated project
      * @throws IllegalArgumentException if the [Project] doesn't exist or the [Issue] doesn't exist
      */
-    @SqlUpdate("update issues set _name = :name, _state = :state where proj_id in (SELECT project_id from PROJECT_USERS where project_id = :projectId and user_name = username ) and issue_id = issueId)")
-    fun updateIssue(projectId: UUID, issueId : UUID, name: String, state: String) : Boolean
+    @SqlUpdate("update issues set _name = :name, _state = :state where proj_id in (SELECT project_id from PROJECT_USERS where project_id = :projectId and user_name = :username ) and issue_id = :issueId")
+    fun updateIssue(projectId: UUID, username: String, issueId : UUID, name: String, state: String) : Boolean
 
     @SqlUpdate("insert into _comments values(?,?,?,?,?)")
     fun addCommentToIssue(comment : String, date : String, commentId: UUID, issueId: UUID, username: String): Boolean
@@ -204,7 +204,9 @@ interface ModelDao {
     @RegisterRowMapper(Comment.CommentMapper::class)
     fun getComment(issueId: UUID, commentId: UUID, username: String) : Comment
 
-    @SqlUpdate("delete from project_users where project_id = ? user_name = ?")
+    @SqlUpdate("delete from project_users where project_id = ? and user_name = ?")
     fun deleteProjectUser(projectId: UUID, username: String): Boolean
 
+    @SqlQuery("select username from _COMMENTS where comment_id = :commentId")
+    fun getCommentOwner(commentId : UUID) : String
 }

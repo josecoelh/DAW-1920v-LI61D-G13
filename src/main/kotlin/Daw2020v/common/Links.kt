@@ -4,8 +4,8 @@ import java.util.*
 
 const val WIKI_PATH = "https://github.com/josecoelh/DAW-1920v-LI61D-G13/wiki"
 const val PROJECT_ENDPOINT = "/githubPremium/projects"
-const val ISSUE_ENDPOINT = "$PROJECT_ENDPOINT{projectId}/issues"
-const val COMMENT_ENDPOINT ="$ISSUE_ENDPOINT{issueId}/comments"
+const val ISSUE_ENDPOINT = "$PROJECT_ENDPOINT/{projectId}/issues"
+const val COMMENT_ENDPOINT ="$ISSUE_ENDPOINT/{issueId}/comments"
 const val HOME = "/githubPremium"
 const val LOGIN = "$HOME/login"
 const val ALL_PROJECTS = "/githubPremium/projects"

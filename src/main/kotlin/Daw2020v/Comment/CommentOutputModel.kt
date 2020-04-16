@@ -12,11 +12,11 @@ class CommentOutputModel(comment : Comment, projectId :UUID, issueId : UUID) {
             "date" to comment.date)
     var actions: List<PairContainer> = listOf<PairContainer>(
             PairContainer(
-                    "name" to "delete-comment-label",
+                    "name" to "delete-comment",
                     "method" to "DELETE",
                     "href" to Links.commentFromIssue(projectId, issueId, comment.id)),
             PairContainer(
-                    "name" to "get-comment-label",
+                    "name" to "get-comment",
                     "method" to "GET",
                     "href" to Links.commentFromIssue(projectId, issueId, comment.id)))
     var links : List<PairContainer> = listOf(

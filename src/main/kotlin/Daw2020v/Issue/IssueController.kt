@@ -1,13 +1,14 @@
 package Daw2020v.Issue
 
 import Daw2020v.Authentication.USER_SESSION
-import Daw2020v.BaseConstrollerClass
+import Daw2020v.BaseControllerClass
 import Daw2020v.Label.LabelOutputModel
 import Daw2020v.RequireSession
 import Daw2020v.common.ISSUE_ENDPOINT
 import Daw2020v.common.model.Issue
 import Daw2020v.common.model.Project
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.util.*
@@ -15,7 +16,7 @@ import javax.servlet.http.HttpSession
 
 @RequestMapping(ISSUE_ENDPOINT)
 @RestController
-class IssueController @Autowired constructor(val issueService: IssueService) : BaseConstrollerClass() {
+class IssueController @Autowired constructor(val issueService: IssueService) : BaseControllerClass() {
 
 
     /**
@@ -61,7 +62,7 @@ class IssueController @Autowired constructor(val issueService: IssueService) : B
     @RequireSession
     fun createIssue(@PathVariable("projectId") projectId: UUID, @RequestBody issue: Issue, session: HttpSession): ResponseEntity<IssueOutputModel> {
         val res = issueService.createIssue(projectId, issue,session.getAttribute(USER_SESSION) as String)
-        return ResponseEntity.ok(res.toDto(projectId))
+        return ResponseEntity.status(HttpStatus.CREATED).body(res.toDto(projectId))
     }
 
     /**

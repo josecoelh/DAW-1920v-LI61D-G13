@@ -1,7 +1,6 @@
 package Daw2020v.Project
 
 
-import Daw2020v.Authentication.Authorized
 import Daw2020v.Authentication.USER_SESSION
 import Daw2020v.Label.LabelOutputModel
 import Daw2020v.common.*
@@ -9,8 +8,9 @@ import Daw2020v.common.model.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import Daw2020v.BaseConstrollerClass
+import Daw2020v.BaseControllerClass
 import Daw2020v.RequireSession
+import org.springframework.http.HttpStatus
 
 import java.util.*
 import javax.servlet.http.HttpSession
@@ -20,7 +20,7 @@ import javax.servlet.http.HttpSession
  */
 @RequestMapping(PROJECT_ENDPOINT)
 @RestController
-class ProjectController @Autowired constructor(val projectService: ProjectService) : BaseConstrollerClass() {
+class ProjectController @Autowired constructor(val projectService: ProjectService) : BaseControllerClass() {
 
 
     /** Retrieves all the [Label]'s from a [Project]
@@ -69,7 +69,7 @@ class ProjectController @Autowired constructor(val projectService: ProjectServic
     @RequireSession
     fun createProject(@RequestBody project: ProjectInputModel, session: HttpSession): ResponseEntity<ProjectOutputModel> {
         val res : Project = projectService.insertProject(project, session.getAttribute(USER_SESSION) as String)
-        return ResponseEntity.ok(res.toDto())
+        return ResponseEntity.status(HttpStatus.CREATED).body(res.toDto())
     }
 
 

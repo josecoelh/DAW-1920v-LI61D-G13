@@ -1,5 +1,6 @@
 package Daw2020v.Project
 
+import Daw2020v.BaseServiceClass
 import Daw2020v.common.BadProjectException
 import Daw2020v.common.ForbiddenResourceException
 import Daw2020v.dao.Database
@@ -14,8 +15,7 @@ import java.util.*
  *
  */
 @Service
-class ProjectService @Autowired constructor() {
-    val modelDao: ModelDao = Database.getDao(ModelDao::class.java)
+class ProjectService @Autowired constructor() : BaseServiceClass() {
 
 
     fun getAllProjects(username:String): List<Project> {
@@ -31,6 +31,7 @@ class ProjectService @Autowired constructor() {
 
 
     fun getProject(projectId: UUID, username: String): Project {
+        verifyProjectOwnership(projectId,username)
         val project: Project = Database.executeDao { modelDao.getProject(projectId,username) } as Project
         val projectLabels: MutableList<String> = Database.executeDao { modelDao.getProjectLabels(projectId,username) } as MutableList<String>
         val issues: List<Issue> = Database.executeDao { modelDao.getProjectIssues(projectId,username) } as List<Issue>
@@ -85,13 +86,8 @@ class ProjectService @Autowired constructor() {
         return true
     }
 
-    fun verifyProjectOwnership(projectId: UUID,username: String) {
-        if((Database.executeDao { modelDao.getProjectUser(projectId,username) } as String?) == null) {
-            throw ForbiddenResourceException()
-        }
-    }
-
     fun getAllLabels(projectId: UUID,username: String): MutableList<String> {
+        verifyProjectOwnership(projectId,username)
         return Database.executeDao { modelDao.getProjectLabels(projectId,username) } as MutableList<String>
     }
 
