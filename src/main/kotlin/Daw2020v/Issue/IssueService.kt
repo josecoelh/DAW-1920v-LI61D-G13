@@ -2,13 +2,11 @@ package Daw2020v.Issue
 
 import Daw2020v.BaseServiceClass
 import Daw2020v.common.BadIssueException
-import Daw2020v.common.ForbiddenResourceException
 import Daw2020v.common.LabelNotAllowedException
 import Daw2020v.common.LabelRepeatedException
 import Daw2020v.common.model.Comment
 import Daw2020v.common.model.Issue
 import Daw2020v.dao.Database
-import Daw2020v.dao.ModelDao
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.util.*
@@ -26,9 +24,9 @@ class IssueService @Autowired constructor() : BaseServiceClass() {
         return issue
     }
 
-    fun getAllIssues(projectId: UUID, username: String): List<Issue> {
+    fun getAllIssues(projectId: UUID, username: String, page: Int, size: Int): List<Issue> {
         verifyProjectOwnership(projectId, username)
-        val issues: List<Issue> = Database.executeDao { modelDao.getProjectIssues(projectId, username) } as List<Issue>
+        val issues: List<Issue> = Database.executeDao { modelDao.getProjectIssues(projectId, username,(page-1)*size, size) } as List<Issue>
         issues.forEach {
             issueFinalizer(projectId, it, username)
         }
@@ -38,7 +36,7 @@ class IssueService @Autowired constructor() : BaseServiceClass() {
 
     fun issueFinalizer(projectId: UUID, issue: Issue, username: String) {
         issue.allowedLabels = Database.executeDao { modelDao.getProjectLabels(projectId, username) } as MutableList<String>;
-        issue.addComment(*(Database.executeDao { modelDao.getIssueComment(issue.id) } as List<Comment>).toTypedArray())
+        issue.addComment(*(Database.executeDao { modelDao.getIssueComments(issue.id) } as List<Comment>).toTypedArray())
         issue.addLabel(*(Database.executeDao { modelDao.getIssueLabels(projectId, issue.id) } as List<String>).toTypedArray())
     }
 

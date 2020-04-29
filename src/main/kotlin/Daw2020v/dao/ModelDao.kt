@@ -14,9 +14,9 @@ import java.util.*
 interface ModelDao {
 
 
-    @SqlQuery("SELECT * FROM project WHERE proj_id  in (SELECT project_id from PROJECT_USERS where user_name = ?)")
+    @SqlQuery("SELECT * FROM project WHERE proj_id  in (SELECT project_id from PROJECT_USERS where user_name = :username) order by _name limit :size offset :startNumber")
     @RegisterRowMapper(Project.ProjectMapper::class)
-    fun getAllProjects(username:String):List<Project>
+    fun getAllProjects(username: String, startNumber: Int, size: Int):List<Project>
     /**
      * Inserts a [Project] in the DB
      * @param project the [Project] to add
@@ -37,14 +37,22 @@ interface ModelDao {
     @SqlQuery("select al._value from project as proj  join allowed_labels as al on(proj.proj_id = al.proj_id) where proj.proj_id in (SELECT project_id from PROJECT_USERS where project_id = ? and user_name = ?)")
     fun getProjectLabels(id: UUID,username: String) : List<String>
 
+    @SqlQuery("select iss.issue_id, iss._name , iss._state from project as proj join issues as iss on(proj.proj_id = iss.proj_id) where proj.proj_id in (SELECT project_id from PROJECT_USERS where project_id = :id and user_name = :username) order by iss._name limit :size offset :startNumber")
+    @RegisterRowMapper(Issue.IssueMapper::class)
+    fun getProjectIssues(id: UUID, username: String,startNumber: Int, size: Int) : List<Issue>
+
     @SqlQuery("select iss.issue_id, iss._name , iss._state from project as proj join issues as iss on(proj.proj_id = iss.proj_id) where proj.proj_id in (SELECT project_id from PROJECT_USERS where project_id = ? and user_name = ?)")
     @RegisterRowMapper(Issue.IssueMapper::class)
     fun getProjectIssues(id: UUID, username: String) : List<Issue>
 
 
-    @SqlQuery("select com._comment, com._date, com.comment_id from issues as i join _comments as com on (i.issue_id = com.issue_id) where com.issue_id = ?")
+    @SqlQuery("select com._comment, com._date, com.comment_id from issues as i join _comments as com on (i.issue_id = com.issue_id) where com.issue_id = :id order by com._date limit :size offset :startNumber")
     @RegisterRowMapper(Comment.CommentMapper::class)
-    fun getIssueComment(id:UUID) : List<Comment>
+    fun getIssueComments(id:UUID,startNumber: Int, size: Int) : List<Comment>
+
+    @SqlQuery("select com._comment, com._date, com.comment_id from issues as i join _comments as com on (i.issue_id = com.issue_id) where com.issue_id = :id")
+    @RegisterRowMapper(Comment.CommentMapper::class)
+    fun getIssueComments(id:UUID) : List<Comment>
 
     @SqlQuery("select il._value from issues as i join issue_labels as il on (i.issue_id = il.issue_id) where i.proj_id = ? and i.issue_id = ?")
     fun getIssueLabels(projectId: UUID, issueId: UUID) : List<String>

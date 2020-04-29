@@ -2,11 +2,8 @@ package Daw2020v.Project
 
 import Daw2020v.BaseServiceClass
 import Daw2020v.common.BadProjectException
-import Daw2020v.common.ForbiddenResourceException
 import Daw2020v.dao.Database
-import Daw2020v.dao.ModelDao
 import Daw2020v.common.model.*
-import netscape.security.ForbiddenTargetException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.util.*
@@ -18,8 +15,8 @@ import java.util.*
 class ProjectService @Autowired constructor() : BaseServiceClass() {
 
 
-    fun getAllProjects(username:String): List<Project> {
-        return modelDao.getAllProjects(username)
+    fun getAllProjects(username:String, page: Int, size: Int): List<Project> {
+        return modelDao.getAllProjects(username, (page-1)*size, size)
     }
 
     fun insertProject(project: ProjectInputModel, username: String): Project {
@@ -38,7 +35,7 @@ class ProjectService @Autowired constructor() : BaseServiceClass() {
         project.allowedLabels = projectLabels
         issues.forEach {
             it.allowedLabels = projectLabels;
-            it.addComment(*(Database.executeDao { modelDao.getIssueComment(it.id) } as List<Comment>).toTypedArray())
+            it.addComment(*(Database.executeDao { modelDao.getIssueComments(it.id) } as List<Comment>).toTypedArray())
             it.addLabel(*(Database.executeDao { modelDao.getIssueLabels(projectId, it.id) } as List<String>).toTypedArray())
             project?.addIssue(it)
 

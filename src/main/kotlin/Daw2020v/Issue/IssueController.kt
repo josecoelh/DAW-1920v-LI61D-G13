@@ -26,8 +26,10 @@ class IssueController @Autowired constructor(val issueService: IssueService) : B
      */
     @GetMapping()
     @RequireSession
-    fun getAllIssuesFromProject(@PathVariable("projectId") projectId: UUID, session: HttpSession): ResponseEntity<MutableList<IssueOutputModel>> {
-        val issues = issueService.getAllIssues(projectId, session.getAttribute(USER_SESSION) as String)
+    fun getAllIssuesFromProject(@PathVariable("projectId") projectId: UUID, session: HttpSession,
+                                @RequestParam("size",required = false, defaultValue = "10") size : Int,
+                                @RequestParam("page",required = false, defaultValue = "1") page : Int): ResponseEntity<MutableList<IssueOutputModel>> {
+        val issues = issueService.getAllIssues(projectId, session.getAttribute(USER_SESSION) as String, page,size)
         val outputList: MutableList<IssueOutputModel> = mutableListOf()
         issues.forEach {
             outputList.add(it.toDto(projectId))

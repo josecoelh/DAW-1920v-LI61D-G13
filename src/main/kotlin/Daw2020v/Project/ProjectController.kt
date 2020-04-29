@@ -39,10 +39,12 @@ class ProjectController @Autowired constructor(val projectService: ProjectServic
     /** Retrieves all the [Project]
      * @return [ProjectOutputModel] wrapped in a [ResponseEntity]
      */
-    @GetMapping()
+    @GetMapping(/*params = arrayOf("page","size")*/)
     @RequireSession
-    fun getAllProjects(session: HttpSession): ResponseEntity<Array<ProjectOutputModel>> {
-        val projects = projectService.getAllProjects(session.getAttribute(USER_SESSION) as String)
+    fun getAllProjects(session: HttpSession,
+                       @RequestParam("size",required = false, defaultValue = "10") size : Int,
+                       @RequestParam("page",required = false, defaultValue = "1") page : Int ): ResponseEntity<Array<ProjectOutputModel>> {
+        val projects = projectService.getAllProjects(session.getAttribute(USER_SESSION) as String,page,size)
         val res = mutableListOf<ProjectOutputModel>()
         projects.forEach { res.add(it.toDto()) }
         return ResponseEntity.ok(res.toTypedArray())

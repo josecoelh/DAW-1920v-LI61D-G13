@@ -3,7 +3,6 @@ package Daw2020v.Comment
 import Daw2020v.BaseServiceClass
 import Daw2020v.common.ForbiddenResourceException
 import Daw2020v.common.model.Comment
-import Daw2020v.dao.ModelDao
 import Daw2020v.dao.Database
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -27,9 +26,9 @@ class CommentService @Autowired constructor() : BaseServiceClass() {
         return Database.executeDao { modelDao.deleteCommentInIssue(issueId, commentId,username) } as Boolean
     }
 
-    fun getAllComments(projectId: UUID, issueId: UUID, username: String): MutableList<Comment> {
+    fun getAllComments(projectId: UUID, issueId: UUID, username: String, page: Int, size: Int): MutableList<Comment> {
         verifyProjectOwnership(projectId,username)
-        return (Database.executeDao { modelDao.getIssueComment(issueId) } as MutableList<Comment>)
+        return (Database.executeDao { modelDao.getIssueComments(issueId, (page-1)*size, size) } as MutableList<Comment>)
     }
 
 
