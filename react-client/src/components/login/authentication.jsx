@@ -1,13 +1,14 @@
 import React, {useEffect, useRef} from 'react';
-import  { Login, Register } from "./index"
-import   Side  from "./side"
+import  LoginInterface from "./LoginInterface";
+import   Side  from "./Side";
+import "./style.scss"
 
 export class Authentication extends React.Component{
   constructor(props){
         super(props);
         this.state = {
            isLogginActive : false
-                }
+        }
     }
     render(){
     const sideRef = this.props.sideRef;
@@ -34,8 +35,10 @@ export class Authentication extends React.Component{
       <div className="App">
         <div className="login">
           <div className="container" >
-            {this.state.isLogginActive && <Login  />}
-            {!this.state.isLogginActive && <Register />}
+            {this.state.isLogginActive && <LoginInterface state = "Login"
+              />}
+            {!this.state.isLogginActive && <LoginInterface state = "Register"
+              />}
           </div>
           <Side
             current={sideText}
