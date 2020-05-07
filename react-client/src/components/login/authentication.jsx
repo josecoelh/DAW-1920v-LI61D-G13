@@ -1,4 +1,4 @@
-import React, {useEffect, useRef} from 'react';
+import React from 'react';
 import  LoginInterface from "./LoginInterface";
 import   Side  from "./Side";
 import "./style.scss"

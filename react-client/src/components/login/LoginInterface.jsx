@@ -10,12 +10,12 @@ function LoginInterface({ state }) {
     const buttonRef = useRef(null);
     function usernameDown(e) {
         if (e.key === "Enter") {
-            passwordRef.current.focus();
+            passwordRef.refs.focus();
         }
     }
     function passwordDown(e) {
         if (e.key === "Enter") {
-            buttonRef.current.focus();
+            buttonRef.refs.focus();
         }
     }
     function validationAndRedirect(validated,state) {
@@ -25,7 +25,7 @@ function LoginInterface({ state }) {
             alert(`${state} failed`)
         }
     }
-    useEffect(() => { usernameRef.current.focus() }, []);
+    useEffect(() => { usernameRef.refs.focus() }, []);
     return (
         <div className="base-container" >
             <div className="header">{state}</div>

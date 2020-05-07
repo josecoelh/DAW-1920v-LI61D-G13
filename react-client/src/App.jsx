@@ -1,16 +1,19 @@
-import React, { useRef,useEffect } from 'react';
+import React, { useRef } from 'react';
 import { Authentication } from "./components/login/Authentication";
-import Projects  from "./components/projects/Projects";
+import List  from "./components/list/List";
 import './App.scss';
+import './components/Header.scss'
 
 
 
-const projectsw = [{name : 'project1'},{name : 'project2'}]
+const projects = [{name : 'project1', description : 'cool Project'},{name : 'project1', description : 'cool Project'},{name : 'project1', description : 'cool Project'},{name : 'project1', description : 'cool Project'}]
 function App() {
-    const sideRef = useRef(null);
-    const projectsA = projectsw.map(element=>element.ref = useRef(null))
+    const sideRef = useRef();
+   
+   
     return (
-        <Projects projects = {projectsA}></Projects>
+        
+        <List elements = {projects}></List>
         /*<Authentication
             sideRef={sideRef}>
         </Authentication>*/
