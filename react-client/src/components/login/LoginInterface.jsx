@@ -5,17 +5,17 @@ import { Base64 } from 'js-base64'
 function LoginInterface({ state }) {
     let username = null;
     let password = null;
-    const usernameRef = useRef(null);
-    const passwordRef = useRef(null);
-    const buttonRef = useRef(null);
+    const usernameRef = useRef();
+    const passwordRef = useRef();
+    const buttonRef = useRef();
     function usernameDown(e) {
         if (e.key === "Enter") {
-            passwordRef.refs.focus();
+            passwordRef.current.focus();
         }
     }
     function passwordDown(e) {
         if (e.key === "Enter") {
-            buttonRef.refs.focus();
+            buttonRef.current.focus();
         }
     }
     function validationAndRedirect(validated,state) {
@@ -25,10 +25,10 @@ function LoginInterface({ state }) {
             alert(`${state} failed`)
         }
     }
-    useEffect(() => { usernameRef.refs.focus() }, []);
+    useEffect(() => { usernameRef.current.focus() }, []);
     return (
         <div className="base-container" >
-            <div className="header">{state}</div>
+            <div className="type">{state}</div>
             <div className="content">
                 <div className="image">
                     <img src={logo} />
