@@ -17,6 +17,7 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.stereotype.Component
 import org.springframework.web.method.HandlerMethod
 import org.springframework.web.servlet.HandlerInterceptor
+import org.springframework.web.servlet.config.annotation.CorsRegistry
 import org.springframework.web.servlet.config.annotation.EnableWebMvc
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
@@ -31,7 +32,7 @@ class ApiConfig : WebMvcConfigurer {
     @Autowired
     lateinit var interceptor: Interceptor
 
-    override fun extendMessageConverters(converters: MutableList<HttpMessageConverter<*>>) {
+    /*override fun extendMessageConverters(converters: MutableList<HttpMessageConverter<*>>) {
         val converter = converters.find {
             it is MappingJackson2HttpMessageConverter
         } as MappingJackson2HttpMessageConverter
@@ -43,13 +44,12 @@ class ApiConfig : WebMvcConfigurer {
         jsonHomeConverter.objectMapper.setSerializationInclusion(Include.NON_NULL)
         jsonHomeConverter.supportedMediaTypes = listOf(MediaType("application", "json-home"))
         converters.add(jsonHomeConverter)
-    }
+    }*/
 
     @Component
     class Interceptor @Autowired constructor(val authService: AuthService) : HandlerInterceptor {
         override fun preHandle(request: HttpServletRequest, response: HttpServletResponse, handler: Any): Boolean {
             if(request.session.getAttribute(USER_SESSION) != null) {
-                response.sendRedirect(ALL_PROJECTS)
                 return false
             }
             if (handler is HandlerMethod && handler.hasMethodAnnotation(Authorized::class.java)) {
@@ -65,16 +65,21 @@ class ApiConfig : WebMvcConfigurer {
         registry.addInterceptor(object : HandlerInterceptor {
             override fun preHandle(request: HttpServletRequest, response: HttpServletResponse, handler: Any): Boolean {
                 if (handler is HandlerMethod && handler.hasMethodAnnotation(RequireSession::class.java)) {
-                    if (request.session.getAttribute(USER_SESSION) != null) return true
-                    else {
-                        response.sendRedirect("$HOME/login")
-                        return false
-                    }
+                    return request.session.getAttribute(USER_SESSION) != null
                 }
                 return true
             }
         }).excludePathPatterns(listOf("$HOME/login", "$HOME/register"))
 
+    }
+
+    override fun addCorsMappings(registry: CorsRegistry) {
+        // TODO: Revisit this to elaborate on the CORS protocol
+        registry
+                .addMapping("/**")
+                .allowedHeaders("*")
+                .allowedMethods("*")
+                .allowedOrigins("*")
     }
 }
 
