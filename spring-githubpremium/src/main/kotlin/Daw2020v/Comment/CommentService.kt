@@ -31,7 +31,10 @@ class CommentService @Autowired constructor() : BaseServiceClass() {
         return (Database.executeDao { modelDao.getIssueComments(issueId, (page-1)*size, size) } as MutableList<Comment>)
     }
 
-
+    fun getAllComments(projectId: UUID, issueId: UUID, username: String): MutableList<Comment> {
+        verifyProjectOwnership(projectId,username)
+        return (Database.executeDao { modelDao.getIssueComments(issueId) } as MutableList<Comment>)
+    }
 
     fun verifyCommentOwnership(commentId: UUID,username: String) {
         if((Database.executeDao { modelDao.getCommentOwner(commentId) } as String) != username) {

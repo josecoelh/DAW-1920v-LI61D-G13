@@ -30,7 +30,7 @@ class ProjectController @Autowired constructor(val projectService: ProjectServic
     @GetMapping(path = arrayOf("/{projectId}/labels"))
     @RequireSession
     fun getAllLabelsFromProject(@PathVariable("projectId") projectId: UUID, session: HttpSession): ResponseEntity<MutableList<LabelOutputModel>> {
-        val labels = projectService.getAllLabels(projectId,session.getAttribute(USER_SESSION) as String)
+        val labels = projectService.getAllLabels(projectId, session.getAttribute(USER_SESSION) as String)
         val outputList = mutableListOf<LabelOutputModel>()
         labels.forEach { outputList.add(LabelOutputModel(it, projectId)) }
         return ResponseEntity.ok(outputList)
@@ -42,9 +42,11 @@ class ProjectController @Autowired constructor(val projectService: ProjectServic
     @GetMapping(/*params = arrayOf("page","size")*/)
     @RequireSession
     fun getAllProjects(session: HttpSession,
-                       @RequestParam("size",required = false, defaultValue = "10") size : Int,
-                       @RequestParam("page",required = false, defaultValue = "1") page : Int ): ResponseEntity<Array<ProjectOutputModel>> {
-        val projects = projectService.getAllProjects(session.getAttribute(USER_SESSION) as String,page,size)
+                       @RequestParam("size", required = false, defaultValue = "-1") size: Int,
+                       @RequestParam("page", required = false, defaultValue = "-1") page: Int): ResponseEntity<Array<ProjectOutputModel>> {
+        val projects = (size == '-1')?
+            projectService.getAllProjects(session.getAttribute(USER_SESSION) as String) :
+            projectService.getAllProjects(session.getAttribute(USER_SESSION) as String, page, size)
         val res = mutableListOf<ProjectOutputModel>()
         projects.forEach { res.add(it.toDto()) }
         return ResponseEntity.ok(res.toTypedArray())
@@ -56,8 +58,8 @@ class ProjectController @Autowired constructor(val projectService: ProjectServic
      */
     @GetMapping(path = arrayOf("/{projectId}"))
     @RequireSession
-    fun getProject(@PathVariable("projectId") projectId: UUID, session:HttpSession): ResponseEntity<ProjectOutputModel> {
-        val project : Project = projectService.getProject(projectId, session.getAttribute(USER_SESSION) as String)
+    fun getProject(@PathVariable("projectId") projectId: UUID, session: HttpSession): ResponseEntity<ProjectOutputModel> {
+        val project: Project = projectService.getProject(projectId, session.getAttribute(USER_SESSION) as String)
         return ResponseEntity.ok(project.toDto())
     }
 
@@ -70,7 +72,7 @@ class ProjectController @Autowired constructor(val projectService: ProjectServic
     @PostMapping
     @RequireSession
     fun createProject(@RequestBody project: ProjectInputModel, session: HttpSession): ResponseEntity<ProjectOutputModel> {
-        val res : Project = projectService.insertProject(project, session.getAttribute(USER_SESSION) as String)
+        val res: Project = projectService.insertProject(project, session.getAttribute(USER_SESSION) as String)
         return ResponseEntity.status(HttpStatus.CREATED).body(res.toDto())
     }
 
@@ -83,8 +85,8 @@ class ProjectController @Autowired constructor(val projectService: ProjectServic
      */
     @PutMapping(path = arrayOf("/{projectId}"))
     @RequireSession
-    fun updateProject(@PathVariable("projectId") projectId: UUID, @RequestBody project: ProjectInputModel,session: HttpSession): ResponseEntity<ProjectOutputModel> {
-        val res = projectService.updateProject(projectId, session.getAttribute(USER_SESSION) as String,project)
+    fun updateProject(@PathVariable("projectId") projectId: UUID, @RequestBody project: ProjectInputModel, session: HttpSession): ResponseEntity<ProjectOutputModel> {
+        val res = projectService.updateProject(projectId, session.getAttribute(USER_SESSION) as String, project)
         return ResponseEntity.ok(res.toDto())
     }
 
@@ -96,7 +98,7 @@ class ProjectController @Autowired constructor(val projectService: ProjectServic
     @DeleteMapping(path = arrayOf("/{projectId}"))
     @RequireSession
     fun deleteProject(@PathVariable("projectId") projectId: UUID, session: HttpSession): ResponseEntity<ProjectOutputModel.ProjectDeletedOutputModel> {
-        projectService.deleteProject(projectId,session.getAttribute(USER_SESSION) as String)
+        projectService.deleteProject(projectId, session.getAttribute(USER_SESSION) as String)
         return ResponseEntity.ok(ProjectOutputModel.ProjectDeletedOutputModel(projectId))
     }
 
@@ -108,8 +110,8 @@ class ProjectController @Autowired constructor(val projectService: ProjectServic
      */
     @PutMapping(path = arrayOf("/{projectId}/labels"))
     @RequireSession
-    fun putAllowedLabels(@PathVariable("projectId") id: UUID, @RequestBody labels: Array<String>,session: HttpSession): ResponseEntity<List<LabelOutputModel>> {
-        projectService.addAllowedLabelInProject(id,session.getAttribute(USER_SESSION) as String, labels)
+    fun putAllowedLabels(@PathVariable("projectId") id: UUID, @RequestBody labels: Array<String>, session: HttpSession): ResponseEntity<List<LabelOutputModel>> {
+        projectService.addAllowedLabelInProject(id, session.getAttribute(USER_SESSION) as String, labels)
         val res: List<LabelOutputModel> = labels.map { LabelOutputModel(it, id) }
         return ResponseEntity.ok(res)
     }
@@ -123,7 +125,7 @@ class ProjectController @Autowired constructor(val projectService: ProjectServic
     @DeleteMapping(path = arrayOf("/{projectId}/labels/{labelId}"))
     @RequireSession
     fun deleteAllowedLabel(@PathVariable("projectId") projectId: UUID, @PathVariable("labelId") labelId: String, session: HttpSession): ResponseEntity<LabelOutputModel.LabelDeletedOutputModel> {
-        projectService.deleteAllowedLabel(projectId, session.getAttribute(USER_SESSION) as String,labelId)
+        projectService.deleteAllowedLabel(projectId, session.getAttribute(USER_SESSION) as String, labelId)
         return ResponseEntity.ok(LabelOutputModel.LabelDeletedOutputModel(labelId, projectId))
     }
 }

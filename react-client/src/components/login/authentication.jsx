@@ -25,7 +25,6 @@ export class Authentication extends React.Component{
         this.setState( {
           isLogginActive : !this.state.isLogginActive
         })
-        //isLogginActive = !isLogginActive 
       }
 
     

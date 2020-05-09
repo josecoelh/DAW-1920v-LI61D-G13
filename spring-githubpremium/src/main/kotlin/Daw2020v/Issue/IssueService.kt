@@ -33,6 +33,15 @@ class IssueService @Autowired constructor() : BaseServiceClass() {
         return issues
     }
 
+    fun getAllIssues(projectId: UUID, username: String): List<Issue> {
+        verifyProjectOwnership(projectId, username)
+        val issues: List<Issue> = Database.executeDao { modelDao.getProjectIssues(projectId, username) } as List<Issue>
+        issues.forEach {
+            issueFinalizer(projectId, it, username)
+        }
+        return issues
+    }
+
 
     fun issueFinalizer(projectId: UUID, issue: Issue, username: String) {
         issue.allowedLabels = Database.executeDao { modelDao.getProjectLabels(projectId, username) } as MutableList<String>;

@@ -17,6 +17,10 @@ interface ModelDao {
     @SqlQuery("SELECT * FROM project WHERE proj_id  in (SELECT project_id from PROJECT_USERS where user_name = :username) order by _name limit :size offset :startNumber")
     @RegisterRowMapper(Project.ProjectMapper::class)
     fun getAllProjects(username: String, startNumber: Int, size: Int):List<Project>
+
+    @SqlQuery("SELECT * FROM project WHERE proj_id  in (SELECT project_id from PROJECT_USERS where user_name = :username)")
+    @RegisterRowMapper(Project.ProjectMapper::class)
+    fun getAllProjects(username: String, startNumber: Int, size: Int):List<Project>
     /**
      * Inserts a [Project] in the DB
      * @param project the [Project] to add

@@ -1,48 +1,88 @@
 .dropbtn {
-    background-color: #2386c8;
-    z-index: 999;
-    position: relative;
-    font-size: 16px;
-    border: none;
-    cursor: pointer;
-    text-align: center;
-    font-size: larger;
-    height: 40px;
-    min-height: 20%;   
-  }
-  
-  .dropdown {
-    position: relative;
-    display: inline-block;
-     margin-left: 24%;
-    margin-right: 74%;
-    z-index: 999;
-  
-  }
+  background-color: #2386c8;
+  z-index: 999;
+  position: relative;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  text-align: center;
+  font-size: larger;
+  height: 40px;
+  min-height: 20%;
+}
 
-  .dropdown-content {
-    display: none;
-    position: absolute;
-    min-width: 160px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-    color: #000000;
-    z-index: 999;
-  }
-  
-  .dropdown-content a {
-    padding: 12px 16px;
-    text-decoration: none;
-    display: block;
-    z-index: 999;
-    position: relative;
-  }
-  
-  .dropdown-content a:hover {background-color: #f1f1f1}
-  
-  .dropdown:hover .dropdown-content {
-    display: block;
-  }
-  
-  .dropdown:hover .dropbtn {
-    background-color: #2386c8;
-  }
+.nav {
+  background-color: #2386c8;
+  border: none;
+  margin-left: 2%;
+  color: white;
+}
+.nav:hover {
+  color: darkgrey;
+}
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+  margin-left: 77%;
+  margin-right: 90%;
+  z-index: 999;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  color: #000000;
+  z-index: 999;
+  margin-left: -140%;
+}
+
+.username {
+  transform: translate(-50%, -50%);
+  font-size: 16px;
+  width: 50%;
+  margin-left: 70%;
+  margin-right: -75%;
+}
+
+.dropdown-content h1 {
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  z-index: 999;
+  position: relative;
+  font-size: large;
+}
+
+.logout:hover {
+  background-color: #f1f1f1;
+}
+
+.dropdown-content a:hover {
+  background-color: #f1f1f1;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+.delButton {
+    
+  display:block;
+  box-sizing:border-box;
+  width:20px;
+  height:20px;
+  border-width:3px;
+  border-style: solid;
+  border-color:rgb(226, 35, 35);
+  border-radius:100%;
+  background: -webkit-linear-gradient(-45deg, transparent 0%, transparent 46%, white 46%,  white 56%,transparent 56%, transparent 100%), -webkit-linear-gradient(45deg, transparent 0%, transparent 46%, white 46%,  white 56%,transparent 56%, transparent 100%);
+  background-color: rgb(226, 35, 35);
+  transition: all 0.3s ease;
+  float:right
+}
+.dropdown:hover .dropbtn {
+  background-color: #2386c8;
+}

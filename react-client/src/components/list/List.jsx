@@ -1,59 +1,102 @@
-import React, { createRef } from "react";
+import React from "react";
 import ListEntry from "./ListEntry";
 import ListTab from "./ListTab";
-import GPHeader from "../Header"
+import GPHeader from "../Header";
+import type from "../../type";
+import ProjectForm from "../forms/ProjectForm";
+import IssueForm from "../forms/IssueForm";
+import links from "../../links";
 
-function List({ elements }) {
-
-    const arrLength = elements.length
-    const entryRefs = React.useRef([]);
-    if (entryRefs.current.length !== arrLength) {
-        entryRefs.current = Array(arrLength).fill().map((_, i) => entryRefs.current[i] || createRef());
+export class List extends React.Component {
+    constructor(props) {
+        super(props);
+        this.entries = [];
+        this.tabs = [];
+        this.formRef = null;
+        this.state = {
+            elements: this.props.elements
+        }
     }
-    const tabRefs = React.useRef([]);
-    if (tabRefs.current.length !== arrLength) {
-        tabRefs.current = Array(arrLength).fill().map((_, i) => tabRefs.current[i] || createRef());
-    }
 
 
-    const entryClick = (e, index) => {
+
+    entryClick = (e, index) => {
         e.preventDefault()
-        entryRefs.current.forEach((element, i) => {
-            if (i === index) {
-                tabRefs.current[i].current.classList.add('active')
-                element.current.classList.add('active')
-            }
-            else {
-                tabRefs.current[i].current.classList.remove('active')
-                element.current.classList.remove('active');
+        this.entries.forEach((element, i) => {
+            if (element) {
+                if (i === index) {
+                    this.tabs[i].classList.add('active')
+                    element.classList.add('active')
+                }
+                else {
+                    this.tabs[i].classList.remove('active')
+                    element.classList.remove('active');
+                }
             }
         });
     }
 
-    function elementStringify(element) {
+    deleteEntry = (e, element) => {
+        e.preventDefault();
+        this.entries.length = 0;
+        this.tabs.length = 0;
+        this.setState({
+            elements: this.state.elements.filter(it => it !== element)
+        })
+    }
+
+
+
+
+    elementStringify(element) {
         const keys = Object.keys(element);
         let toRet = "";
         keys.forEach(it => toRet += `${it}: ${element[it]} \n`)
         return toRet;
     }
-    return (
-        <div className="cont">
-            <GPHeader></GPHeader>
-            <div className="row">
-                <div class="col-4">
-                    <div class="list-group" id="list-tab" role="tablist">
-                        {elements.map((it, i) => { return <ListEntry ref={entryRefs.current[i]} onClick={(e) => entryClick(e, i)} name={it.name}></ListEntry> })}
-                    </div>
-                </div>
-                <div class="col-8">
-                    <div class="tab-content" id="nav-tabContent">
-                        {elements.map((it, i) => { return <ListTab ref={tabRefs.current[i]} element={elementStringify(it)}></ListTab> })
-                        }
-                    </div>
-                </div>
-            </div>
-        </div>
 
-    );
+    render() {
+        const linkBase = this.props.elemType === type.projects? links.projects : links.issues;
+        return (
+            <div className="cont">
+                <GPHeader></GPHeader>
+                <div className="row">
+                    <div className="col-4">
+                        <div className="list-group" id="list-tab" role="tablist">
+                            {this.state.elements.map((it, i) => {
+                                return <ListEntry
+                                    entryRef={ref => this.entries[i] = ref}
+                                    onClick={(e) => { this.entryClick(e, i) }}
+                                    name={it.name}
+                                    onDelete={(e) => { this.deleteEntry(e, it) }}
+                                    ></ListEntry>
+                            })}
+                        </div>
+                    </div>
+                    <div className="col-8">
+                        <div className="tab-content" id="nav-tabContent">
+                            {this.state.elements.map((it, i) => {
+                                return <ListTab
+                                    tabRef={ref => (this.tabs[i] = ref)}
+                                    element={this.elementStringify(it)}
+                                    link = {linkBase}
+                                   >
+                                </ListTab>
+                            })
+                            }
+                        </div>
+
+                    </div>
+                    <button className="addEntry" onClick = {(e)=>{
+                        this.formRef.classList.toggle("hidden");
+                    }}>+</button>
+                    
+                </div>
+                {this.props.elemType === type.project && <ProjectForm formRef = {ref => this.formRef = ref}/>}
+                {this.props.elemType === type.issue && <IssueForm formRef = {ref => this.formRef = ref}/>}
+            </div>
+
+        );
+    }
 }
-export default List;
+

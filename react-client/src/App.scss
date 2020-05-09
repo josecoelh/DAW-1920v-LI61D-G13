@@ -96,6 +96,8 @@
       }
     }
 
+ 
+
     .text {
       font-size: 21px;
       font-weight: 500;
@@ -113,19 +115,40 @@
   display: flex;
   z-index: 900;
   position: relative;
+  font-family: "Open Sans", sans-serif;
+  max-height : 45px;
+
 
   img {
     width: 2.5%;
     height: 2.5%;
-    margin-left: 24%;
-    margin-right: 24%;
+    margin-left: 2%;
+    margin-right: 2%;
     display: block;
     z-index: 1000;
     ;
   }
 }
 
-
+.addEntry{
+  display: block;
+  height: 30px;
+  width: 30px;
+  border-radius: 50%;
+  background-color: #2386c8;
+  color: white;
+  font-weight: bolder;
+}
+.btnDetail{
+  display: block;
+  height: 30px;
+  width: 30px;
+  border-radius: 50%;
+  background-color: #2386c8;
+  color: white;
+  font-weight: bolder;
+  float:right
+}
 
 .row{
   display: flex;
@@ -144,6 +167,7 @@
   flex-wrap: wrap;
   top: 40px;
   left: 25%;
+  font-family: "Open Sans", sans-serif;
 
 }
 
@@ -153,14 +177,32 @@
   padding: 5px 20px;
   border: 0;
   background-color: #3498db;
-  color: #fff;
+  color: #3498db;
   border-radius: 3px;
   transition: all 250ms ease-in-out;
   cursor: pointer;
   &:hover {
-    background-color: #2386c8;
+    background-color: white;
+    color: white;
   }
   &:focus {
     outline: none;
+  }
+}
+
+.submit{
+  background-color: #3498db;
+  border-radius: 3px;
+  transition: all 250ms ease-in-out;
+  color: white;
+  
+  border: 0;
+  font-size: 21px;
+  padding: 5px 20px;
+}
+
+.baseForm{
+  &hidden{
+    display: block;
   }
 }

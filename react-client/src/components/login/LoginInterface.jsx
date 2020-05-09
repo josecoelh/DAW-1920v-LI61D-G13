@@ -1,6 +1,7 @@
 import React, { useRef, useEffect } from "react";
 import logo from "../../img/logo.png";
 import { Base64 } from 'js-base64'
+import links from "../../links"
 
 function LoginInterface({ state }) {
     let username = null;
@@ -31,7 +32,7 @@ function LoginInterface({ state }) {
             <div className="type">{state}</div>
             <div className="content">
                 <div className="image">
-                    <img src={logo} />
+                    <img src={logo} alt = "logo" />
                 </div>
                 <div className="form">
                     <div className="form-group">
@@ -47,7 +48,7 @@ function LoginInterface({ state }) {
             <div className="footer">
                 <button ref={buttonRef} type="button"
                     onClick={(e) => {
-                        fetch(`http://localhost:8080/githubPremium/${state.toLowerCase()}`, {
+                        fetch(`${links.base}${state.toLowerCase()}`, {
                             method: 'PUT',
                             headers: {
                                 'Content-Type': 'application/json',

@@ -19,6 +19,10 @@ class ProjectService @Autowired constructor() : BaseServiceClass() {
         return modelDao.getAllProjects(username, (page-1)*size, size)
     }
 
+    fun getAllProjects(username:String): List<Project> {
+        return modelDao.getAllProjects(username)
+    }
+
     fun insertProject(project: ProjectInputModel, username: String): Project {
         if (project.name == null || project.description == null) throw BadProjectException()
         Database.executeDao { modelDao.createProject(project.id, project.name!!.value, project.description!!.text) }

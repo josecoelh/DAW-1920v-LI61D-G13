@@ -7,7 +7,11 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+         <head>
+           <title>GithubPremium</title>
+            <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css"></link>
+        </head>   
+    <App/>
   </React.StrictMode>,
   document.getElementById('root')
 );
