@@ -139,6 +139,8 @@
   color: white;
   font-weight: bolder;
 }
+
+
 .btnDetail{
   display: block;
   height: 30px;
@@ -148,6 +150,43 @@
   color: white;
   font-weight: bolder;
   float:right
+}
+
+.cardContainer{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  min-height: 80vh;
+  float: left;
+  margin-left: 70px;
+}
+.show{
+  &dropdown{
+  margin-left: '340px'; 
+  margin-right: '0px';}
+}
+.dropdown-menu{
+  &show{
+    margin-left: '340px'; 
+  margin-right: '0px';
+  }
+}
+
+.formCont{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  min-height: 80vh;
+}
+
+.btn{
+  &btn-primary{
+    background-color: #2386c8
+}
 }
 
 .row{

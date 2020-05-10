@@ -44,8 +44,9 @@ class ProjectController @Autowired constructor(val projectService: ProjectServic
     fun getAllProjects(session: HttpSession,
                        @RequestParam("size", required = false, defaultValue = "-1") size: Int,
                        @RequestParam("page", required = false, defaultValue = "-1") page: Int): ResponseEntity<Array<ProjectOutputModel>> {
-        val projects = (size == '-1')?
-            projectService.getAllProjects(session.getAttribute(USER_SESSION) as String) :
+        val projects = if (size ==-1)
+            projectService.getAllProjects(session.getAttribute(USER_SESSION) as String)
+        else
             projectService.getAllProjects(session.getAttribute(USER_SESSION) as String, page, size)
         val res = mutableListOf<ProjectOutputModel>()
         projects.forEach { res.add(it.toDto()) }

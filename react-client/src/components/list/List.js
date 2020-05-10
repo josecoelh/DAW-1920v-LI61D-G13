@@ -20,6 +20,9 @@ export class List extends React.Component {
 
 
 
+
+
+
     entryClick = (e, index) => {
         e.preventDefault()
         this.entries.forEach((element, i) => {
@@ -40,12 +43,28 @@ export class List extends React.Component {
         e.preventDefault();
         this.entries.length = 0;
         this.tabs.length = 0;
+        fetch(`links.projects${element.id}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
         this.setState({
             elements: this.state.elements.filter(it => it !== element)
         })
     }
 
-
+    onAddElement = (e, element) =>{
+        e.preventDefault();
+        //FETCH
+        let newElems = this.state.elements;//test
+        newElems.push(element);//test
+        this.setState(
+            {
+                elements: newElems
+            }
+        )
+    } 
 
 
     elementStringify(element) {
@@ -56,7 +75,7 @@ export class List extends React.Component {
     }
 
     render() {
-        const linkBase = this.props.elemType === type.projects? links.projects : links.issues;
+        const linkBase = this.props.elemType === type.projects ? links.projects : links.issues;
         return (
             <div className="cont">
                 <GPHeader></GPHeader>
@@ -69,7 +88,7 @@ export class List extends React.Component {
                                     onClick={(e) => { this.entryClick(e, i) }}
                                     name={it.name}
                                     onDelete={(e) => { this.deleteEntry(e, it) }}
-                                    ></ListEntry>
+                                ></ListEntry>
                             })}
                         </div>
                     </div>
@@ -79,21 +98,28 @@ export class List extends React.Component {
                                 return <ListTab
                                     tabRef={ref => (this.tabs[i] = ref)}
                                     element={this.elementStringify(it)}
-                                    link = {linkBase}
-                                   >
+                                    link={linkBase}
+                                >
                                 </ListTab>
                             })
                             }
                         </div>
 
                     </div>
-                    <button className="addEntry" onClick = {(e)=>{
+                    <button className="addEntry" onClick={(e) => {
                         this.formRef.classList.toggle("hidden");
                     }}>+</button>
-                    
+
                 </div>
-                {this.props.elemType === type.project && <ProjectForm formRef = {ref => this.formRef = ref}/>}
-                {this.props.elemType === type.issue && <IssueForm formRef = {ref => this.formRef = ref}/>}
+                {this.props.elemType === type.project && 
+                    <ProjectForm 
+                        onChange={((e, label) => { this.onAddElement(e, label) })} 
+                        formRef={ref => this.formRef = ref} />}
+
+                {this.props.elemType === type.issue && 
+                    <IssueForm 
+                        onChange = {((e, label)=>{this.onAddElement(e,label)})}
+                        formRef={ref => this.formRef = ref} />}
             </div>
 
         );

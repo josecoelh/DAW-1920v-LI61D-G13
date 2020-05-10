@@ -2,5 +2,6 @@ export default {
 
     project : "project",
     issue : "issue",
-    comment : "comment"
+    comment : "comment",
+    label : "label"
 }

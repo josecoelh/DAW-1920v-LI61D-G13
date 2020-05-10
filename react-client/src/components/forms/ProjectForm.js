@@ -1,7 +1,7 @@
 import React from "react";
 import links from "../../links";
 
-function ProjectForm({formRef}) {
+function ProjectForm({formRef, onChange}) {
     let name;
     let desc;
     return (
@@ -14,23 +14,15 @@ function ProjectForm({formRef}) {
                             <label htmlFor="name">Name</label>
                             <input type="text" name="name" onChange={(e) => name = e.target.value} placeholder="Name" />
                         </div>
+                        <div className="form-group">
+                            <label htmlFor="description">Description</label>
+                            <input type="text" name="description" onChange={(e) => desc = e.target.value} placeholder="Description" />
+                        </div>
                     </div>
                 </div>
                 <div className="footer">
                     <button type="button"
-                        onClick={(e) => {
-                            e.preventDefault();
-                            fetch(links.projects, {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                },
-                                body : JSON.stringify({
-                                    name : name,
-                                    description : desc
-                                })
-                            }).then(response => response.json())
-                        }}
+                           onClick = {(e ) => {onChange(e,{ name : name, description : desc})}}
                         className="submit">Submit</button>
                 </div>
             </div>

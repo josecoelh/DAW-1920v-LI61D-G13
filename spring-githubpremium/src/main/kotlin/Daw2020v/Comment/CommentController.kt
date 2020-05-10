@@ -80,9 +80,8 @@ class CommentController @Autowired constructor(val commentService: CommentServic
                                 @RequestParam("size", required = false, defaultValue = "-1") size: Int,
                                 @RequestParam("page", required = false, defaultValue = "-1") page: Int
     ): ResponseEntity<MutableList<CommentOutputModel>> {
-        val comments = (size.equals("-1")) ?
-            commentService.getAllComments(projectId, issueId, session.getAttribute(USER_SESSION) as String) :
-            commentService.getAllComments(projectId, issueId, session.getAttribute(USER_SESSION) as String,page,size)
+        val comments = if (size == -1) commentService.getAllComments(projectId, issueId, session.getAttribute(USER_SESSION) as String)
+        else commentService.getAllComments(projectId, issueId, session.getAttribute(USER_SESSION) as String, page, size)
         val outputList = mutableListOf<CommentOutputModel>()
         comments.forEach { outputList.add(it.toDto(projectId, issueId)) }
         return ResponseEntity.ok(outputList)

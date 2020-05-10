@@ -83,6 +83,22 @@
   transition: all 0.3s ease;
   float:right
 }
+
+.addButton{
+  display:block;
+  box-sizing:border-box;
+  width:20px;
+  height:20px;
+  border-width:3px;
+  border-style: solid;
+  border-color:rgb(17, 194, 17);
+  border-radius:100%;
+  background: -webkit-linear-gradient(-180deg, transparent 0%, transparent 46%, white 46%,  white 56%,transparent 56%, transparent 100%), -webkit-linear-gradient(90deg, transparent 0%, transparent 46%, white 46%,  white 56%,transparent 56%, transparent 100%);
+  background-color: rgb(17, 194, 17);
+  transition: all 0.3s ease;
+  float:right
+}
+
 .dropdown:hover .dropbtn {
   background-color: #2386c8;
 }

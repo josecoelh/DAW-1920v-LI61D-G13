@@ -27,18 +27,19 @@ class IssueController @Autowired constructor(val issueService: IssueService) : B
     @GetMapping()
     @RequireSession
     fun getAllIssuesFromProject(@PathVariable("projectId") projectId: UUID, session: HttpSession,
-                                @RequestParam("size",required = false, defaultValue = "-1") size : Int,
-                                @RequestParam("page",required = false, defaultValue = "-1") page : Int): ResponseEntity<MutableList<IssueOutputModel>> {
-        val issues = (size.equals("-1"))?
-            issueService.getAllIssues(projectId, session.getAttribute(USER_SESSION) as String) :
-            issueService.getAllIssues(projectId, session.getAttribute(USER_SESSION) as String, page,size)
+                                @RequestParam("size", required = false, defaultValue = "-1") size: Int,
+                                @RequestParam("page", required = false, defaultValue = "-1") page: Int): ResponseEntity<MutableList<IssueOutputModel>> {
+        val issues =
+                if (size == -1)
+                    issueService.getAllIssues(projectId, session.getAttribute(USER_SESSION) as String)
+                else
+                    issueService.getAllIssues(projectId, session.getAttribute(USER_SESSION) as String, page, size)
         val outputList: MutableList<IssueOutputModel> = mutableListOf()
         issues.forEach {
             outputList.add(it.toDto(projectId))
         }
         return ResponseEntity.ok(outputList)
     }
-
 
 
     /**
@@ -49,8 +50,8 @@ class IssueController @Autowired constructor(val issueService: IssueService) : B
      */
     @GetMapping(path = arrayOf("/{issueId}/labels"))
     @RequireSession
-    fun getAllLabelsFromIssues(@PathVariable("projectId") projectId: UUID, @PathVariable("issueId") issueId: UUID,session: HttpSession): ResponseEntity<MutableList<LabelOutputModel>> {
-        val labels = issueService.getIssue(projectId, issueId,session.getAttribute(USER_SESSION) as String).labels
+    fun getAllLabelsFromIssues(@PathVariable("projectId") projectId: UUID, @PathVariable("issueId") issueId: UUID, session: HttpSession): ResponseEntity<MutableList<LabelOutputModel>> {
+        val labels = issueService.getIssue(projectId, issueId, session.getAttribute(USER_SESSION) as String).labels
         val outputList = mutableListOf<LabelOutputModel>()
         labels.forEach { outputList.add(LabelOutputModel(it, projectId, issueId)) }
         return ResponseEntity.ok(outputList)
@@ -65,7 +66,7 @@ class IssueController @Autowired constructor(val issueService: IssueService) : B
     @PostMapping()
     @RequireSession
     fun createIssue(@PathVariable("projectId") projectId: UUID, @RequestBody issue: Issue, session: HttpSession): ResponseEntity<IssueOutputModel> {
-        val res = issueService.createIssue(projectId, issue,session.getAttribute(USER_SESSION) as String)
+        val res = issueService.createIssue(projectId, issue, session.getAttribute(USER_SESSION) as String)
         return ResponseEntity.status(HttpStatus.CREATED).body(res.toDto(projectId))
     }
 
@@ -77,8 +78,8 @@ class IssueController @Autowired constructor(val issueService: IssueService) : B
      */
     @GetMapping(path = arrayOf("/{issueId}"))
     @RequireSession
-    fun getIssue(@PathVariable("projectId") projectId: UUID, @PathVariable("issueId") issueId: UUID,session: HttpSession): ResponseEntity<IssueOutputModel> {
-        val res = issueService.getIssue(projectId, issueId,session.getAttribute(USER_SESSION) as String)
+    fun getIssue(@PathVariable("projectId") projectId: UUID, @PathVariable("issueId") issueId: UUID, session: HttpSession): ResponseEntity<IssueOutputModel> {
+        val res = issueService.getIssue(projectId, issueId, session.getAttribute(USER_SESSION) as String)
         return ResponseEntity.ok(res.toDto(projectId))
     }
 
@@ -90,8 +91,8 @@ class IssueController @Autowired constructor(val issueService: IssueService) : B
      */
     @DeleteMapping(path = arrayOf("/{issueId}"))
     @RequireSession
-    fun deleteIssue(@PathVariable("projectId") projectId: UUID, @PathVariable("issueId") issueId: UUID,session: HttpSession): ResponseEntity<IssueOutputModel.IssueDeletedOutputModel> {
-        issueService.deleteIssue(projectId, issueId,session.getAttribute(USER_SESSION) as String)
+    fun deleteIssue(@PathVariable("projectId") projectId: UUID, @PathVariable("issueId") issueId: UUID, session: HttpSession): ResponseEntity<IssueOutputModel.IssueDeletedOutputModel> {
+        issueService.deleteIssue(projectId, issueId, session.getAttribute(USER_SESSION) as String)
         return ResponseEntity.ok(IssueOutputModel.IssueDeletedOutputModel(projectId, issueId))
     }
 
@@ -106,8 +107,8 @@ class IssueController @Autowired constructor(val issueService: IssueService) : B
     @RequireSession
     fun putLabelinIssue(@PathVariable("projectId") projectId: UUID,
                         @PathVariable("issueId") issueId: UUID,
-                        @PathVariable("labelId") labelId: String,session: HttpSession): ResponseEntity<LabelOutputModel> {
-        val res = issueService.putLabelInIssue(projectId, issueId, labelId,session.getAttribute(USER_SESSION) as String)
+                        @PathVariable("labelId") labelId: String, session: HttpSession): ResponseEntity<LabelOutputModel> {
+        val res = issueService.putLabelInIssue(projectId, issueId, labelId, session.getAttribute(USER_SESSION) as String)
         return ResponseEntity.ok(LabelOutputModel(res, projectId, issueId))
     }
 
@@ -123,7 +124,7 @@ class IssueController @Autowired constructor(val issueService: IssueService) : B
     fun deleteLabelinIssue(@PathVariable("projectId") projectId: UUID,
                            @PathVariable("issueId") issueId: UUID,
                            @PathVariable("labelId") labelId: String, session: HttpSession): ResponseEntity<LabelOutputModel.LabelDeletedOutputModel> {
-        issueService.deleteLabelInIssue(projectId, issueId, labelId,session.getAttribute(USER_SESSION) as String)
+        issueService.deleteLabelInIssue(projectId, issueId, labelId, session.getAttribute(USER_SESSION) as String)
         return ResponseEntity.ok(LabelOutputModel.LabelDeletedOutputModel(labelId, projectId, issueId))
     }
 
@@ -138,8 +139,8 @@ class IssueController @Autowired constructor(val issueService: IssueService) : B
     @RequireSession
     fun updateIssue(@PathVariable("projectId") projectId: UUID,
                     @PathVariable("issueId") issueId: UUID,
-                    @RequestBody issue: IssueInputModel,session: HttpSession): ResponseEntity<IssueOutputModel> {
-        val res = issueService.updateIssue(projectId, issueId, issue,session.getAttribute(USER_SESSION) as String)
+                    @RequestBody issue: IssueInputModel, session: HttpSession): ResponseEntity<IssueOutputModel> {
+        val res = issueService.updateIssue(projectId, issueId, issue, session.getAttribute(USER_SESSION) as String)
         return ResponseEntity.ok(res.toDto(projectId))
     }
 
