@@ -1,6 +1,6 @@
 import React from 'react';
 import  LoginInterface from "./LoginInterface";
-import   Side  from "./Side";
+import   Side  from "./side";
 import "./style.scss"
 
 export class Authentication extends React.Component{
