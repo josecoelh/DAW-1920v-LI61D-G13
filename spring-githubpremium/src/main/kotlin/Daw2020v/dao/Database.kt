@@ -29,7 +29,7 @@ class Database {
         fun executeDao(daoFunc : ()->Any?):Any?{
             handle.begin()
             val ret = daoFunc()
-            handle.commit()
+            if(!handle.connection.autoCommit)handle.commit()
             return ret
         }
     }

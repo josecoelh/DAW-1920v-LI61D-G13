@@ -6,21 +6,20 @@ import type from "../../type";
 import ProjectForm from "../forms/ProjectForm";
 import IssueForm from "../forms/IssueForm";
 import links from "../../links";
+import Spinner from 'react-bootstrap/Spinner';
 
 export class List extends React.Component {
     constructor(props) {
         super(props);
         this.entries = [];
+        this.API_BASE_URL = "http://localhost:8080";
         this.tabs = [];
         this.formRef = null;
+        this.projectId = window.location.pathname.split("/")[3];
         this.state = {
             elements: []
         }
     }
-
-
-
-
 
 
     entryClick = (e, index) => {
@@ -43,51 +42,82 @@ export class List extends React.Component {
         e.preventDefault();
         this.entries.length = 0;
         this.tabs.length = 0;
-        fetch(`links.projects${element.id}`, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',
-            },
+        this.deleteElements(element).then(() => {
+            return setTimeout(() => { return this.getElements() }, 500)
         })
-        this.setState({
-            elements: this.state.elements.filter(it => it !== element)
-        })
+
     }
 
     onAddElement = (e, element) => {
         e.preventDefault();
-        //FETCH
-        let newElems = this.state.elements;//test
-        newElems.push(element);//test
         this.formRef.classList.add("hidden");
-        this.setState(
-            {
-                elements: newElems
-            }
-        )
+        this.addElements(element).then(() => {
+            return setTimeout(() => { return this.getElements() }, 500)
+        })
+
+
+
     }
 
-
-    elementStringify(element) {
-        const keys = Object.keys(element);
-        let toRet = "";
-        keys.forEach(it => toRet += `${it}: ${element[it]} \n`)
-        return toRet;
-    }
-
-    async componentDidMount(){
-        fetch(links.projects, {
+    getElements() {
+        const linkBase = (this.props.elemType === type.project) ? links.projects : `${links.issue(this.projectId)}`;
+        return fetch(linkBase, {
             method: 'GET',
-            credentials : 'include',
+            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json'
             }
-        }).then(res => res.json()).then(result => this.setState({elements : result}))
+        }).then(res => res.json()).then(elems => {
+            console.log(elems);
+            return this.setState({ elements: elems })
+        })
     }
 
+
+    addElements(elem) {
+        const linkBase = (this.props.elemType === type.project) ? links.projects : `${links.issue(this.projectId)}`;
+        return fetch(linkBase, {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                name: elem.name,
+                description: elem.description,
+            })
+        }).then(res => res.json())
+    }
+
+    deleteElements(elem) {
+        const action = elem.actions[1];
+        return fetch(this.API_BASE_URL + action.href, {
+            method: action.method,
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        }).then(res => res.json())
+    }
+
+
+
+    async componentDidMount() {
+        this.getElements()
+    }
+
+
+
     render() {
-       
-        const linkBase = this.props.elemType === type.projects ? links.projects : links.issues;
+
+
+        if (!this.state.elements)
+            return (
+                <Spinner animation="border" role="status">
+                    <span className="sr-only">Loading...</span>
+                </Spinner>);
+
+        const linkBase = this.props.elemType === type.projects ? links.projects : `${links.issue(this.projectId)}`;
         return (
             <div className="cont">
                 <GPHeader></GPHeader>
@@ -109,8 +139,8 @@ export class List extends React.Component {
                             {this.state.elements.map((it, i) => {
                                 return <ListTab
                                     tabRef={ref => (this.tabs[i] = ref)}
-                                    element={this.elementStringify(it.properties.description)}
-                                    link={linkBase}
+                                    element={it.properties.description || it.properties.state}
+                                    link={it.actions[2].href}
                                 >
                                 </ListTab>
                             })

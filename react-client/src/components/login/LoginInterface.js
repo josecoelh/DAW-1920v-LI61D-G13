@@ -1,9 +1,8 @@
-import React, { useRef, useEffect, createContext } from "react";
+import React, { useRef, useEffect } from "react";
 import logo from "../../img/logo.png";
 import { Base64 } from 'js-base64';
 import links from "../../links";
-import { Redirect } from "react-router-dom";
-import { MyContext } from "../../Context.js";
+import Cookies from 'js-cookie';
 
 function LoginInterface({ state }) {
     let username = null;
@@ -21,10 +20,11 @@ function LoginInterface({ state }) {
             buttonRef.current.focus();
         }
     }
-    function validationAndRedirect(validated, state, username,context) {
+    function validationAndRedirect(validated, state, username) {
         if (validated) {
-            context.setUser(username);
-            window.location = '/projects';
+            console.log("logged");
+            Cookies.set('username',username)
+            window.location = '/githubPremium/projects';
         } else {
             alert(`${state} failed`)
         }
@@ -49,23 +49,19 @@ function LoginInterface({ state }) {
                 </div>
             </div>
             <div className="footer">
-                <MyContext.Consumer>
-                    {(context) => {
-                        return(
+               
                         <button ref={buttonRef} type="button"
-                            onClick={(e) => {
-                                fetch(`${links.base}${state.toLowerCase()}`, {
-                                    method: 'PUT',
-                                    credentials: 'include',
-                                    headers: {
-                                        'Content-Type': 'application/json',
-                                        'Authorization': `Basic ${Base64.encode(`${username}:${password}`)}`
-                                    },
-                                }).then(response => response.json()).then(validated => validationAndRedirect(validated, state.toLowerCase(), { username },context))
-                            }}
-                            className="btn">{state}</button>)
+                    onClick={(e) => {
+                        fetch(`${links.base}${state.toLowerCase()}`, {
+                            method: 'PUT',
+                            credentials: 'include',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Basic ${Base64.encode(`${username}:${password}`)}`
+                            },
+                        }).then(response => response.json()).then(validated => validationAndRedirect(validated, state.toLowerCase(), { username }))
                     }}
-                </MyContext.Consumer>
+                    className="btn">{state}</button>
             </div>
         </div>);
 }

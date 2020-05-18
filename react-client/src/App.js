@@ -1,4 +1,4 @@
-import React, { useRef} from 'react';
+import React, { useRef } from 'react';
 import { Authentication } from "./components/login/authentication";
 import { List } from './components/list/List';
 import './App.scss';
@@ -7,47 +7,39 @@ import Types from './type';
 import { Route, Switch, Redirect } from "react-router-dom";
 import { ProjectView } from './components/element/ProjectView';
 import { IssueView } from './components/element/IssueView';
-import { MyContext, BaseProvider } from './Context.js';
+import Cookies from 'js-cookie';
 
 
-const projects = [
-    {
-        "id": "3779a41b-7920-4f9c-b3aa-75d9302a1abe",
-        "name": "Issue ",
-        "description": "The quick brown fox  jumped over the lazy dog ",
-        "state": "OPEN"
-    }]
+
 function App() {
     const sideRef = useRef();
     return (
-        <BaseProvider>
-            <div className="App">
-                {<RouteRenderer sideRef={sideRef} />}
-            </div>
-        </BaseProvider>
+    <RouteRenderer sideRef={sideRef}/>
     )
 }
 
 function RouteRenderer({ sideRef }) {
     return (
         <Switch>
-            <Route exact path="/login">
-                <MyContext.Consumer>
-                    {(context) => {
-                        return (!context.state.user && <Authentication sideRef={sideRef}></Authentication>)
-                    }}
-                </MyContext.Consumer>
+            <Route exact path="/githubPremium/login">
+                {Cookies.get('username') ? <Redirect to="/githubPremium/projects" /> : <Authentication sideRef={sideRef}></Authentication>}
             </Route>
-            <Route exact path="/projects">
-                {/*(context) => context.state.user &&*/ <List elemType={Types.project} > </List>}
+            <Route exact path="/githubPremium/projects/:projectId/issues">
+                {Cookies.get('username') ? <List elemType={Types.issue} > </List> : <Redirect to="/githubPremium/login" />}
+            </Route>
+            <Route exact path="/githubPremium/projects/:projectId/issues/:issueId">
+                {Cookies.get('username') ?<IssueView /> : <Redirect to="/githubPremium/login" />}
+            </Route>
+            <Route exact path="/githubPremium/projects">
+                {Cookies.get('username') ? <List elemType={Types.project} > </List> : <Redirect to="/githubPremium/login" />}
+            </Route>
+            <Route exact path="/githubPremium/projects/:projectId">
+                {Cookies.get('username') ? <ProjectView /> : <Redirect to="/githubPremium/login" />}
             </Route>
             <Route path="/">
-                <Redirect to="/login" />
-                {/*(context) => context.state.user &&*/ <Redirect to="/projects" />}
-                        )}
-                    </Route>
+                <Redirect to="/githubPremium/login" />
+            </Route>
         </Switch>
     )
 }
-
 export default App;

@@ -17,12 +17,7 @@ function ListTab({ element, tabRef, link }) {
             <button className="btnDetail" 
             onClick={(e) => {
                 e.preventDefault();
-                fetch(`${link}/${element.id}`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                   }).then(response => response.json())
+                window.location = link;
             }}
             >🠚</button>
         </div>
