@@ -4,14 +4,17 @@ import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { BrowserRouter as Router } from 'react-router-dom';
 
 ReactDOM.render(
   <React.StrictMode>
-         <head>
+        <head>
            <title>GithubPremium</title>
             <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css"></link>
-        </head>   
-    <App/>
+        </head>  
+     <Router>
+      <App/>
+    </Router>
   </React.StrictMode>,
   document.getElementById('root')
 );

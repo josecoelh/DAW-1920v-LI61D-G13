@@ -79,7 +79,8 @@ class ApiConfig : WebMvcConfigurer {
                 .addMapping("/**")
                 .allowedHeaders("*")
                 .allowedMethods("*")
-                .allowedOrigins("*")
+                .allowedOrigins("http://localhost:3000")
+                .allowCredentials(true)
     }
 }
 

@@ -8,5 +8,4 @@ export default {
         issueLabels : (projectId,issueId)=>`/githubPremium/projects/${projectId}/issues/${issueId}/labels`,
         issueComments : (projectId,issueId)=>`/githubPremium/projects/${projectId}/issues/${issueId}/comments` ,
         comment :  (projectId,issueId,commentId)=>`/githubPremium/projects/${projectId}/issues/${issueId}/comments/${commentId}`
-        
 }

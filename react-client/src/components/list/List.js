@@ -14,7 +14,7 @@ export class List extends React.Component {
         this.tabs = [];
         this.formRef = null;
         this.state = {
-            elements: this.props.elements
+            elements: []
         }
     }
 
@@ -54,7 +54,7 @@ export class List extends React.Component {
         })
     }
 
-    onAddElement = (e, element) =>{
+    onAddElement = (e, element) => {
         e.preventDefault();
         //FETCH
         let newElems = this.state.elements;//test
@@ -65,7 +65,7 @@ export class List extends React.Component {
                 elements: newElems
             }
         )
-    } 
+    }
 
 
     elementStringify(element) {
@@ -75,7 +75,18 @@ export class List extends React.Component {
         return toRet;
     }
 
+    async componentDidMount(){
+        fetch(links.projects, {
+            method: 'GET',
+            credentials : 'include',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(res => res.json()).then(result => this.setState({elements : result}))
+    }
+
     render() {
+       
         const linkBase = this.props.elemType === type.projects ? links.projects : links.issues;
         return (
             <div className="cont">
@@ -87,7 +98,7 @@ export class List extends React.Component {
                                 return <ListEntry
                                     entryRef={ref => this.entries[i] = ref}
                                     onClick={(e) => { this.entryClick(e, i) }}
-                                    name={it.name}
+                                    name={it.properties.name}
                                     onDelete={(e) => { this.deleteEntry(e, it) }}
                                 ></ListEntry>
                             })}
@@ -98,7 +109,7 @@ export class List extends React.Component {
                             {this.state.elements.map((it, i) => {
                                 return <ListTab
                                     tabRef={ref => (this.tabs[i] = ref)}
-                                    element={this.elementStringify(it)}
+                                    element={this.elementStringify(it.properties.description)}
                                     link={linkBase}
                                 >
                                 </ListTab>
@@ -112,14 +123,14 @@ export class List extends React.Component {
                     }}>+</button>
 
                 </div>
-                {this.props.elemType === type.project && 
-                    <ProjectForm 
-                        onChange={((e, label) => { this.onAddElement(e, label) })} 
+                {this.props.elemType === type.project &&
+                    <ProjectForm
+                        onChange={((e, label) => { this.onAddElement(e, label) })}
                         formRef={ref => this.formRef = ref} />}
 
-                {this.props.elemType === type.issue && 
-                    <IssueForm 
-                        onChange = {((e, label)=>{this.onAddElement(e,label)})}
+                {this.props.elemType === type.issue &&
+                    <IssueForm
+                        onChange={((e, label) => { this.onAddElement(e, label) })}
                         formRef={ref => this.formRef = ref} />}
             </div>
 
