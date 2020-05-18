@@ -9,18 +9,19 @@ import { IssueView } from './components/element/IssueView'
 
 
 
-const projects = 
+const projects = [
     {
         "id": "3779a41b-7920-4f9c-b3aa-75d9302a1abe",
         "name": "Issue ",
+        "description" : "The quick brown fox  jumped over the lazy dog ",
         "state": "OPEN"
-    }
+    }]
 function App() {
     const sideRef = useRef();
     return (
-        <IssueView element = {projects}></IssueView>
+       //<IssueView element = {projects}></IssueView>
         //<ProjectView element = {projects}/>
-        //<List elements={projects} elemType={type.project//}></List>
+        <List elements={projects} elemType={type.project}></List>
         /*<Authentication
             sideRef={sideRef}>
         </Authentication>*/

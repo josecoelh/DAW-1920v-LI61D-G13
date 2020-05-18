@@ -22,7 +22,8 @@ function ProjectForm({formRef, onChange}) {
                 </div>
                 <div className="footer">
                     <button type="button"
-                           onClick = {(e ) => {onChange(e,{ name : name, description : desc})}}
+                           onClick = {(e ) => {
+                               onChange(e,{ name : name, description : desc})}}
                         className="submit">Submit</button>
                 </div>
             </div>

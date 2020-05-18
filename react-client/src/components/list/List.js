@@ -59,6 +59,7 @@ export class List extends React.Component {
         //FETCH
         let newElems = this.state.elements;//test
         newElems.push(element);//test
+        this.formRef.classList.add("hidden");
         this.setState(
             {
                 elements: newElems
