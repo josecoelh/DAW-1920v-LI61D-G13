@@ -166,9 +166,7 @@ export class IssueView extends React.Component {
                                         </ListGroup.Item>
                                     })}
                             </ListGroup>
-                            <Button style={{ backgroundColor: '#2386c8' }} variant="primary" onClick={
-                                () => { }
-                            }>Issues</Button>
+                            
                         </Card.Body>
                     </Card>
                 </div>

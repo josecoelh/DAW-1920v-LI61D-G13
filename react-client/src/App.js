@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { Authentication } from "./components/login/Authentication";
+import { Authentication } from "./components/login/authentication";
 import { List } from './components/list/List';
 import './App.scss';
 import './components/Header.scss'
