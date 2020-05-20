@@ -9,7 +9,9 @@ class CommentOutputModel(comment : Comment, projectId :UUID, issueId : UUID) {
     var properties: PairContainer = PairContainer(
             "value" to comment.value,
             "id" to comment.id.toString(),
-            "date" to comment.date)
+            "date" to comment.date,
+            "user" to comment.user
+    )
     var actions: List<PairContainer> = listOf<PairContainer>(
             PairContainer(
                     "name" to "delete-comment",

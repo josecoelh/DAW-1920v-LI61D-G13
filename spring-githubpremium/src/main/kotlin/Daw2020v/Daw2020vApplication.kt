@@ -29,6 +29,8 @@ import javax.servlet.http.HttpServletResponse
 @EnableWebMvc
 class ApiConfig : WebMvcConfigurer {
 
+
+
     @Autowired
     lateinit var interceptor: Interceptor
 
@@ -83,6 +85,18 @@ class ApiConfig : WebMvcConfigurer {
                 .allowCredentials(true)
     }
 }
+
+/*@EnableWebSecurity
+class WebSecurityConfig : WebSecurityConfigurerAdapter() {
+
+    @Throws(Exception::class)
+    protected fun configure(http: HttpSecurity) {
+        http
+                // ...
+                .headers().cacheControl()
+    }
+}
+*/
 
 @SpringBootApplication
 class Daw2020vApplication

@@ -2,6 +2,8 @@ import React, {useRef} from 'react';
 import logo from "../img/logo.png";
 import logout from "../img/logout.png";
 import links from "../links"
+import Cookies from 'js-cookie';
+
 function GPHeader({ username }) {
 
   
@@ -20,9 +22,10 @@ function GPHeader({ username }) {
     return ( 
         <div className="header" >
             <img src={logo} alt='left' />
-            <button className="nav" onClick = {()=>{console.log('fetching projects')}/*(e) => navClick(e, isProj = true)*/}>Projects</button>
-            <button className="nav" onClick = {()=>console.log('fetching issues')/*(e) => navClick(e, isProj = false)*/}>Issues</button>
-            <h1 className = "username">Repd</h1>
+            <button className="nav" onClick = {()=>{
+                window.location = links.projects;
+                }}>Projects</button>
+            <h1 className = "username">{Cookies.getJSON('username').username}</h1>
             <div className="dropdown">
                 <input type="image" className="dropbtn" src={logout} alt="logout" ></input>
                 <div className="dropdown-content">
@@ -30,7 +33,7 @@ function GPHeader({ username }) {
                          e.preventDefault()
                         fetch(`${links.logout}`, {
                             method: 'PUT',
-                        }).then(response => response.json())
+                        }).then(()=>{Cookies.remove('username')}).then(()=> window.location = '/');
                     }}> Logout</h1>
                 </div>
             </div>

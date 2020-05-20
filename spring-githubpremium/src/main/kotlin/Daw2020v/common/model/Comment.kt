@@ -13,6 +13,7 @@ import java.util.*
  * Data type for representing Comments in the context of this app.
  */
 class Comment private constructor(val value: String,
+                                  val user: String,
                                   val id: UUID = UUID.randomUUID(),
                                   val date: String = SimpleDateFormat("dd/MM/yyy HH mm").format(Date(Instant.now().toEpochMilli()))) {
 
@@ -26,8 +27,8 @@ class Comment private constructor(val value: String,
          * @param   value   The comment in question
          * @return  The corresponding [Comment] instance, or null if the [value] length is not within the admissible interval
          */
-        fun of(value: String): Comment? =
-                if (value.length in MIN..MAX) Comment(value)
+        fun of(value: String, user:String): Comment? =
+                if (value.length in MIN..MAX) Comment(value, user)
                 else null
 
 
@@ -39,7 +40,7 @@ class Comment private constructor(val value: String,
         /**
          * Overload of the function call operator to have the same behavior as the [of] function
          */
-        operator fun invoke(value: String): Comment? = of(value)
+        operator fun invoke(value: String, user:String): Comment? = of(value, user)
 
         operator fun invoke(value: String, id: UUID, date: String): Comment? = of(value, id, date)
     }
@@ -47,6 +48,7 @@ class Comment private constructor(val value: String,
     class CommentMapper : RowMapper<Comment> {
         override fun map(rs: ResultSet?, ctx: StatementContext?): Comment =
                 Comment(rs!!.getString("_comment"),
+                        rs.getString("username"),
                         UUID.fromString(rs.getString("comment_id")),
                         rs.getString("_date"))
     }

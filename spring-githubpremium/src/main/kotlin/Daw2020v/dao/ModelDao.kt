@@ -50,11 +50,11 @@ interface ModelDao {
     fun getProjectIssues(id: UUID, username: String) : List<Issue>
 
 
-    @SqlQuery("select com._comment, com._date, com.comment_id from issues as i join _comments as com on (i.issue_id = com.issue_id) where com.issue_id = :id order by com._date limit :size offset :startNumber")
+    @SqlQuery("select com._comment, com.username, com._date, com.comment_id from issues as i join _comments as com on (i.issue_id = com.issue_id) where com.issue_id = :id order by com._date limit :size offset :startNumber")
     @RegisterRowMapper(Comment.CommentMapper::class)
     fun getIssueComments(id:UUID,startNumber: Int, size: Int) : List<Comment>
 
-    @SqlQuery("select com._comment, com._date, com.comment_id from issues as i join _comments as com on (i.issue_id = com.issue_id) where com.issue_id = :id")
+    @SqlQuery("select com._comment, com.username, com._date, com.comment_id from issues as i join _comments as com on (i.issue_id = com.issue_id) where com.issue_id = :id")
     @RegisterRowMapper(Comment.CommentMapper::class)
     fun getIssueComments(id:UUID) : List<Comment>
 
@@ -113,7 +113,7 @@ interface ModelDao {
     @SqlUpdate("update issues set _name = :name where proj_id in (SELECT project_id from PROJECT_USERS where project_id = :projectId and user_name = :username ) and issue_id = issueId)")
     fun changeIssueName(projectId: UUID, username: String,issueId : UUID, name: String) : Boolean
 
-    @SqlUpdate("update issue set state = :state where proj_id in (SELECT project_id from PROJECT_USERS where project_id = :projectId and user_name = :username ) and issue_id = :issueId ")
+    @SqlUpdate("update issues set _state = :state where proj_id in (SELECT project_id from PROJECT_USERS where project_id = :projectId and user_name = :username ) and issue_id = :issueId ")
     fun changeIssueState(projectId: UUID,username: String, issueId: UUID, state: String) : Boolean
 
     @SqlUpdate(" delete from _comments where issue_id = ?")
@@ -212,13 +212,13 @@ interface ModelDao {
     @RegisterRowMapper(Issue.IssueMapper::class)
     fun getIssue(projectId: UUID, username: String,issueId: UUID): Issue
 
-    @SqlQuery("select _comment, _date, comment_id from _comments where issue_id=? and comment_id=? and username = ?" )
+    @SqlQuery("select _comment, username, _date, comment_id from _comments where issue_id=? and comment_id=? and username = ?" )
     @RegisterRowMapper(Comment.CommentMapper::class)
     fun getComment(issueId: UUID, commentId: UUID, username: String) : Comment
 
     @SqlUpdate("delete from project_users where project_id = ? and user_name = ?")
     fun deleteProjectUser(projectId: UUID, username: String): Boolean
 
-    @SqlQuery("select username from _COMMENTS where comment_id = :commentId")
+    @SqlQuery("select username from _comments where comment_id = :commentId")
     fun getCommentOwner(commentId : UUID) : String
 }

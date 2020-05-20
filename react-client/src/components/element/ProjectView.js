@@ -48,7 +48,7 @@ export class ProjectView extends React.Component {
                 'Content-Type': 'application/json'
             }
         }
-        ).then(res => res.json()).then(it => this.setState({ element: it })
+        ).then(res =>res.json()).then(it => this.setState({ element: it })
         )
     }
 
@@ -116,6 +116,7 @@ export class ProjectView extends React.Component {
                                 <ListGroup.Item style={{ backgroundColor: '#2386c8', color: 'white' }} as="li" >
                                     Labels <button className="addButton" onClick={(e) => {
                                         e.preventDefault()
+                                        
                                         this.setState({
                                             labels: this.state.labels,
                                             addForm: true

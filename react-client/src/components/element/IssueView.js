@@ -30,7 +30,7 @@ export class IssueView extends React.Component {
         }
     }
 
-     getElement() {
+    getElement() {
         fetch(this.API_BASE_URL + window.location.pathname, {
             method: 'GET',
             credentials: 'include',
@@ -43,18 +43,21 @@ export class IssueView extends React.Component {
     }
 
 
-    addLabels(label){
-        return fetch(`${links.issueLabels(this.projectId,this.issueId)}/${label}`, {
+    addLabels(label) {
+        return fetch(`${links.issueLabels(this.projectId, this.issueId)}/${label}`, {
             method: 'PUT',
             credentials: 'include',
             headers: {
                 'Content-Type': 'application/json'
             },
 
-        }).then(res => res.json()).catch( alert("label not allowed"))
+        }).then(res => res.json()).catch(it => {
+            console.log(it);
+            alert("label not allowed");
+        })
     }
 
-    deleteLabels(label){
+    deleteLabels(label) {
         const action = label.actions[0];
         return fetch((this.API_BASE_URL + action.href), {
             method: action.method,
@@ -65,20 +68,20 @@ export class IssueView extends React.Component {
         }).then(res => res.json())
     }
 
-    addComments(comment){
-        return fetch(links.issueComments(this.projectId,this.issueId), {
+    addComments(comment) {
+        return fetch(links.issueComments(this.projectId, this.issueId), {
             method: 'POST',
             credentials: 'include',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body : JSON.stringify( {
-                 "value" : comment
+            body: JSON.stringify({
+                "value": comment
             })
         }).then(res => res.json())
     }
 
-    deleteComments(comment){
+    deleteComments(comment) {
         const action = comment.actions[0];
         return fetch((this.API_BASE_URL + action.href), {
             method: action.method,
@@ -90,7 +93,7 @@ export class IssueView extends React.Component {
     }
 
     getLabels() {
-        fetch(links.issueLabels(this.projectId,this.issueId), {
+        fetch(links.issueLabels(this.projectId, this.issueId), {
             method: 'GET',
             credentials: 'include',
             headers: {
@@ -101,8 +104,8 @@ export class IssueView extends React.Component {
         )
     }
 
-    getComments(){
-        fetch(links.issueComments(this.projectId,this.issueId), {
+    getComments() {
+        fetch(links.issueComments(this.projectId, this.issueId), {
             method: 'GET',
             credentials: 'include',
             headers: {
@@ -118,29 +121,43 @@ export class IssueView extends React.Component {
         this.getElement();
         this.getLabels();
         this.getComments();
-        
-    }         
+
+    }
 
 
     onAddLabel = (e, label) => {
         e.preventDefault();
-       this.addLabels(label).then(()=> setTimeout(()=> this.getLabels(),500))
+        this.addLabels(label).then(() => setTimeout(() => this.getLabels(), 500))
     }
 
     onAddComment = (e, comment) => {
         e.preventDefault();
-        this.addComments(comment).then(()=> setTimeout(()=> this.getComments(),500))
+        this.addComments(comment).then(() => setTimeout(() => this.getComments(), 500))
     }
 
     onDeleteComment = (e, comment) => {
         e.preventDefault();
-        this.deleteComments(comment).then(()=> setTimeout(()=> this.getComments(),500))
+        this.deleteComments(comment).then(() => setTimeout(() => this.getComments(), 500))
     };
 
     onDeleteLabels = (e, label) => {
         e.preventDefault();
-        this.deleteLabels(label).then(()=> setTimeout(()=> this.getLabels(),500))
+        this.deleteLabels(label).then(() => setTimeout(() => this.getLabels(), 500))
     };
+
+    setIssueState = (stateString) => {
+        let action = this.state.element.actions[0];
+        fetch(this.API_BASE_URL + action.href, {
+            method: action.method,
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                "state": stateString
+            })
+        }).then(() => this.setState({ state: stateString }))
+    }
 
     render() {
 
@@ -160,26 +177,23 @@ export class IssueView extends React.Component {
                     <Card style={{ width: '50rem', borderRadius: '5%' }}>
                         <Card.Body>
                             <Card.Title style={{ fontWeight: '900' }}>{this.state.element.properties.name}</Card.Title>
-                            <Card.Text  >
+                            <Card.Text>
                                 {this.state.state}
                                 <DropdownButton id="dropdown-basic-button" title="set state">
                                     {this.state.state !== 'OPEN' &&
                                         <Dropdown.Item
                                             onClick={(e => {
-                                                this.setState({
-                                                    state: 'OPEN'
-                                                })
+                                                e.preventDefault();
+                                                this.setIssueState('OPEN')
                                             })}>OPEN
                                          </Dropdown.Item>}
                                     {this.state.state !== 'CLOSED' && <Dropdown.Item onClick={(e => {
-                                        this.setState({
-                                            state: 'CLOSED'
-                                        })
+                                        e.preventDefault();
+                                        this.setIssueState('CLOSED')
                                     })}>CLOSED</Dropdown.Item>}
                                     {this.state.state !== 'ARCHIVED' && <Dropdown.Item onClick={(e => {
-                                        this.setState({
-                                            state: 'ARCHIVED'
-                                        })
+                                        e.preventDefault();
+                                        this.setIssueState('ARCHIVED')
                                     })}>ARCHIVED</Dropdown.Item>}
                                 </DropdownButton>
                             </Card.Text>
@@ -213,7 +227,7 @@ export class IssueView extends React.Component {
                                 </ListGroup.Item>
                                 {this.state.comments &&
                                     this.state.comments.map((it) => {
-                                        return <ListGroup.Item as="li">{it.properties.date}: {it.properties.value}
+                                        return <ListGroup.Item as="li">Date:{it.properties.date} by: {it.properties.user} <p>{it.properties.value}</p>
                                             <button type="button" className="delButton" onClick={(e) => { this.onDeleteComment(e, it) }}></button>
                                         </ListGroup.Item>
                                     })}
@@ -231,4 +245,3 @@ export class IssueView extends React.Component {
     }
 }
 
-      

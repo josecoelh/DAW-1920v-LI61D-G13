@@ -7,5 +7,7 @@ export default {
         projectLabels : (projectId)=>`http://localhost:8080/githubPremium/projects/${projectId}/labels`,
         issueLabels : (projectId,issueId)=>`http://localhost:8080/githubPremium/projects/${projectId}/issues/${issueId}/labels`,
         issueComments : (projectId,issueId)=>`http://localhost:8080/githubPremium/projects/${projectId}/issues/${issueId}/comments`,
-        comment :  (projectId,issueId,commentId)=>`/githubPremium/projects/${projectId}/issues/${issueId}/comments/${commentId}`
+        comment :  (projectId,issueId,commentId)=>`/githubPremium/projects/${projectId}/issues/${issueId}/comments/${commentId}`,
+//        singleIssue : (projectId,issueId)=>`http://localhost:8080/githubPremium/projects/${projectId}/issues/${issueId}
+
 }

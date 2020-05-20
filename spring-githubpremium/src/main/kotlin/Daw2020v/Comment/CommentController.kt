@@ -46,7 +46,7 @@ class CommentController @Autowired constructor(val commentService: CommentServic
     fun addCommentToIssue(@PathVariable("projectId") projectId: UUID,
                           @PathVariable("issueId") issueId: UUID,
                           @RequestBody comment: CommentInputModel, session: HttpSession): ResponseEntity<CommentOutputModel> {
-        val newComment = Comment(comment.value)!!
+        val newComment = Comment(comment.value, session.getAttribute(USER_SESSION) as String)!!
         commentService.addCommentToIssue(projectId, issueId, newComment, session.getAttribute(USER_SESSION) as String)
         return ResponseEntity.status(HttpStatus.CREATED).body(newComment.toDto(projectId, issueId))
     }

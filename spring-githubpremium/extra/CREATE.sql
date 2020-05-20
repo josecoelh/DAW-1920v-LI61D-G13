@@ -56,7 +56,9 @@ CREATE TABLE _COMMENTS(
 	_DATE VARCHAR(16),
 	comment_id UUID,
 	issue_id UUID,
+	username VARCHAR(50),
 	FOREIGN KEY (issue_id) REFERENCES ISSUES(issue_id),
+	FOREIGN KEY (username) REFERENCES USERS(username),
 	PRIMARY KEY(comment_id)
 );
 
@@ -67,13 +69,9 @@ insert into project_users values ('username','3779a41b-7920-4f9c-b3aa-75d9302a1a
 insert into allowed_labels values ('v','3779a41b-7920-4f9c-b3aa-75d9302a1abe');
 insert into allowed_labels values ('vv','3779a41b-7920-4f9c-b3aa-75d9302a1abe');
 insert into issues values ('issueTest', '3779a41b-7920-4f9c-b3aa-75d9302a2abe','3779a41b-7920-4f9c-b3aa-75d9302a1abe','CLOSED');
-insert into _comments values ('teste','04/02/2020 04 03','3779a41b-7920-4f9c-b3aa-75d9302a2abe','3779a41b-7920-4f9c-b3aa-75d9302a2abe');
-insert into _comments values ('teste','04/02/2020 04 03','9611db05-b2eb-449d-87dc-427bf8f3944f','3779a41b-7920-4f9c-b3aa-75d9302a2abe');
-insert into _comments values ('teste','04/02/2020 04 03','9611db05-b2eb-449d-87dc-427bf8f3944a','3779a41b-7920-4f9c-b3aa-75d9302a2abe');
+insert into _comments values ('teste','04/02/2020 04 03','3779a41b-7920-4f9c-b3aa-75d9302a2abe','3779a41b-7920-4f9c-b3aa-75d9302a2abe', 'username');
+insert into _comments values ('teste','04/02/2020 04 03','9611db05-b2eb-449d-87dc-427bf8f3944f','3779a41b-7920-4f9c-b3aa-75d9302a2abe', 'username');
+insert into _comments values ('teste','04/02/2020 04 03','9611db05-b2eb-449d-87dc-427bf8f3944a','3779a41b-7920-4f9c-b3aa-75d9302a2abe', 'username');
 insert into issue_labels values ('v','3779a41b-7920-4f9c-b3aa-75d9302a2abe');
 insert into issue_labels values ('vv','3779a41b-7920-4f9c-b3aa-75d9302a2abe');
-
-select * from project_users inner join project on (project_id = proj_id)
---SELECT * FROM project WHERE proj_id  in (SELECT project_id from PROJECT_USERS where user_name = 'test') order by _name limit 10 offset 1
-SELECT * FROM project WHERE proj_id  in (SELECT project_id from PROJECT_USERS where user_name = 'username') order by _name limit 10 offset 0
 
