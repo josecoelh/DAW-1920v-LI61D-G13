@@ -7,26 +7,15 @@ import Cookies from 'js-cookie';
 function GPHeader({ username }) {
 
   
-    const navClick = (e, isProj) => {
-        e.preventDefault()
-        const link = isProj? links.projects : links.issues
-        fetch(link, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': sessionStorage.getItem('codedUser')
-            },
-        })
-        
-    }
+
 
     return ( 
         <div className="header" >
             <img src={logo} alt='left' />
             <button className="nav" onClick = {()=>{
-                window.location = links.projects;
+                window.location = "/githubPremium/projects";
                 }}>Projects</button>
-            <h1 className = "username">{Cookies.getJSON('username').username}</h1>
+            <h1 className = "username">{sessionStorage.getItem('username')}</h1>
             <div className="dropdown">
                 <input type="image" className="dropbtn" src={logout} alt="logout" ></input>
                 <div className="dropdown-content">
@@ -34,7 +23,7 @@ function GPHeader({ username }) {
                          e.preventDefault()
                         fetch(`${links.logout}`, {
                             method: 'PUT',
-                        }).then(()=>{Cookies.remove('username')}).then(()=> window.location = '/');
+                        }).then(()=>{sessionStorage.removeItem('username')}).then(()=> window.location = '/');
                     }}> Logout</h1>
                 </div>
             </div>

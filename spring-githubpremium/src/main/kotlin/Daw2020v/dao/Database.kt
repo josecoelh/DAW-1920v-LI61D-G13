@@ -8,8 +8,10 @@ import org.jdbi.v3.sqlobject.SqlObjectPlugin
 class Database {
     companion object {
         private lateinit var jdbi: Jdbi
-        private val handle : Handle by lazy{
-            jdbi.open() //never closed as so far in development, there is only 1 instance of handle that accesses de DB
+        private val handle: Handle by lazy {
+            val tempHandle = jdbi.open()
+            tempHandle.connection.autoCommit = false;
+            tempHandle//never closed as so far in development, there is only 1 instance of handle that accesses de DB
         }
 
         init {
@@ -22,14 +24,14 @@ class Database {
             jdbi.installPlugin(SqlObjectPlugin())
         }
 
-        fun <T>getDao(daoKlass: Class<out T>) : T {
+        fun <T> getDao(daoKlass: Class<out T>): T {
             return jdbi.onDemand(daoKlass)
         }
 
-        fun executeDao(daoFunc : ()->Any?):Any?{
+        fun executeDao(daoFunc: () -> Any?): Any? {
             handle.begin()
             val ret = daoFunc()
-            if(!handle.connection.autoCommit) handle.commit()
+            handle.commit()
             return ret
         }
     }

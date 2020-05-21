@@ -1,7 +1,0 @@
-DROP TABLE IF EXISTS USERS
-
-CREATE TABLE USERS(
-	username VARCHAR(20) ,
-	_password VARCHAR(50),
-	PRIMARY KEY(username)
-)

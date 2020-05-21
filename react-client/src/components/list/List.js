@@ -63,7 +63,6 @@ export class List extends React.Component {
         const linkBase = (this.props.elemType === type.project) ? links.projects : `${links.issue(this.projectId)}`;
         return fetch(linkBase, {
             method: 'GET',
-            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': sessionStorage.getItem('codedUser')
@@ -79,7 +78,6 @@ export class List extends React.Component {
         const linkBase = (this.props.elemType === type.project) ? links.projects : `${links.issue(this.projectId)}`;
         return fetch(linkBase, {
             method: 'POST',
-            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': sessionStorage.getItem('codedUser')
@@ -88,19 +86,18 @@ export class List extends React.Component {
                 name: elem.name,
                 description: elem.description,
             })
-        }).then(res => res.json())
+        }).then(res => res.json()).then(res=> { if(res.error) throw res.message}).catch( e=> alert(e))
     }
 
     deleteElements(elem) {
         const action = elem.actions[1];
         return fetch(this.API_BASE_URL + action.href, {
             method: action.method,
-            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': sessionStorage.getItem('codedUser')
             },
-        }).then(res => res.json())
+        }).then(res => res.json()).then(res=> { if(res.error) throw res.message}).catch( e=> alert(e))
     }
 
 

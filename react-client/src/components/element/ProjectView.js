@@ -43,7 +43,6 @@ export class ProjectView extends React.Component {
     getElement() {
         fetch(this.API_BASE_URL + window.location.pathname, {
             method: 'GET',
-            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': sessionStorage.getItem('codedUser')
@@ -57,7 +56,6 @@ export class ProjectView extends React.Component {
     addLabels(label){
         return fetch(links.projectLabels(window.location.pathname.split("/")[3]), {
             method: 'PUT',
-            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': sessionStorage.getItem('codedUser')
@@ -72,7 +70,6 @@ export class ProjectView extends React.Component {
         const action = label.actions[0];
         return fetch((this.API_BASE_URL + action.href), {
             method: action.method,
-            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': sessionStorage.getItem('codedUser')
@@ -83,7 +80,6 @@ export class ProjectView extends React.Component {
     getLabels() {
         fetch(links.projectLabels(window.location.pathname.split("/")[3]), {
             method: 'GET',
-            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': sessionStorage.getItem('codedUser')
@@ -106,6 +102,8 @@ export class ProjectView extends React.Component {
                 <Spinner animation="border" role="status">
                     <span className="sr-only">Loading...</span>
                 </Spinner>);
+
+
         return (
             <div className="cont">
                 <GPHeader></GPHeader>

@@ -4,6 +4,7 @@ import Daw2020v.Authentication.AuthService
 import Daw2020v.Authentication.Authorized
 import Daw2020v.common.ALL_PROJECTS
 import Daw2020v.common.HOME
+import Daw2020v.common.LOGIN
 import com.fasterxml.jackson.annotation.JsonInclude.*
 import com.fasterxml.jackson.databind.DeserializationFeature
 import org.springframework.beans.factory.annotation.Autowired
@@ -53,16 +54,18 @@ class ApiConfig : WebMvcConfigurer {
             if (request.method.compareTo("options", true) != 0 &&
                     request.getHeader("Authorization").isNullOrBlank()) {
                 response.addHeader("WWW-Authenticate", "Basic")
-                response.sendError(HttpStatus.UNAUTHORIZED.value());
-                return false
-            } else {
-                return authService.verifyCredentials(request.getHeader("Authorization"))
+                response.sendError(HttpStatus.UNAUTHORIZED.value()); return false
             }
+            if(request.method.compareTo("options", true) == 0){
+                response.status = 200; return true;
+            }
+            return (authService.verifyCredentials(request.getHeader("Authorization")))
+
         }
     }
 
     override fun addInterceptors(registry: InterceptorRegistry) {
-        registry.addInterceptor(interceptor).excludePathPatterns("$HOME/register")
+        registry.addInterceptor(interceptor).excludePathPatterns("$HOME/register",LOGIN)
     }
 
     override fun addCorsMappings(registry: CorsRegistry) {
@@ -71,7 +74,7 @@ class ApiConfig : WebMvcConfigurer {
                 .addMapping("/**")
                 .allowedHeaders("*")
                 .allowedMethods("*")
-                .allowedOrigins("http://localhost:3000")
+                .allowedOrigins("*")
                 //.allowCredentials(true)
     }
 }

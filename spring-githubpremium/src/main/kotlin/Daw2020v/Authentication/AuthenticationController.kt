@@ -1,7 +1,6 @@
 package Daw2020v.Authentication
 
 import Daw2020v.BaseControllerClass
-import Daw2020v.RequireSession
 import Daw2020v.common.*
 import org.postgresql.util.PSQLException
 import org.springframework.beans.factory.annotation.Autowired
@@ -10,7 +9,6 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.http.MediaType
 import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpSession
 
 
 @RequestMapping(HOME)
@@ -30,24 +28,20 @@ class AuthenticationController @Autowired constructor(val authService: AuthServi
              ))
 
     @PutMapping(path = arrayOf("/login"))
-    @Authorized
-    fun login(session: HttpSession, @RequestHeader("Authorization") codedUser: String): ResponseEntity<Boolean> {
-        val coded = codedUser.split(" ")[1]
-        val username = authService.decodeUsername(coded)
-        if (authService.verifyCredentials(coded)) {
+    fun login( @RequestHeader("Authorization") codedUser: String): ResponseEntity<Boolean> {
+        val username = authService.decodeUsername(codedUser)
+        if (authService.verifyCredentials(codedUser)) {
             return ResponseEntity.ok(true)
-        } else return ResponseEntity.status(HttpStatus.FORBIDDEN).body(false)
+        } else return ResponseEntity.status(HttpStatus.FORBIDDEN).header("Content-Type", "application/json").body(false)
 
     }
 
     @PutMapping(path = arrayOf("/register"))
-    @Authorized
-    fun register(@RequestHeader("Authorization") codedUser: String, session: HttpSession): ResponseEntity<Boolean> {
-        val coded = codedUser.split(" ")[1]
-        val username = authService.decodeUsername(coded)
-        if (authService.register(username, coded)) {
+    fun register(@RequestHeader("Authorization") codedUser: String): ResponseEntity<Boolean> {
+        val username = authService.decodeUsername(codedUser)
+        if (authService.register(username, codedUser.split("Basic ")[1])) {
             return ResponseEntity.ok(true)
         }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(false)
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).header("Content-Type", "application/json").body(false)
     }
 }

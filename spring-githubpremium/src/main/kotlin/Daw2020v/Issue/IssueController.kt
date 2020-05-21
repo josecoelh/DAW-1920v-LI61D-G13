@@ -2,7 +2,6 @@ package Daw2020v.Issue
 
 import Daw2020v.BaseControllerClass
 import Daw2020v.Label.LabelOutputModel
-import Daw2020v.RequireSession
 import Daw2020v.common.ISSUE_ENDPOINT
 import Daw2020v.common.model.Issue
 import Daw2020v.common.model.Project
@@ -11,7 +10,6 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.util.*
-import javax.servlet.http.HttpSession
 
 @RequestMapping(ISSUE_ENDPOINT)
 @RestController
@@ -24,7 +22,6 @@ class IssueController @Autowired constructor(val issueService: IssueService) : B
      * @return [IssueOutputModel] wrapped in a [ResponseEntity]
      */
     @GetMapping()
-    @RequireSession
     fun getAllIssuesFromProject(@PathVariable("projectId") projectId: UUID, @RequestHeader("Authorization") logintoken : String,
                                 @RequestParam("size", required = false, defaultValue = "-1") size: Int,
                                 @RequestParam("page", required = false, defaultValue = "-1") page: Int): ResponseEntity<MutableList<IssueOutputModel>> {
@@ -48,7 +45,6 @@ class IssueController @Autowired constructor(val issueService: IssueService) : B
      * @return List of [LabelOutputModel] wrapped into a [ResponseEntity]
      */
     @GetMapping(path = arrayOf("/{issueId}/labels"))
-    @RequireSession
     fun getAllLabelsFromIssues(@PathVariable("projectId") projectId: UUID, @PathVariable("issueId") issueId: UUID, @RequestHeader("Authorization") logintoken : String): ResponseEntity<MutableList<LabelOutputModel>> {
         val labels = issueService.getIssue(projectId, issueId, issueService.decodeUsername(logintoken)).labels
         val outputList = mutableListOf<LabelOutputModel>()
@@ -63,7 +59,6 @@ class IssueController @Autowired constructor(val issueService: IssueService) : B
      * @return the return is a SuccessResponse object with the details of what was done
      */
     @PostMapping()
-    @RequireSession
     fun createIssue(@PathVariable("projectId") projectId: UUID, @RequestBody issue: Issue, @RequestHeader("Authorization") logintoken : String): ResponseEntity<IssueOutputModel> {
         val res = issueService.createIssue(projectId, issue, issueService.decodeUsername(logintoken))
         return ResponseEntity.status(HttpStatus.CREATED).body(res.toDto(projectId))
@@ -76,7 +71,6 @@ class IssueController @Autowired constructor(val issueService: IssueService) : B
      * @return [Issue] with the corresponding [issueId]
      */
     @GetMapping(path = arrayOf("/{issueId}"))
-    @RequireSession
     fun getIssue(@PathVariable("projectId") projectId: UUID, @PathVariable("issueId") issueId: UUID, @RequestHeader("Authorization") logintoken : String): ResponseEntity<IssueOutputModel> {
         val res = issueService.getIssue(projectId, issueId, issueService.decodeUsername(logintoken))
         return ResponseEntity.ok(res.toDto(projectId))
@@ -89,7 +83,6 @@ class IssueController @Autowired constructor(val issueService: IssueService) : B
      * @return the return is a SuccessResponse object with the details of what was done
      */
     @DeleteMapping(path = arrayOf("/{issueId}"))
-    @RequireSession
     fun deleteIssue(@PathVariable("projectId") projectId: UUID, @PathVariable("issueId") issueId: UUID, @RequestHeader("Authorization") logintoken : String): ResponseEntity<IssueOutputModel.IssueDeletedOutputModel> {
         issueService.deleteIssue(projectId, issueId, issueService.decodeUsername(logintoken))
         return ResponseEntity.ok(IssueOutputModel.IssueDeletedOutputModel(projectId, issueId))
@@ -103,7 +96,6 @@ class IssueController @Autowired constructor(val issueService: IssueService) : B
      * @return the return is a SuccessResponse object with the details of what was done
      */
     @PutMapping(path = arrayOf("/{issueId}/labels/{labelId}"))
-    @RequireSession
     fun putLabelinIssue(@PathVariable("projectId") projectId: UUID,
                         @PathVariable("issueId") issueId: UUID,
                         @PathVariable("labelId") labelId: String, @RequestHeader("Authorization") logintoken : String): ResponseEntity<LabelOutputModel> {
@@ -119,7 +111,6 @@ class IssueController @Autowired constructor(val issueService: IssueService) : B
      * @return the return is a SuccessResponse object with the details of what was done
      */
     @DeleteMapping(path = arrayOf("/{issueId}/labels/{labelId}"))
-    @RequireSession
     fun deleteLabelinIssue(@PathVariable("projectId") projectId: UUID,
                            @PathVariable("issueId") issueId: UUID,
                            @PathVariable("labelId") labelId: String, @RequestHeader("Authorization") logintoken : String): ResponseEntity<LabelOutputModel.LabelDeletedOutputModel> {
@@ -135,7 +126,6 @@ class IssueController @Autowired constructor(val issueService: IssueService) : B
      * @return the return is a SuccessResponse object with the details of what was done
      */
     @PutMapping(path = arrayOf("/{issueId}"))
-    @RequireSession
     fun updateIssue(@PathVariable("projectId") projectId: UUID,
                     @PathVariable("issueId") issueId: UUID,
                     @RequestBody issue: IssueInputModel, @RequestHeader("Authorization") logintoken : String): ResponseEntity<IssueOutputModel> {

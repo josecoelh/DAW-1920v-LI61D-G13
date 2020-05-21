@@ -19,17 +19,20 @@ function LoginInterface({ state }) {
             buttonRef.current.focus();
         }
     }
-    function validationAndRedirect(validated, state, codedUser) {
+    function validationAndRedirect(validated, state, username, codedUser) {
+        console.log("called");
+        console.log(validated);
         if (validated) {
             console.log("logged");
-            sessionStorage.setItem('username',username)
-            sessionStorage.setItem('codedUser',codedUser)
+            sessionStorage.setItem('username',username);
+            console.log(codedUser);
+            sessionStorage.setItem('codedUser',codedUser);
             window.location = '/githubPremium/projects';
         } else {
-            alert(`${state} failed`)
-        }
-    }
-    useEffect(() => { usernameRef.current.focus() }, []);
+            throw`${state} failed`;
+        }}
+    
+    useEffect(()=> { usernameRef.current.focus() }, []);
     return (
         <div className="base-container" >
             <div className="type">{state}</div>
@@ -52,15 +55,17 @@ function LoginInterface({ state }) {
                
                         <button ref={buttonRef} type="button"
                     onClick={(e) => {
+                        if(!username){ return alert("Please insert a username")} 
                         const codedUser = `Basic ${Base64.encode(`${username}:${password}`)}`;
                         fetch(`${links.base}${state.toLowerCase()}`, {
                             method: 'PUT',
-                            credentials: 'include',
                             headers: {
                                 'Content-Type': 'application/json',
                                 'Authorization': codedUser
                             },
-                        }).then(response => response.json()).then(validated => validationAndRedirect(validated, state.toLowerCase(), { username },codedUser))
+                        }).then(response => {console.log(response); return response.json()}).then(validated => {
+                            
+                            return validationAndRedirect(validated, state.toLowerCase(),  username ,codedUser)}).catch(e=> alert(e))
                     }}
                     className="btn">{state}</button>
             </div>

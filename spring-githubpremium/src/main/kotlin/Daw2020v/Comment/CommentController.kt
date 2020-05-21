@@ -1,7 +1,6 @@
 package Daw2020v.Comment
 
 import Daw2020v.BaseControllerClass
-import Daw2020v.RequireSession
 import Daw2020v.common.COMMENT_ENDPOINT
 import Daw2020v.common.model.Comment
 import Daw2020v.common.model.Issue
@@ -11,7 +10,6 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.util.*
-import javax.servlet.http.HttpSession
 
 @RequestMapping(COMMENT_ENDPOINT)
 @RestController
@@ -25,7 +23,6 @@ class CommentController @Autowired constructor(val commentService: CommentServic
      * @param commentId the id of the [Comment] to retrieve
      */
     @GetMapping(path = arrayOf("{commentId}")) //TODO erros
-    @RequireSession
     fun getComment(@PathVariable("projectId") projectId: UUID,
                    @PathVariable("issueId") issueId: UUID,
                    @PathVariable("commentId") commentId: UUID, @RequestHeader("Authorization") logintoken : String): ResponseEntity<CommentOutputModel> {
@@ -41,7 +38,6 @@ class CommentController @Autowired constructor(val commentService: CommentServic
      * @return the return is a SuccessResponse object with the details of what was done
      */
     @PostMapping()
-    @RequireSession
     fun addCommentToIssue(@PathVariable("projectId") projectId: UUID,
                           @PathVariable("issueId") issueId: UUID,
                           @RequestBody comment: CommentInputModel, @RequestHeader("Authorization") logintoken : String): ResponseEntity<CommentOutputModel> {
@@ -58,7 +54,6 @@ class CommentController @Autowired constructor(val commentService: CommentServic
      * @return the return is a SuccessResponse object with the details of what was done
      */
     @DeleteMapping(path = arrayOf("{commentId}"))
-    @RequireSession
     fun deleteCommentInIssue(@PathVariable("projectId") projectId: UUID,
                              @PathVariable("issueId") issueId: UUID,
                              @PathVariable("commentId") commentId: UUID, @RequestHeader("Authorization") logintoken : String): ResponseEntity<CommentOutputModel.CommentDeletedOutputModel> {
@@ -73,7 +68,6 @@ class CommentController @Autowired constructor(val commentService: CommentServic
      * @return a list of [CommentOutputModel] wrapped in a [ResponseEntity]
      */
     @GetMapping()
-    @RequireSession
     fun getAllCommentsFromIssue(@PathVariable("projectId") projectId: UUID,
                                 @PathVariable("issueId") issueId: UUID, @RequestHeader("Authorization") logintoken : String,
                                 @RequestParam("size", required = false, defaultValue = "-1") size: Int,

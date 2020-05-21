@@ -33,7 +33,6 @@ export class IssueView extends React.Component {
     getElement() {
         fetch(this.API_BASE_URL + window.location.pathname, {
             method: 'GET',
-            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': sessionStorage.getItem('codedUser')
@@ -47,7 +46,6 @@ export class IssueView extends React.Component {
     addLabels(label) {
         return fetch(`${links.issueLabels(this.projectId, this.issueId)}/${label}`, {
             method: 'PUT',
-            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': sessionStorage.getItem('codedUser')
@@ -63,18 +61,16 @@ export class IssueView extends React.Component {
         const action = label.actions[0];
         return fetch((this.API_BASE_URL + action.href), {
             method: action.method,
-            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': sessionStorage.getItem('codedUser')
-            }
-        }).then(res => res.json())
+            }}
+        ).then(res => res.json())
     }
 
     addComments(comment) {
         return fetch(links.issueComments(this.projectId, this.issueId), {
             method: 'POST',
-            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': sessionStorage.getItem('codedUser')
@@ -89,7 +85,6 @@ export class IssueView extends React.Component {
         const action = comment.actions[0];
         return fetch((this.API_BASE_URL + action.href), {
             method: action.method,
-            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': sessionStorage.getItem('codedUser')
@@ -100,7 +95,6 @@ export class IssueView extends React.Component {
     getLabels() {
         fetch(links.issueLabels(this.projectId, this.issueId), {
             method: 'GET',
-            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': sessionStorage.getItem('codedUser')
@@ -113,7 +107,6 @@ export class IssueView extends React.Component {
     getComments() {
         fetch(links.issueComments(this.projectId, this.issueId), {
             method: 'GET',
-            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': sessionStorage.getItem('codedUser')
@@ -156,7 +149,6 @@ export class IssueView extends React.Component {
         let action = this.state.element.actions[0];
         fetch(this.API_BASE_URL + action.href, {
             method: action.method,
-            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': sessionStorage.getItem('codedUser')
