@@ -1,5 +1,6 @@
 package Daw2020v.Authentication
 
+import Daw2020v.BaseServiceClass
 import Daw2020v.common.WrongCredentialsException
 import Daw2020v.dao.Database
 import Daw2020v.dao.UserDao
@@ -9,13 +10,12 @@ import org.springframework.stereotype.Service
 import java.util.*
 
 @Service
-class AuthService @Autowired constructor() {
+class AuthService @Autowired constructor() : BaseServiceClass() {
     private val userDao: UserDao = Database.getDao(UserDao::class.java)
 
-    fun decodeUsername(codedUser: String) = String(Base64.getDecoder().decode(codedUser), Charsets.UTF_8).split(":")[0]
 
     fun verifyCredentials(codedUser: String): Boolean {
-            return (Database.executeDao { userDao.getCodedUser(decodeUsername(codedUser)) } as User?)?.codedUser == codedUser
+        return (Database.executeDao { userDao.getCodedUser(decodeUsername(codedUser)) } as User?)?.codedUser == codedUser.split("Basic ")[1]
     }
 
     fun register(username: String, hashedUser: String): Boolean {

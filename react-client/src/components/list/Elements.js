@@ -10,7 +10,8 @@ export  {getElements , addElements}
             method: 'GET',
             credentials: 'include',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': sessionStorage.getItem('codedUser')
             }
         }).then(res => res.json())
     }
@@ -22,7 +23,8 @@ export  {getElements , addElements}
             method: 'PUT',
             credentials: 'include',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': sessionStorage.getItem('codedUser')
             }
         }).then(res => res.json())
     }

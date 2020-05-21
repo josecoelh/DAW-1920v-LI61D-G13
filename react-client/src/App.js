@@ -7,8 +7,6 @@ import Types from './type';
 import { Route, Switch, Redirect } from "react-router-dom";
 import { ProjectView } from './components/element/ProjectView';
 import { IssueView } from './components/element/IssueView';
-import Cookies from 'js-cookie';
-
 
 
 function App() {
@@ -22,19 +20,19 @@ function RouteRenderer({ sideRef }) {
     return (
         <Switch>
             <Route exact path="/githubPremium/login">
-                {Cookies.get('username') ? <Redirect to="/githubPremium/projects" /> : <Authentication sideRef={sideRef}></Authentication>}
+                {sessionStorage.getItem('username') ? <Redirect to="/githubPremium/projects" /> : <Authentication sideRef={sideRef}></Authentication>}
             </Route>
             <Route exact path="/githubPremium/projects/:projectId/issues">
-                {Cookies.get('username') ? <List elemType={Types.issue} > </List> : <Redirect to="/githubPremium/login" />}
+                {sessionStorage.getItem('username') ? <List elemType={Types.issue} > </List> : <Redirect to="/githubPremium/login" />}
             </Route>
             <Route exact path="/githubPremium/projects/:projectId/issues/:issueId">
-                {Cookies.get('username') ?<IssueView /> : <Redirect to="/githubPremium/login" />}
+                {sessionStorage.getItem('username') ?<IssueView /> : <Redirect to="/githubPremium/login" />}
             </Route>
             <Route exact path="/githubPremium/projects">
-                {Cookies.get('username') ? <List elemType={Types.project} > </List> : <Redirect to="/githubPremium/login" />}
+                {sessionStorage.getItem('username') ? <List elemType={Types.project} > </List> : <Redirect to="/githubPremium/login" />}
             </Route>
             <Route exact path="/githubPremium/projects/:projectId">
-                {Cookies.get('username') ? <ProjectView /> : <Redirect to="/githubPremium/login" />}
+                {sessionStorage.getItem('username') ? <ProjectView /> : <Redirect to="/githubPremium/login" />}
             </Route>
             <Route path="/">
                 <Redirect to="/githubPremium/login" />

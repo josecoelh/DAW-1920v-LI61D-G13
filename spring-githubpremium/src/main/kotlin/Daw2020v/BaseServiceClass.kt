@@ -15,4 +15,8 @@ class BaseServiceClass {
             throw ForbiddenResourceException()
         }
     }
+
+
+
+    fun decodeUsername(codedUser: String) = String(Base64.getDecoder().decode(codedUser.split("Basic ")[1]), Charsets.UTF_8).split(":")[0]
 }

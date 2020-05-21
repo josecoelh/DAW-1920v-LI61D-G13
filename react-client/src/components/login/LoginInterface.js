@@ -2,7 +2,6 @@ import React, { useRef, useEffect } from "react";
 import logo from "../../img/logo.png";
 import { Base64 } from 'js-base64';
 import links from "../../links";
-import Cookies from 'js-cookie';
 
 function LoginInterface({ state }) {
     let username = null;
@@ -20,10 +19,11 @@ function LoginInterface({ state }) {
             buttonRef.current.focus();
         }
     }
-    function validationAndRedirect(validated, state, username) {
+    function validationAndRedirect(validated, state, codedUser) {
         if (validated) {
             console.log("logged");
-            Cookies.set('username',username)
+            sessionStorage.setItem('username',username)
+            sessionStorage.setItem('codedUser',codedUser)
             window.location = '/githubPremium/projects';
         } else {
             alert(`${state} failed`)
@@ -52,14 +52,15 @@ function LoginInterface({ state }) {
                
                         <button ref={buttonRef} type="button"
                     onClick={(e) => {
+                        const codedUser = `Basic ${Base64.encode(`${username}:${password}`)}`;
                         fetch(`${links.base}${state.toLowerCase()}`, {
                             method: 'PUT',
                             credentials: 'include',
                             headers: {
                                 'Content-Type': 'application/json',
-                                'Authorization': `Basic ${Base64.encode(`${username}:${password}`)}`
+                                'Authorization': codedUser
                             },
-                        }).then(response => response.json()).then(validated => validationAndRedirect(validated, state.toLowerCase(), { username }))
+                        }).then(response => response.json()).then(validated => validationAndRedirect(validated, state.toLowerCase(), { username },codedUser))
                     }}
                     className="btn">{state}</button>
             </div>

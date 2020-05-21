@@ -65,7 +65,8 @@ export class List extends React.Component {
             method: 'GET',
             credentials: 'include',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': sessionStorage.getItem('codedUser')
             }
         }).then(res => res.json()).then(elems => {
             console.log(elems);
@@ -80,7 +81,8 @@ export class List extends React.Component {
             method: 'POST',
             credentials: 'include',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': sessionStorage.getItem('codedUser')
             },
             body: JSON.stringify({
                 name: elem.name,
@@ -95,7 +97,8 @@ export class List extends React.Component {
             method: action.method,
             credentials: 'include',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': sessionStorage.getItem('codedUser')
             },
         }).then(res => res.json())
     }

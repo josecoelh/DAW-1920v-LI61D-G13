@@ -1,6 +1,5 @@
 package Daw2020v.Comment
 
-import Daw2020v.Authentication.USER_SESSION
 import Daw2020v.BaseControllerClass
 import Daw2020v.RequireSession
 import Daw2020v.common.COMMENT_ENDPOINT
@@ -29,8 +28,8 @@ class CommentController @Autowired constructor(val commentService: CommentServic
     @RequireSession
     fun getComment(@PathVariable("projectId") projectId: UUID,
                    @PathVariable("issueId") issueId: UUID,
-                   @PathVariable("commentId") commentId: UUID, session: HttpSession): ResponseEntity<CommentOutputModel> {
-        val res = commentService.getComment(projectId, issueId, commentId, session.getAttribute(USER_SESSION) as String)
+                   @PathVariable("commentId") commentId: UUID, @RequestHeader("Authorization") logintoken : String): ResponseEntity<CommentOutputModel> {
+        val res = commentService.getComment(projectId, issueId, commentId, commentService.decodeUsername(logintoken))
         return ResponseEntity.ok(res.toDto(projectId, issueId))
     }
 
@@ -45,9 +44,9 @@ class CommentController @Autowired constructor(val commentService: CommentServic
     @RequireSession
     fun addCommentToIssue(@PathVariable("projectId") projectId: UUID,
                           @PathVariable("issueId") issueId: UUID,
-                          @RequestBody comment: CommentInputModel, session: HttpSession): ResponseEntity<CommentOutputModel> {
-        val newComment = Comment(comment.value, session.getAttribute(USER_SESSION) as String)!!
-        commentService.addCommentToIssue(projectId, issueId, newComment, session.getAttribute(USER_SESSION) as String)
+                          @RequestBody comment: CommentInputModel, @RequestHeader("Authorization") logintoken : String): ResponseEntity<CommentOutputModel> {
+        val newComment = Comment(comment.value, commentService.decodeUsername(logintoken))!!
+        commentService.addCommentToIssue(projectId, issueId, newComment, commentService.decodeUsername(logintoken))
         return ResponseEntity.status(HttpStatus.CREATED).body(newComment.toDto(projectId, issueId))
     }
 
@@ -62,8 +61,8 @@ class CommentController @Autowired constructor(val commentService: CommentServic
     @RequireSession
     fun deleteCommentInIssue(@PathVariable("projectId") projectId: UUID,
                              @PathVariable("issueId") issueId: UUID,
-                             @PathVariable("commentId") commentId: UUID, session: HttpSession): ResponseEntity<CommentOutputModel.CommentDeletedOutputModel> {
-        commentService.deleteCommentInIssue(issueId, commentId, session.getAttribute(USER_SESSION) as String)
+                             @PathVariable("commentId") commentId: UUID, @RequestHeader("Authorization") logintoken : String): ResponseEntity<CommentOutputModel.CommentDeletedOutputModel> {
+        commentService.deleteCommentInIssue(issueId, commentId, commentService.decodeUsername(logintoken))
         return ResponseEntity.ok(CommentOutputModel.CommentDeletedOutputModel(projectId, issueId, commentId))
     }
 
@@ -76,12 +75,12 @@ class CommentController @Autowired constructor(val commentService: CommentServic
     @GetMapping()
     @RequireSession
     fun getAllCommentsFromIssue(@PathVariable("projectId") projectId: UUID,
-                                @PathVariable("issueId") issueId: UUID, session: HttpSession,
+                                @PathVariable("issueId") issueId: UUID, @RequestHeader("Authorization") logintoken : String,
                                 @RequestParam("size", required = false, defaultValue = "-1") size: Int,
                                 @RequestParam("page", required = false, defaultValue = "-1") page: Int
     ): ResponseEntity<MutableList<CommentOutputModel>> {
-        val comments = if (size == -1) commentService.getAllComments(projectId, issueId, session.getAttribute(USER_SESSION) as String)
-        else commentService.getAllComments(projectId, issueId, session.getAttribute(USER_SESSION) as String, page, size)
+        val comments = if (size == -1) commentService.getAllComments(projectId, issueId, commentService.decodeUsername(logintoken))
+        else commentService.getAllComments(projectId, issueId, commentService.decodeUsername(logintoken), page, size)
         val outputList = mutableListOf<CommentOutputModel>()
         comments.forEach { outputList.add(it.toDto(projectId, issueId)) }
         return ResponseEntity.ok(outputList)

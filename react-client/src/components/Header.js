@@ -14,6 +14,7 @@ function GPHeader({ username }) {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': sessionStorage.getItem('codedUser')
             },
         })
         

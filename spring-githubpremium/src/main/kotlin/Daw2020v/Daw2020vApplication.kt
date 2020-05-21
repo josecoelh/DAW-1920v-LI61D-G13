@@ -2,7 +2,6 @@ package Daw2020v
 
 import Daw2020v.Authentication.AuthService
 import Daw2020v.Authentication.Authorized
-import Daw2020v.Authentication.USER_SESSION
 import Daw2020v.common.ALL_PROJECTS
 import Daw2020v.common.HOME
 import com.fasterxml.jackson.annotation.JsonInclude.*
@@ -11,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.converter.HttpMessageConverter
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
@@ -28,7 +28,6 @@ import javax.servlet.http.HttpServletResponse
 @Configuration
 @EnableWebMvc
 class ApiConfig : WebMvcConfigurer {
-
 
 
     @Autowired
@@ -51,28 +50,19 @@ class ApiConfig : WebMvcConfigurer {
     @Component
     class Interceptor @Autowired constructor(val authService: AuthService) : HandlerInterceptor {
         override fun preHandle(request: HttpServletRequest, response: HttpServletResponse, handler: Any): Boolean {
-            if(request.session.getAttribute(USER_SESSION) != null) {
+            if (request.method.compareTo("options", true) != 0 &&
+                    request.getHeader("Authorization").isNullOrBlank()) {
+                response.addHeader("WWW-Authenticate", "Basic")
+                response.sendError(HttpStatus.UNAUTHORIZED.value());
                 return false
+            } else {
+                return authService.verifyCredentials(request.getHeader("Authorization"))
             }
-            if (handler is HandlerMethod && handler.hasMethodAnnotation(Authorized::class.java)) {
-                val header = request.getHeader("Authorization")?.split(" ")
-                return (header != null && header[0].equals("Basic"))
-            }
-            return true
         }
     }
 
     override fun addInterceptors(registry: InterceptorRegistry) {
-        registry.addInterceptor(interceptor).addPathPatterns(listOf("$HOME/login", "$HOME/register"))
-        registry.addInterceptor(object : HandlerInterceptor {
-            override fun preHandle(request: HttpServletRequest, response: HttpServletResponse, handler: Any): Boolean {
-                if (handler is HandlerMethod && handler.hasMethodAnnotation(RequireSession::class.java)) {
-                    return request.session.getAttribute(USER_SESSION) != null
-                }
-                return true
-            }
-        }).excludePathPatterns(listOf("$HOME/login", "$HOME/register"))
-
+        registry.addInterceptor(interceptor).excludePathPatterns("$HOME/register")
     }
 
     override fun addCorsMappings(registry: CorsRegistry) {
@@ -82,7 +72,7 @@ class ApiConfig : WebMvcConfigurer {
                 .allowedHeaders("*")
                 .allowedMethods("*")
                 .allowedOrigins("http://localhost:3000")
-                .allowCredentials(true)
+                //.allowCredentials(true)
     }
 }
 

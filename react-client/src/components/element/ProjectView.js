@@ -45,7 +45,8 @@ export class ProjectView extends React.Component {
             method: 'GET',
             credentials: 'include',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': sessionStorage.getItem('codedUser')
             }
         }
         ).then(res =>res.json()).then(it => this.setState({ element: it })
@@ -58,9 +59,10 @@ export class ProjectView extends React.Component {
             method: 'PUT',
             credentials: 'include',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': sessionStorage.getItem('codedUser')
             },
-            body : JSON.stringify( [
+            body : JSON.stringify([
                  label
             ])
         }).then(res => res.json())
@@ -72,7 +74,8 @@ export class ProjectView extends React.Component {
             method: action.method,
             credentials: 'include',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': sessionStorage.getItem('codedUser')
             }
         }).then(res => res.json())
     }
@@ -82,7 +85,8 @@ export class ProjectView extends React.Component {
             method: 'GET',
             credentials: 'include',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': sessionStorage.getItem('codedUser')
             }
         }
         ).then(res => res.json()).then(labelSiren => this.setState({ labels: labelSiren })

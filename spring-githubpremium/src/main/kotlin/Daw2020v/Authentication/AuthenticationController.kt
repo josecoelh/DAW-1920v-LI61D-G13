@@ -12,7 +12,6 @@ import org.springframework.http.MediaType
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpSession
 
-const val USER_SESSION: String = "USER_SESSION"
 
 @RequestMapping(HOME)
 @RestController
@@ -30,14 +29,12 @@ class AuthenticationController @Autowired constructor(val authService: AuthServi
                      location = request.requestURI
              ))
 
-
     @PutMapping(path = arrayOf("/login"))
     @Authorized
     fun login(session: HttpSession, @RequestHeader("Authorization") codedUser: String): ResponseEntity<Boolean> {
         val coded = codedUser.split(" ")[1]
         val username = authService.decodeUsername(coded)
         if (authService.verifyCredentials(coded)) {
-            session.setAttribute(USER_SESSION, username)
             return ResponseEntity.ok(true)
         } else return ResponseEntity.status(HttpStatus.FORBIDDEN).body(false)
 
@@ -49,16 +46,8 @@ class AuthenticationController @Autowired constructor(val authService: AuthServi
         val coded = codedUser.split(" ")[1]
         val username = authService.decodeUsername(coded)
         if (authService.register(username, coded)) {
-            session.setAttribute(USER_SESSION, username)
             return ResponseEntity.ok(true)
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(false)
-    }
-
-    @PutMapping(path = arrayOf("/logout"))
-    @RequireSession
-    fun logout(request: HttpServletRequest): ResponseEntity<Boolean> {
-        request.session.invalidate()
-        return ResponseEntity.ok(true)
     }
 }
